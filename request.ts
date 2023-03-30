@@ -1,7 +1,7 @@
 import { errorResponse } from "./response.ts";
 
-export const requiredHeader =
-  (header: string, status = 400) => (req: Request): string | never => {
+export function requiredHeader(header: string, status = 400) {
+  return (req: Request): string | never => {
     const value = req.headers.get(header);
 
     if (!value) {
@@ -10,9 +10,10 @@ export const requiredHeader =
 
     return value;
   };
+}
 
-export const getUrlHeader =
-  (header: string, trailing?: "/") => (req: Request): URL | undefined => {
+export function getUrlHeader(header: string, trailing?: "/") {
+  return (req: Request): URL | undefined => {
     const value = req.headers.get(header);
 
     try {
@@ -27,11 +28,12 @@ export const getUrlHeader =
 
     return undefined;
   };
+}
 
-export const getBodyAsObject = async <T>(
+export async function getBodyAsObject<T>(
   req: Request,
   processForm?: (data: Record<string, FormDataEntryValue>, form: FormData) => T,
-): Promise<T> | never => {
+): Promise<T> | never {
   const contentType = req.headers.get("content-type");
 
   let body;
@@ -68,11 +70,11 @@ export const getBodyAsObject = async <T>(
   }
 
   return body;
-};
+}
 
-export const getSearchValues = (
+export function getSearchValues(
   input: Request | URL | URLPatternResult | URLSearchParams,
-) => {
+) {
   const searchParams = input instanceof Request
     ? new URL(input.url).searchParams
     : input instanceof URL
@@ -92,4 +94,4 @@ export const getSearchValues = (
         : searchParams.getAll(param)
       : [];
   };
-};
+}

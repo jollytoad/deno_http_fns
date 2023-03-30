@@ -10,7 +10,7 @@ import { fromFileUrl } from "https://deno.land/std@0.181.0/path/mod.ts";
  * @param fileRootUrl the root from where the files are served (this should be a file:// URL)
  * @returns a Request handler that always returns a Response
  */
-export const staticRoute = (pattern: string, fileRootUrl: string) => {
+export function staticRoute(pattern: string, fileRootUrl: string) {
   const fsRoot = fromFileUrl(fileRootUrl);
 
   return byPattern(
@@ -25,4 +25,4 @@ export const staticRoute = (pattern: string, fileRootUrl: string) => {
       },
     }),
   );
-};
+}

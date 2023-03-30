@@ -14,7 +14,9 @@ import { cascade } from "./cascade.ts";
  *  this optional and defaults to a Not Found response.
  * @returns a Request handler that always returns a Response
  */
-export const handle = <A extends Args>(
+export function handle<A extends Args>(
   handlers: CustomHandler<A>[],
   fallback: CustomHandler<A, Response> = () => notFound(),
-): CustomHandler<A, Response> => withFallback(cascade(...handlers), fallback);
+): CustomHandler<A, Response> {
+  return withFallback(cascade(...handlers), fallback);
+}

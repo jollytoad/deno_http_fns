@@ -23,11 +23,11 @@ export type MediaTypeHandlers<A extends Args> = Record<
  *  can not be matched from the `Accept` header, defaults to a Not Acceptable response
  * @returns a Request handler
  */
-export const byMediaType = <A extends Args>(
+export function byMediaType<A extends Args>(
   handlers: MediaTypeHandlers<A>,
   fallbackExt: CustomHandler<A> = () => notFound(),
   fallbackAccept: CustomHandler<A> = () => notAcceptable(),
-): CustomHandler<A> => {
+): CustomHandler<A> {
   return async (req, ...args) => {
     const ext = getExt(req, ...args);
     if (ext) {
@@ -61,7 +61,7 @@ export const byMediaType = <A extends Args>(
       return response;
     }
   };
-};
+}
 
 // deno-lint-ignore no-explicit-any
 function getExt(req: Request, info?: any): string {

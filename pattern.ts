@@ -10,29 +10,30 @@ export type RouteHandler = CustomHandler<[URLPatternResult]>;
  *  take the Request and the URLPatternResult as arguments
  * @returns a Request handler that returns a Response or null
  */
-export const byPattern = <A extends Args>(
+export function byPattern<A extends Args>(
   pattern: URLPatternInput | URLPattern | Array<URLPatternInput | URLPattern>,
   handler: RouteHandler,
-): CustomHandler<A> =>
-async (req, ..._args) => {
-  const patterns = Array.isArray(pattern) ? pattern : [pattern];
-  const url = new URL(req.url);
+): CustomHandler<A> {
+  return async (req, ..._args) => {
+    const patterns = Array.isArray(pattern) ? pattern : [pattern];
+    const url = new URL(req.url);
 
-  for (const pattern of patterns) {
-    const match = typeof pattern === "string"
-      ? new URLPattern({ pathname: pattern }).exec(url)
-      : pattern instanceof URLPattern
-      ? pattern.exec(url)
-      : new URLPattern(pattern).exec(url);
+    for (const pattern of patterns) {
+      const match = typeof pattern === "string"
+        ? new URLPattern({ pathname: pattern }).exec(url)
+        : pattern instanceof URLPattern
+        ? pattern.exec(url)
+        : new URLPattern(pattern).exec(url);
 
-    if (match) {
-      console.debug("Matched", pattern);
-      const res = await handler(req, match);
-      if (res) {
-        return res;
+      if (match) {
+        console.debug("Matched", pattern);
+        const res = await handler(req, match);
+        if (res) {
+          return res;
+        }
       }
     }
-  }
 
-  return null;
-};
+    return null;
+  };
+}

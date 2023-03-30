@@ -12,7 +12,7 @@ interface CorsOptions {
  * @param opts configuration options
  * @returns a ResponseInterceptor that can be used with `intercept` or `interceptResponse`.
  */
-export const cors = (opts?: CorsOptions) => {
+export function cors(opts?: CorsOptions) {
   return (req: Request, res: Response) => {
     const origin = req.headers.get("Origin");
 
@@ -76,7 +76,7 @@ export const cors = (opts?: CorsOptions) => {
 
     return res;
   };
-};
+}
 
 const SAFELIST = new Set([
   "cache-control",

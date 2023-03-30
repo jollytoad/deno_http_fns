@@ -23,10 +23,10 @@ export type MethodHandlers<A extends Args> = {
  *  but may return `null` if you want the request to cascade to a later handler
  * @returns a Request handler
  */
-export const byMethod = <A extends Args>(
+export function byMethod<A extends Args>(
   handlers: MethodHandlers<A>,
   fallback: CustomHandler<A> = () => methodNotAllowed(),
-): CustomHandler<A> => {
+): CustomHandler<A> {
   const defaultHandlers: MethodHandlers<A> = {
     OPTIONS: optionsHandler(handlers),
   };
@@ -43,11 +43,11 @@ export const byMethod = <A extends Args>(
 
     return fallback(req, ...args);
   };
-};
+}
 
-const optionsHandler = <A extends Args>(
+function optionsHandler<A extends Args>(
   handlers: MethodHandlers<A>,
-): CustomHandler<A> => {
+): CustomHandler<A> {
   const methods = Object.keys(handlers);
   if ("GET" in methods && !("HEAD" in methods)) {
     methods.push("HEAD");
@@ -64,7 +64,7 @@ const optionsHandler = <A extends Args>(
       },
     });
   };
-};
+}
 
 const headHandler =
   <A extends Args>(handler: CustomHandler<A>): CustomHandler<A> =>

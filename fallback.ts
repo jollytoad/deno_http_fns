@@ -13,15 +13,16 @@ import { notFound } from "./response.ts";
  *  this optional and defaults to a Not Found response
  * @returns a Request handler that always returns a Response
  */
-export const withFallback = <A extends Args>(
+export function withFallback<A extends Args>(
   handler: CustomHandler<A>,
   fallback: CustomHandler<A, Response> = () => notFound(),
-): CustomHandler<A, Response> =>
-async (req, ...args) => {
-  const res = await handler(req, ...args);
-  if (res) {
-    return res;
-  }
+): CustomHandler<A, Response> {
+  return async (req, ...args) => {
+    const res = await handler(req, ...args);
+    if (res) {
+      return res;
+    }
 
-  return fallback(req, ...args);
-};
+    return fallback(req, ...args);
+  };
+}

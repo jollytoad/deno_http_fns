@@ -11,8 +11,9 @@ import type { CustomHandler } from "./types.ts";
  * @param handler the handler to call with the new arg
  * @returns a Request handler that accepts the new arg type
  */
-export const mapData = <O, I>(
+export function mapData<O, I>(
   mapper: (req: Request, data: I) => O | Promise<O>,
   handler: CustomHandler<[O]>,
-): CustomHandler<[I]> =>
-async (req, data) => handler(req, await mapper(req, data));
+): CustomHandler<[I]> {
+  return async (req, data) => handler(req, await mapper(req, data));
+}

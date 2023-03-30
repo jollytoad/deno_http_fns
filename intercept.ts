@@ -26,9 +26,10 @@ export type ErrorInterceptor<in out R = Response | Skip> = (
  * @param handler the original handler
  * @param pre a chain of RequestInterceptors functions that may return a
  *  new/modified Request that is passed to the handler
- * @param post A chain of ResponseInterceptors functions that may modify the
+ * @param post a chain of ResponseInterceptors functions that may modify the
  *  Response from the handler
- * @param error A chain of ResponseInterceptors that may modify the Response from the handler
+ * @param error a chain of ResponseInterceptors that may modify the Response from the handler
+ * @returns a new Request handler
  */
 export function intercept<A extends Args, R extends Response | Skip>(
   handler: CustomHandler<A, R>,
@@ -73,6 +74,16 @@ export function intercept<A extends Args, R extends Response | Skip>(
   };
 }
 
+/**
+ * Shortcut for `intercept` when you only need to provide ResponseInterceptors.
+ *
+ * Example: `interceptResponse(..., skip(404))`
+ *
+ * @param handler the original handler
+ * @param interceptors a chain of ResponseInterceptors functions that may modify the
+ *  Response from the handler
+ * @returns a new Request handler
+ */
 export function interceptResponse<A extends Args, R extends Response | Skip>(
   handler: CustomHandler<A, R>,
   ...interceptors: ResponseInterceptor<R>[]
@@ -83,9 +94,10 @@ export function interceptResponse<A extends Args, R extends Response | Skip>(
 /**
  * A ResponseInterceptor that will catch and skip any Responses that match the given Statuses.
  */
-export const skip =
-  (...status: number[]) => (_req: unknown, res: Response | Skip) =>
+export function skip(...status: number[]) {
+  return (_req: unknown, res: Response | Skip) =>
     res && status.includes(res.status) ? null : undefined;
+}
 
 function safeHandle<A extends Args, R extends Response | null>(
   handler: CustomHandler<A, R>,
