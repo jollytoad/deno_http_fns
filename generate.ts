@@ -42,6 +42,8 @@ export function generateRoutesModule(
   const body: string[] = [];
   let i = 1;
 
+  head.push('// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n');
+
   if (opts?.dynamic) {
     const dynamic_ts = `${httpFnsUrl}dynamic.ts`;
 
