@@ -26,7 +26,6 @@ export function byPattern<A extends Args>(
         : new URLPattern(pattern).exec(url);
 
       if (match) {
-        console.debug("Matched", pattern);
         const res = await handler(req, match);
         if (res) {
           return res;

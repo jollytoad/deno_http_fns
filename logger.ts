@@ -1,4 +1,4 @@
-import * as c from "https://deno.land/std@0.181.0/fmt/colors.ts";
+import * as c from "https://deno.land/std@0.182.0/fmt/colors.ts";
 
 /**
  * A RequestInterceptor that logs the Requests (using console.group),
