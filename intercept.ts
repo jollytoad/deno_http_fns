@@ -99,13 +99,13 @@ export function skip(...status: number[]) {
     res && status.includes(res.status) ? null : undefined;
 }
 
-function safeHandle<A extends Args, R extends Response | null>(
+async function safeHandle<A extends Args, R extends Response | null>(
   handler: CustomHandler<A, R>,
   req: Request,
   ...args: A
-): R | Promise<R> {
+): Promise<R> {
   try {
-    return handler(req, ...args);
+    return await handler(req, ...args);
   } catch (error: unknown) {
     if (error instanceof Response) {
       return error as R;

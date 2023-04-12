@@ -69,11 +69,6 @@ export function cors(opts?: CorsOptions) {
       res = appendHeaders(res, headers);
     }
 
-    if (req.method === "OPTIONS") {
-      console.log(req.headers);
-      console.log(res.headers);
-    }
-
     return res;
   };
 }

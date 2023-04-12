@@ -1,5 +1,3 @@
-import * as c from "https://deno.land/std@0.182.0/fmt/colors.ts";
-
 /**
  * A RequestInterceptor that logs the Requests (using console.group),
  * can be passed a `pre` interceptor to `intercept`.
@@ -9,9 +7,9 @@ import * as c from "https://deno.land/std@0.182.0/fmt/colors.ts";
  */
 export function logRequestGroup(req: Request) {
   console.group(
-    c.brightYellow("►"),
-    c.brightYellow(req.method),
-    c.bold(c.brightCyan(req.url)),
+    `%c► ${req.method} %c${req.url}`,
+    "color: yellow",
+    "color: cyan; font-weight: bold",
   );
 }
 
@@ -42,10 +40,12 @@ export function logGroupEnd() {
  */
 export function logStatusAndContentType(_req: unknown, res: Response) {
   if (res) {
-    const clr = res.ok || res.status === 304 ? c.brightGreen : c.brightRed;
+    const clr = res.ok || res.status === 304 ? "green" : "red";
+    const contentType = res.headers.get("Content-Type") || "";
     console.debug(
-      clr(`◁ ${res.status} ${res.statusText}`),
-      c.gray(res.headers.get("Content-Type") || ""),
+      `%c◁ ${res.status} ${res.statusText} %c${contentType}`,
+      `color: ${clr}`,
+      `color: gray`,
     );
   }
 }

@@ -42,7 +42,9 @@ export function generateRoutesModule(
   const body: string[] = [];
   let i = 1;
 
-  head.push('// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n');
+  head.push(
+    "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n",
+  );
 
   if (opts?.dynamic) {
     const dynamic_ts = `${httpFnsUrl}dynamic.ts`;
@@ -67,7 +69,6 @@ export function generateRoutesModule(
     body.push("export default cascade(\n");
 
     for (const [modulePattern, moduleUrl] of walkRoutes(pattern, fileRootUrl)) {
-      console.log(outPath, moduleUrl);
       let modulePath = relative(outPath, moduleUrl);
       if (modulePath[0] !== ".") {
         modulePath = "./" + modulePath;

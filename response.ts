@@ -23,7 +23,6 @@ export function errorResponse(
   message?: string | null,
   status: Status = Status.BadRequest,
 ): Response {
-  console.error(message);
   return response(status, message ?? STATUS_TEXT[status], {
     "Content-Type": "text/plain",
   });
@@ -43,6 +42,10 @@ export function notAcceptable(): Response {
 
 export function notFound(message?: string | null): Response {
   return errorResponse(message, Status.NotFound);
+}
+
+export function forbidden(message?: string | null): Response {
+  return errorResponse(message, Status.Forbidden);
 }
 
 export function replaceBody(res: Response, body: BodyInit | null) {
