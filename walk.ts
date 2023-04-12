@@ -3,6 +3,7 @@ import {
   join,
   parse,
 } from "https://deno.land/std@0.182.0/path/mod.ts";
+import { sortBy } from "https://deno.land/std@0.182.0/collections/sort_by.ts";
 
 export type RouteTuple = [pattern: string, moduleUrl: string];
 
@@ -14,7 +15,11 @@ export type RouteTuple = [pattern: string, moduleUrl: string];
  * @returns an Iterable of tuples of the URL pattern to match to the handler module URL
  */
 export function walkRoutes(pattern: string, fileRootUrl: string) {
-  return walk(pattern === "/" ? "" : pattern, fromFileUrl(fileRootUrl));
+  // TODO: Sort using something like URLPattern.compareComponent if it becomes available
+  // See: https://github.com/WICG/urlpattern/issues/61
+  return sortBy([
+    ...walk(pattern === "/" ? "" : pattern, fromFileUrl(fileRootUrl)),
+  ], ([pattern]) => pattern).reverse();
 }
 
 function* walk(rootPattern: string, path: string): Iterable<RouteTuple> {
