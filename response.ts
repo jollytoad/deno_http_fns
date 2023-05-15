@@ -19,6 +19,28 @@ export function ok(body?: BodyInit | null, headers?: HeadersInit): Response {
   return response(body ? Status.OK : Status.NoContent, body, headers);
 }
 
+export function noContent(): Response {
+  return response(Status.NoContent);
+}
+
+export function json(body: unknown, headersInit?: HeadersInit): Response {
+  const headers = new Headers(headersInit);
+  headers.set("Content-Type", "application/json");
+  return response(Status.OK, JSON.stringify(body), headers);
+}
+
+export function html(body: BodyInit, headersInit?: HeadersInit): Response {
+  const headers = new Headers(headersInit);
+  headers.set("Content-Type", "text/html");
+  return response(Status.OK, body, headers);
+}
+
+export function seeOther(location: string | URL): Response {
+  return response(Status.SeeOther, null, {
+    "Location": `${location}`,
+  });
+}
+
 export function errorResponse(
   message?: string | null,
   status: Status = Status.BadRequest,
@@ -28,8 +50,8 @@ export function errorResponse(
   });
 }
 
-export function noContent(): Response {
-  return response(Status.NoContent);
+export function badRequest(message?: string | null): Response {
+  return errorResponse(message);
 }
 
 export function methodNotAllowed(): Response {
