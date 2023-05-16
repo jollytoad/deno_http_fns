@@ -2,8 +2,8 @@ import {
   fromFileUrl,
   join,
   parse,
-} from "https://deno.land/std@0.182.0/path/mod.ts";
-import { sortBy } from "https://deno.land/std@0.182.0/collections/sort_by.ts";
+} from "https://deno.land/std@0.187.0/path/mod.ts";
+import { sortBy } from "https://deno.land/std@0.187.0/collections/sort_by.ts";
 
 export type RouteTuple = [pattern: string, moduleUrl: string];
 
