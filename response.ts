@@ -35,10 +35,16 @@ export function html(body: BodyInit, headersInit?: HeadersInit): Response {
   return response(Status.OK, body, headers);
 }
 
-export function seeOther(location: string | URL): Response {
-  return response(Status.SeeOther, null, {
-    "Location": `${location}`,
-  });
+export function seeOther(
+  location: string | URL,
+  headersInit?: HeadersInit,
+): Response {
+  const headers = new Headers(headersInit);
+  headers.set(
+    "Location",
+    typeof location === "string" ? location : location.href,
+  );
+  return response(Status.SeeOther, null, headers);
 }
 
 export function errorResponse(
