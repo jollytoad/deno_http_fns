@@ -19,7 +19,7 @@ export function staticRoute(pattern: string, fileRootUrl: string) {
       GET(req, info) {
         const urlRoot = info.pathname.input.slice(
           1,
-          -info.pathname.groups.path.length,
+          -info.pathname.groups.path!.length,
         );
         return serveDir(req, { fsRoot, urlRoot });
       },
