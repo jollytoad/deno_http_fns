@@ -1,7 +1,7 @@
 import { byPattern } from "../pattern.ts";
 import { forbidden } from "../response.ts";
 import { subHeaders } from "./_substitute.ts";
-import { intersect } from "https://deno.land/std@0.187.0/collections/intersect.ts";
+import { intersect } from "https://deno.land/std@0.189.0/collections/intersect.ts";
 import type { Method, Role, RouteRule } from "./types.ts";
 import type { Skip } from "../types.ts";
 
