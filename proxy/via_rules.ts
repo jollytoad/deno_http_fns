@@ -43,8 +43,6 @@ const handler = (rule: RouteRule) => (req: Request) => {
 
   const { url, method, body } = req;
 
-  console.log(`> ${method} ${url}`, headers);
-
   return fetch(url, {
     method,
     headers,
