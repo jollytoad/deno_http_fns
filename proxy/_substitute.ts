@@ -47,3 +47,11 @@ export function subHeaders(
   }
   return headers;
 }
+
+export function subRef(ref: string | URL | undefined) {
+  if (typeof ref === "string") {
+    return subEnvVars(ref);
+  } else if (ref instanceof URL) {
+    return ref;
+  }
+}

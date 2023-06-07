@@ -6,8 +6,9 @@
  */
 export type Manifest = {
   target: string;
+  rolesProvider?: RolesProviderSpec;
+  auditors?: AuditorSpec[];
   routeRules?: RouteRule[];
-  rolesProvider?: Provider<Role[]>;
 };
 
 export type RouteRule = {
@@ -29,15 +30,39 @@ export type Method =
   | "HEAD"
   | "OPTIONS";
 
-export type ProviderFn<R> = (
-  req: Request,
-  params?: Record<string, string>,
-) => R | Promise<R | undefined> | undefined;
+export type Params = Record<string, string>;
 
-export interface Provider<R> {
-  as?: R;
-  fn?: ProviderFn<R>;
+export interface RolesProviderSpec {
+  as?: Role[];
+  fn?: RolesProvider;
   module?: string | URL;
   service?: string | URL;
-  params?: Record<string, string>;
+  params?: Params;
+}
+
+export type RolesProvider = (
+  req: Request,
+  params?: Params,
+) => Role[] | Promise<Role[] | undefined> | undefined;
+
+export interface AuditorSpec {
+  kind?: AuditKind[];
+  fn?: Auditor;
+  module?: string | URL;
+  service?: string | URL;
+  params?: Params;
+}
+
+export type AuditKind = "denied" | "request" | "response" | "error";
+
+export type Auditor = (params: AuditRecord) => void | Promise<void>;
+
+export interface AuditRecord {
+  kind: AuditKind;
+  roles?: Role[];
+  rule: RouteRule;
+  request: Request;
+  response?: Response;
+  error?: unknown;
+  params?: Params;
 }

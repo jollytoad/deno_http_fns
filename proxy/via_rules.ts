@@ -2,7 +2,7 @@ import { byPattern } from "../pattern.ts";
 import { forbidden } from "../response.ts";
 import { subHeaders } from "./_substitute.ts";
 import { intersect } from "https://deno.land/std@0.189.0/collections/intersect.ts";
-import type { Method, Role, RouteRule } from "./types.ts";
+import type { Auditor, Method, Role, RouteRule } from "./types.ts";
 import type { Skip } from "../types.ts";
 
 /**
@@ -12,9 +12,10 @@ export async function proxyViaRules(
   req: Request,
   rules: RouteRule[],
   roles: Role[],
+  auditor?: Auditor,
 ): Promise<Response | Skip> {
   for (const rule of rules) {
-    const res = await proxyViaRule(req, rule, roles);
+    const res = await proxyViaRule(req, rule, roles, auditor);
     if (res) {
       return res;
     }
@@ -27,15 +28,22 @@ async function proxyViaRule(
   req: Request,
   rule: RouteRule,
   roles: Role[],
+  auditor?: Auditor,
 ): Promise<Response | Skip> {
   if (methodApplies(rule, req) && roleApplies(rule, roles)) {
-    return await byPattern(rule.pattern ?? "*", handler(rule))(req);
+    return await byPattern(rule.pattern ?? "*", handler(rule, roles, auditor))(
+      req,
+    );
   }
-  return forbidden();
+  return null;
 }
 
-const handler = (rule: RouteRule) => (req: Request) => {
+const handler = (rule: RouteRule, roles: Role[], auditor?: Auditor) =>
+async (
+  req: Request,
+) => {
   if (rule.allow !== true) {
+    auditor?.({ kind: "denied", roles, rule, request: req });
     return forbidden();
   }
 
@@ -43,11 +51,43 @@ const handler = (rule: RouteRule) => (req: Request) => {
 
   const { url, method, body } = req;
 
-  return fetch(url, {
+  const outgoingRequest = new Request(url, {
     method,
     headers,
     body,
   });
+
+  auditor?.({
+    kind: "request",
+    roles,
+    rule,
+    request: outgoingRequest,
+  });
+
+  let response: Response;
+
+  try {
+    response = await fetch(outgoingRequest);
+  } catch (error) {
+    auditor?.({
+      kind: "error",
+      roles,
+      rule,
+      request: outgoingRequest,
+      error,
+    });
+    throw error;
+  }
+
+  auditor?.({
+    kind: "response",
+    roles,
+    rule,
+    request: outgoingRequest,
+    response: response,
+  });
+
+  return response;
 };
 
 function methodApplies(rule: RouteRule, req: Request) {

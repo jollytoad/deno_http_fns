@@ -1,6 +1,7 @@
 import { byPattern } from "./pattern.ts";
 import { proxyViaRules } from "./proxy/via_rules.ts";
 import { getRoles } from "./proxy/roles.ts";
+import { getAuditor } from "./proxy/auditor.ts";
 import type { Manifest } from "./proxy/types.ts";
 
 /**
@@ -10,7 +11,10 @@ export function proxyRoute(pattern: string, manifest: Manifest) {
   return byPattern(
     `${pattern === "/" ? "" : pattern}/:path*`,
     async function (req, info) {
-      const roles = await getRoles(req, manifest);
+      const [roles, auditor] = await Promise.all([
+        getRoles(req, manifest),
+        getAuditor(req, manifest),
+      ]);
 
       const incomingUrl = new URL(req.url);
 
@@ -25,6 +29,7 @@ export function proxyRoute(pattern: string, manifest: Manifest) {
         new Request(outgoingUrl, req),
         manifest.routeRules ?? [],
         roles,
+        auditor,
       );
     },
   );
