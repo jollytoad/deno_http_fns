@@ -40,52 +40,38 @@ async function proxyViaRule(
 
 const handler = (rule: RouteRule, roles: Role[], auditor?: Auditor) =>
 async (
-  req: Request,
+  originalRequest: Request,
 ) => {
   if (rule.allow !== true) {
-    await auditor?.({ kind: "denied", roles, rule, request: req });
+    await auditor?.({ kind: "denied", roles, rule, request: originalRequest });
     return forbidden();
   }
 
-  const headers = subHeaders(rule.headers ?? {}, new Headers(req.headers));
+  const headers = subHeaders(
+    rule.headers ?? {},
+    new Headers(originalRequest.headers),
+  );
 
-  const { url, method, body } = req;
+  const { url, method, body } = originalRequest;
 
-  const outgoingRequest = new Request(url, {
+  const request = new Request(url, {
     method,
     headers,
     body,
   });
 
-  await auditor?.({
-    kind: "request",
-    roles,
-    rule,
-    request: outgoingRequest,
-  });
+  await auditor?.({ kind: "request", roles, rule, request });
 
   let response: Response;
 
   try {
-    response = await fetch(outgoingRequest);
+    response = await fetch(request);
   } catch (error) {
-    await auditor?.({
-      kind: "error",
-      roles,
-      rule,
-      request: outgoingRequest,
-      error,
-    });
+    await auditor?.({ kind: "error", roles, rule, request, error });
     throw error;
   }
 
-  await auditor?.({
-    kind: "response",
-    roles,
-    rule,
-    request: outgoingRequest,
-    response: response,
-  });
+  await auditor?.({ kind: "response", roles, rule, request, response });
 
   return response;
 };
