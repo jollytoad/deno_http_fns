@@ -43,7 +43,7 @@ async (
   req: Request,
 ) => {
   if (rule.allow !== true) {
-    auditor?.({ kind: "denied", roles, rule, request: req });
+    await auditor?.({ kind: "denied", roles, rule, request: req });
     return forbidden();
   }
 
@@ -57,7 +57,7 @@ async (
     body,
   });
 
-  auditor?.({
+  await auditor?.({
     kind: "request",
     roles,
     rule,
@@ -69,7 +69,7 @@ async (
   try {
     response = await fetch(outgoingRequest);
   } catch (error) {
-    auditor?.({
+    await auditor?.({
       kind: "error",
       roles,
       rule,
@@ -79,7 +79,7 @@ async (
     throw error;
   }
 
-  auditor?.({
+  await auditor?.({
     kind: "response",
     roles,
     rule,

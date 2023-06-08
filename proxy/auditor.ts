@@ -50,12 +50,26 @@ async function resolveAuditor(
           fn = module.default;
         }
       } else if (serviceRef) {
-        fn = fetchAuditor(serviceRef);
+        fn = fetchAuditor(serviceRef, auditorSpec);
       }
     }
 
     if (fn && auditorSpec?.params) {
       return (params) => fn?.({ ...params, params: auditorSpec.params });
+    }
+
+    if (fn) {
+      return async (params) => {
+        try {
+          return await fn?.(params);
+        } catch (e) {
+          console.error(
+            `%cAuditor failed: ${JSON.stringify(auditorSpec, auditReplacer)}\n`,
+            "color: red;",
+            e,
+          );
+        }
+      };
     }
   }
 
@@ -66,6 +80,7 @@ function noOp() {}
 
 function fetchAuditor(
   url: string | URL,
+  auditorSpec?: AuditorSpec,
 ): Auditor {
   return async (params): Promise<void> => {
     const response = await fetch(url, {
@@ -76,9 +91,10 @@ function fetchAuditor(
       body: JSON.stringify(params, auditReplacer),
     });
     if (!response.ok) {
-      console.warn(
-        `%Auditor failed: POST ${url} -> ${response.status} ${response.statusText}`,
+      console.error(
+        `%cAuditor failed: ${JSON.stringify(auditorSpec, auditReplacer)}\n`,
         "color: red;",
+        `POST ${url} -> ${response.status} ${response.statusText}`,
       );
     }
   };
@@ -104,6 +120,9 @@ function auditReplacer(_key: string, value: unknown) {
       name: value.name,
       message: value.message,
     };
+  }
+  if (typeof value === "function") {
+    return value.name + "()";
   }
   return value;
 }
