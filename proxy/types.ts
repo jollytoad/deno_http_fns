@@ -1,3 +1,7 @@
+import type { HttpMethod } from "https://deno.land/std@0.189.0/http/method.ts";
+
+export type { HttpMethod };
+
 /**
  * Declare the rules for access to an API, and mapping from proxy route
  * to target route.
@@ -13,22 +17,13 @@ export type Manifest = {
 
 export type RouteRule = {
   pattern: URLPatternInput | URLPattern | Array<URLPatternInput | URLPattern>;
-  method?: Method | Method[] | "*";
+  method?: HttpMethod | HttpMethod[] | "*";
   role?: Role | Role[] | "*";
   allow?: boolean;
   headers?: Record<string, string>;
 };
 
 export type Role = string;
-
-export type Method =
-  | "GET"
-  | "POST"
-  | "PUT"
-  | "DELETE"
-  | "PATCH"
-  | "HEAD"
-  | "OPTIONS";
 
 export type Params = Record<string, string>;
 
@@ -53,7 +48,7 @@ export interface AuditorSpec {
   params?: Params;
 }
 
-export type AuditKind = "denied" | "request" | "response" | "error";
+export type AuditKind = "denied" | "request" | "response" | "error" | "aborted";
 
 export type Auditor = (params: AuditRecord) => void | Promise<void>;
 
@@ -64,5 +59,6 @@ export interface AuditRecord {
   request: Request;
   response?: Response;
   error?: unknown;
+  reason?: unknown;
   params?: Params;
 }

@@ -1,16 +1,11 @@
 import { methodNotAllowed } from "./response.ts";
 import type { Args, CustomHandler } from "./types.ts";
+import type { HttpMethod } from "https://deno.land/std@0.189.0/http/method.ts";
 
-export type HttpMethod = keyof MethodHandlers<Args>;
+export type { HttpMethod };
 
 export type MethodHandlers<A extends Args> = {
-  DELETE?: CustomHandler<A>;
-  GET?: CustomHandler<A>;
-  HEAD?: CustomHandler<A>;
-  OPTIONS?: CustomHandler<A>;
-  PATCH?: CustomHandler<A>;
-  POST?: CustomHandler<A>;
-  PUT?: CustomHandler<A>;
+  [M in HttpMethod]?: CustomHandler<A>;
 };
 
 /**

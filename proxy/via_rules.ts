@@ -2,7 +2,7 @@ import { byPattern } from "../pattern.ts";
 import { forbidden } from "../response.ts";
 import { subHeaders } from "./_substitute.ts";
 import { intersect } from "https://deno.land/std@0.189.0/collections/intersect.ts";
-import type { Auditor, Method, Role, RouteRule } from "./types.ts";
+import type { Auditor, HttpMethod, Role, RouteRule } from "./types.ts";
 import type { Skip } from "../types.ts";
 
 /**
@@ -52,36 +52,52 @@ async (
     new Headers(originalRequest.headers),
   );
 
-  const { url, method, body } = originalRequest;
+  const { url, method, body, signal } = originalRequest;
 
   const request = new Request(url, {
     method,
     headers,
     body,
+    signal,
   });
 
   await auditor?.({ kind: "request", roles, rule, request });
 
   let response: Response;
 
+  function aborted(this: AbortSignal) {
+    auditor?.({ kind: "aborted", roles, rule, request, reason: this.reason });
+  }
+
   try {
+    request.signal.addEventListener("abort", aborted, { once: true });
+
     response = await fetch(request);
   } catch (error) {
-    await auditor?.({ kind: "error", roles, rule, request, error });
+    auditor?.({ kind: "error", roles, rule, request, error });
     throw error;
   }
 
   await auditor?.({ kind: "response", roles, rule, request, response });
 
+  if (response.body) {
+    // This is a bit of a hack, it allows the Request abort to be caught when it
+    // happens rather than at the end of the Response stream.
+    response = new Response(
+      response.body.pipeThrough(new TransformStream()),
+      response,
+    );
+  }
+
   return response;
 };
 
 function methodApplies(rule: RouteRule, req: Request) {
-  const ruleMethods: (Method | "*")[] = Array.isArray(rule.method)
+  const ruleMethods: (HttpMethod | "*")[] = Array.isArray(rule.method)
     ? rule.method
     : [rule.method ?? "*"];
   return ruleMethods.includes("*") ||
-    ruleMethods.includes(req.method as Method);
+    ruleMethods.includes(req.method as HttpMethod);
 }
 
 function roleApplies(rule: RouteRule, roles: Role[]) {
