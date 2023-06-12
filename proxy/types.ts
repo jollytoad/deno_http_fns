@@ -1,4 +1,5 @@
 import type { HttpMethod } from "https://deno.land/std@0.189.0/http/method.ts";
+import type { RoutePattern, Skip } from "../types.ts";
 
 export type { HttpMethod };
 
@@ -8,31 +9,36 @@ export type { HttpMethod };
  *
  * eg: https://proxy.example.com/<path> -> <target>/<path>
  */
-export type Manifest = {
+export interface Manifest {
   target: string;
   rolesProvider?: RolesProviderSpec;
   auditors?: AuditorSpec[];
   routeRules?: RouteRule[];
-};
+}
 
-export type RouteRule = {
-  pattern: URLPatternInput | URLPattern | Array<URLPatternInput | URLPattern>;
-  method?: HttpMethod | HttpMethod[] | "*";
+export type RouteMethod = HttpMethod | HttpMethod[] | "*";
+
+export interface RouteRule {
+  pattern: RoutePattern;
+  method?: RouteMethod;
   role?: Role | Role[] | "*";
   allow?: boolean;
   headers?: Record<string, string>;
-};
+}
 
-export type Role = string;
-
-export type Params = Record<string, string>;
-
-export interface RolesProviderSpec {
-  as?: Role[];
-  fn?: RolesProvider;
+interface PluggableFn<F> {
+  fn?: F;
   module?: string | URL;
   service?: string | URL;
   params?: Params;
+}
+
+export type Params = Record<string, string>;
+
+export type Role = string;
+
+export interface RolesProviderSpec extends PluggableFn<RolesProvider> {
+  as?: Role[];
 }
 
 export type RolesProvider = (
@@ -40,19 +46,27 @@ export type RolesProvider = (
   params?: Params,
 ) => Role[] | Promise<Role[] | undefined> | undefined;
 
-export interface AuditorSpec {
+export interface AuditorSpec extends AuditorFnSpec {
   kind?: AuditKind[];
-  fn?: Auditor;
-  module?: string | URL;
-  service?: string | URL;
-  params?: Params;
+  pattern?: RoutePattern;
+  method?: RouteMethod;
+  /**
+   * Chain of Auditors, the result of each auditor is passed to the next in the chain,
+   * unless an explicit skip (null) is returned.
+   * The chain will execute before the auditor defined directly in the AuditorSpec.
+   */
+  chain?: (AuditorFnSpec | Auditor)[];
 }
+
+export type AuditorFnSpec = PluggableFn<Auditor>;
 
 export type AuditKind = "denied" | "request" | "response" | "error" | "aborted";
 
-export type Auditor = (params: AuditRecord) => void | Promise<void>;
+export type Auditor = (
+  props: AuditProps,
+) => AuditResult | Promise<AuditResult>;
 
-export interface AuditRecord {
+export interface AuditProps {
   kind: AuditKind;
   roles?: Role[];
   rule: RouteRule;
@@ -62,3 +76,5 @@ export interface AuditRecord {
   reason?: unknown;
   params?: Params;
 }
+
+export type AuditResult = void | Skip | AuditProps;

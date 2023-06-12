@@ -20,3 +20,11 @@ export type Args = readonly unknown[];
  * to the next handler.
  */
 export type Skip = null;
+
+/**
+ * Define one or many URL patterns to match against.
+ */
+export type RoutePattern =
+  | URLPatternInput
+  | URLPattern
+  | Array<URLPatternInput | URLPattern>;

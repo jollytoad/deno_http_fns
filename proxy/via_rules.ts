@@ -1,8 +1,8 @@
 import { byPattern } from "../pattern.ts";
 import { forbidden } from "../response.ts";
 import { subHeaders } from "./_substitute.ts";
-import { intersect } from "https://deno.land/std@0.189.0/collections/intersect.ts";
-import type { Auditor, HttpMethod, Role, RouteRule } from "./types.ts";
+import { methodApplies, roleApplies } from "./_match.ts";
+import type { Auditor, Role, RouteRule } from "./types.ts";
 import type { Skip } from "../types.ts";
 
 /**
@@ -30,7 +30,7 @@ async function proxyViaRule(
   roles: Role[],
   auditor?: Auditor,
 ): Promise<Response | Skip> {
-  if (methodApplies(rule, req) && roleApplies(rule, roles)) {
+  if (methodApplies(rule.method, req) && roleApplies(rule, roles)) {
     return await byPattern(rule.pattern ?? "*", handler(rule, roles, auditor))(
       req,
     );
@@ -40,45 +40,59 @@ async function proxyViaRule(
 
 const handler = (rule: RouteRule, roles: Role[], auditor?: Auditor) =>
 async (
-  originalRequest: Request,
+  incomingRequest: Request,
 ) => {
   if (rule.allow !== true) {
-    await auditor?.({ kind: "denied", roles, rule, request: originalRequest });
+    if (auditor) {
+      auditor({ kind: "denied", roles, rule, request: incomingRequest });
+    }
     return forbidden();
   }
 
   const headers = subHeaders(
     rule.headers ?? {},
-    new Headers(originalRequest.headers),
+    new Headers(incomingRequest.headers),
   );
 
-  const { url, method, body, signal } = originalRequest;
+  const { url, method, body, signal } = incomingRequest;
 
-  const request = new Request(url, {
+  const outgoingRequest = new Request(url, {
     method,
     headers,
     body,
     signal,
   });
 
-  await auditor?.({ kind: "request", roles, rule, request });
+  const auditProps = auditor
+    ? {
+      roles,
+      rule,
+      request: outgoingRequest.clone(),
+    }
+    : undefined;
+
+  if (auditor && auditProps) {
+    auditor({ kind: "request", ...auditProps });
+  }
 
   let response: Response;
 
   function aborted(this: AbortSignal) {
-    auditor?.({ kind: "aborted", roles, rule, request, reason: this.reason });
+    if (auditor && auditProps) {
+      auditor({ kind: "aborted", ...auditProps, reason: this.reason });
+    }
   }
 
   try {
-    request.signal.addEventListener("abort", aborted, { once: true });
+    outgoingRequest.signal.addEventListener("abort", aborted, { once: true });
 
-    response = await fetch(request);
+    response = await fetch(outgoingRequest);
   } catch (error) {
-    auditor?.({ kind: "error", roles, rule, request, error });
+    if (auditor && auditProps) {
+      auditor({ kind: "error", ...auditProps, error });
+    }
     throw error;
   }
-
-  await auditor?.({ kind: "response", roles, rule, request, response });
 
   if (response.body) {
     // This is a bit of a hack, it allows the Request abort to be caught when it
@@ -89,18 +103,9 @@ async (
     );
   }
 
+  if (auditor && auditProps) {
+    auditor({ kind: "response", ...auditProps, response: response.clone() });
+  }
+
   return response;
 };
-
-function methodApplies(rule: RouteRule, req: Request) {
-  const ruleMethods: (HttpMethod | "*")[] = Array.isArray(rule.method)
-    ? rule.method
-    : [rule.method ?? "*"];
-  return ruleMethods.includes("*") ||
-    ruleMethods.includes(req.method as HttpMethod);
-}
-
-function roleApplies(rule: RouteRule, roles: Role[]) {
-  const ruleRoles = Array.isArray(rule.role) ? rule.role : [rule.role ?? "*"];
-  return !!intersect(roles, ruleRoles).length;
-}

@@ -1,15 +1,15 @@
-import { AuditRecord } from "./types.ts";
+import { AuditProps } from "./types.ts";
 
-export default (record: AuditRecord) => {
+export default (props: AuditProps) => {
   console.debug(
-    `%c${record.kind} rule: "${
-      record.rule.method || "*"
-    } ${record.rule.pattern}", url: "${record.request.url}"`,
+    `%c${props.kind} rule: "${
+      props.rule.method || "*"
+    } ${props.rule.pattern}", url: "${props.request.url}"`,
     `color: blue;`,
   );
-  if (record.params?.log === "roles") {
+  if (props.params?.log === "roles") {
     console.debug(
-      `%c${" ".repeat(record.kind.length)} roles: ${record.roles}`,
+      `%c${" ".repeat(props.kind.length)} roles: ${props.roles}`,
       `color: blue;`,
     );
   }

@@ -1,4 +1,4 @@
-import type { Args, CustomHandler } from "./types.ts";
+import type { Args, CustomHandler, RoutePattern } from "./types.ts";
 
 export type RouteHandler = CustomHandler<[URLPatternResult]>;
 
@@ -11,7 +11,7 @@ export type RouteHandler = CustomHandler<[URLPatternResult]>;
  * @returns a Request handler that returns a Response or null
  */
 export function byPattern<A extends Args>(
-  pattern: URLPatternInput | URLPattern | Array<URLPatternInput | URLPattern>,
+  pattern: RoutePattern,
   handler: RouteHandler,
 ): CustomHandler<A> {
   return async (req, ..._args) => {

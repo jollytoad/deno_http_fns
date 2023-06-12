@@ -1,5 +1,13 @@
+import { methodApplies, patternApplies } from "./_match.ts";
 import { subRef } from "./_substitute.ts";
-import type { AuditKind, Auditor, AuditorSpec, Manifest } from "./types.ts";
+import type {
+  AuditKind,
+  Auditor,
+  AuditorFnSpec,
+  AuditorSpec,
+  AuditProps,
+  Manifest,
+} from "./types.ts";
 
 // deno-lint-ignore require-await
 export async function getAuditor(
@@ -12,8 +20,8 @@ export async function getAuditor(
     const kind = params.kind;
     let fn = fnCache.get(kind);
     if (!fn) {
-      fn = await aggregatedAuditor(kind, manifest.auditors),
-        fnCache.set(kind, fn!);
+      fn = await aggregatedAuditor(kind, manifest.auditors);
+      fnCache.set(kind, fn!);
     }
     return fn!(params);
   };
@@ -26,8 +34,8 @@ async function aggregatedAuditor(
   const fns = await Promise.all(
     auditorSpecs.map((spec) => resolveAuditor(kind, spec)),
   );
-  return async (params) => {
-    await Promise.all(fns.map((fn) => fn(params)));
+  return async (props) => {
+    await Promise.all(fns.map((fn) => fn(props)));
   };
 }
 
@@ -37,25 +45,19 @@ async function resolveAuditor(
 ): Promise<Auditor> {
   let fn: Auditor | undefined;
 
-  if (!auditorSpec?.kind || auditorSpec.kind.includes(kind)) {
-    if (typeof auditorSpec?.fn === "function") {
-      fn = auditorSpec.fn;
-    } else {
-      const moduleRef = subRef(auditorSpec?.module);
-      const serviceRef = subRef(auditorSpec?.service);
+  if (auditorSpec && (!auditorSpec.kind || auditorSpec.kind.includes(kind))) {
+    fn = await resolveAuditorChain(auditorSpec);
 
-      if (moduleRef) {
-        const module = await import(`${moduleRef}`);
-        if (typeof module.default === "function") {
-          fn = module.default;
-        }
-      } else if (serviceRef) {
-        fn = fetchAuditor(serviceRef, auditorSpec);
-      }
+    if (fn && auditorSpec?.method) {
+      return (params) =>
+        methodApplies(auditorSpec.method, params.request) ? fn?.(params) : null;
     }
 
-    if (fn && auditorSpec?.params) {
-      return (params) => fn?.({ ...params, params: auditorSpec.params });
+    if (fn && auditorSpec?.pattern) {
+      return (params) =>
+        patternApplies(auditorSpec.pattern, params.request)
+          ? fn?.(params)
+          : null;
     }
 
     if (fn) {
@@ -76,26 +78,92 @@ async function resolveAuditor(
   return fn ?? noOp;
 }
 
-function noOp() {}
+async function resolveAuditorChain(
+  auditorSpec: AuditorSpec,
+): Promise<Auditor | undefined> {
+  const chain: (AuditorFnSpec | Auditor)[] = [
+    ...auditorSpec.chain ?? [],
+    auditorSpec,
+  ];
+
+  const fns = (await Promise.all(chain.map(resolveAuditorFn))).filter((
+    fn,
+  ): fn is Auditor => !!fn);
+
+  if (fns.length) {
+    return async (props: AuditProps) => {
+      for (const fn of fns) {
+        const result = await fn(props);
+        if (result === null) {
+          return null;
+        }
+        if (result) {
+          props = result;
+        }
+      }
+      return props;
+    };
+  }
+}
+
+async function resolveAuditorFn(
+  fnSpec: AuditorFnSpec | Auditor,
+): Promise<Auditor | undefined> {
+  let fn: Auditor | undefined;
+
+  if (typeof fnSpec === "function") {
+    return fnSpec;
+  } else if (typeof fnSpec.fn === "function") {
+    fn = fnSpec.fn;
+  } else {
+    const moduleRef = subRef(fnSpec?.module);
+    const serviceRef = subRef(fnSpec?.service);
+
+    if (moduleRef) {
+      const module = await import(`${moduleRef}`);
+      if (typeof module.default === "function") {
+        fn = module.default;
+      }
+    } else if (serviceRef) {
+      fn = fetchAuditor(serviceRef, fnSpec);
+    }
+  }
+
+  if (fn && fnSpec?.params) {
+    return (rec) => fn?.({ ...rec, params: fnSpec.params });
+  }
+
+  return fn;
+}
+
+function noOp(props: AuditProps) {
+  return props;
+}
 
 function fetchAuditor(
   url: string | URL,
   auditorSpec?: AuditorSpec,
 ): Auditor {
-  return async (params): Promise<void> => {
+  return async (props) => {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(params, auditReplacer),
+      body: JSON.stringify(props, auditReplacer),
     });
-    if (!response.ok) {
+    if (response.ok) {
+      return {
+        ...props,
+        response,
+      };
+    } else {
       console.error(
         `%cAuditor failed: ${JSON.stringify(auditorSpec, auditReplacer)}\n`,
         "color: red;",
         `POST ${url} -> ${response.status} ${response.statusText}`,
       );
+      return null;
     }
   };
 }
