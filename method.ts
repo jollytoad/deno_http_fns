@@ -1,6 +1,6 @@
 import { methodNotAllowed } from "./response.ts";
 import type { Args, CustomHandler } from "./types.ts";
-import type { HttpMethod } from "https://deno.land/std@0.189.0/http/method.ts";
+import type { HttpMethod } from "https://deno.land/std@0.192.0/http/method.ts";
 
 export type { HttpMethod };
 

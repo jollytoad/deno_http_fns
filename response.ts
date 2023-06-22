@@ -1,7 +1,7 @@
 import {
   Status,
   STATUS_TEXT,
-} from "https://deno.land/std@0.189.0/http/http_status.ts";
+} from "https://deno.land/std@0.192.0/http/http_status.ts";
 
 export function response(
   status: Status,

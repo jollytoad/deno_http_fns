@@ -1,4 +1,4 @@
-import type { HttpMethod } from "https://deno.land/std@0.189.0/http/method.ts";
+import type { HttpMethod } from "https://deno.land/std@0.192.0/http/method.ts";
 import type { RoutePattern, Skip } from "../types.ts";
 
 export type { HttpMethod };

@@ -1,6 +1,6 @@
 import type { RoutePattern } from "../types.ts";
 import type { HttpMethod, Role, RouteMethod, RouteRule } from "./types.ts";
-import { intersect } from "https://deno.land/std@0.189.0/collections/intersect.ts";
+import { intersect } from "https://deno.land/std@0.192.0/collections/intersect.ts";
 
 export function roleApplies(rule: RouteRule, roles: Role[]) {
   const ruleRoles = Array.isArray(rule.role) ? rule.role : [rule.role ?? "*"];
