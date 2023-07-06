@@ -11,7 +11,7 @@ import { walkRoutes } from "./walk.ts";
  * @returns a Request handler
  */
 export function dynamicRoute(pattern: string, fileRootUrl: string) {
-  return cascade(...[...walkRoutes(pattern, fileRootUrl)].map(asLazyRoute));
+  return cascade(...walkRoutes(pattern, fileRootUrl).map(asLazyRoute));
 }
 
 function asLazyRoute([modulePattern, moduleUrl]: [string, string]) {

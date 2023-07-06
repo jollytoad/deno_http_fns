@@ -2,6 +2,7 @@ import {
   fromFileUrl,
   join,
   parse,
+  toFileUrl,
 } from "https://deno.land/std@0.193.0/path/mod.ts";
 import { sortBy } from "https://deno.land/std@0.193.0/collections/sort_by.ts";
 
@@ -38,8 +39,8 @@ function* walk(rootPattern: string, path: string): Iterable<RouteTuple> {
 
       if (typeof sub === "string") {
         const modulePattern = `${rootPattern}/${sub}`;
-        const moduleUrl = join(path, entry.name);
-        yield [modulePattern, moduleUrl];
+        const moduleUrl = toFileUrl(join(path, entry.name));
+        yield [modulePattern, moduleUrl.href];
       }
     }
   }

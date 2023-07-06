@@ -6,7 +6,13 @@ import {
 } from "https://deno.land/std@0.193.0/path/posix.ts";
 
 export interface GenerateOptions {
-  dynamic?: boolean;
+  /**
+   * If `true`, the routes will be discovered dynamically at startup,
+   * otherwise the routes will be discovered at build time.
+   * `lazy` will still discover routes at build time, but will
+   * wrap the discovered routes in the `lazy` module loader.
+   */
+  dynamic?: boolean | "lazy";
   httpFns?: URL | string;
 }
 
@@ -46,7 +52,7 @@ export function generateRoutesModule(
     "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n",
   );
 
-  if (opts?.dynamic) {
+  if (opts?.dynamic === true) {
     const dynamic_ts = `${httpFnsUrl}dynamic.ts`;
 
     head.push(`import { dynamicRoute } from "${dynamic_ts}";\n`);
@@ -60,21 +66,30 @@ export function generateRoutesModule(
       `export default dynamicRoute("${pattern}", import.meta.resolve("${modulePath}"));\n`,
     );
   } else {
-    const pattern_ts = `${httpFnsUrl}pattern.ts`;
-    const cascade_ts = `${httpFnsUrl}cascade.ts`;
+    const isLazy = opts?.dynamic === "lazy";
 
-    head.push(`import { byPattern } from "${pattern_ts}";\n`);
-    head.push(`import { cascade } from "${cascade_ts}";\n`);
+    head.push(`import { byPattern } from "${httpFnsUrl}pattern.ts";\n`);
+    head.push(`import { cascade } from "${httpFnsUrl}cascade.ts";\n`);
+
+    if (isLazy) {
+      head.push(`import { lazy } from "${httpFnsUrl}lazy.ts";\n`);
+    }
 
     body.push("export default cascade(\n");
 
     for (const [modulePattern, moduleUrl] of walkRoutes(pattern, fileRootUrl)) {
-      let modulePath = relative(outPath, moduleUrl);
+      let modulePath = relative(outPath, fromFileUrl(moduleUrl));
       if (modulePath[0] !== ".") {
         modulePath = "./" + modulePath;
       }
-      head.push(`import route_${i} from "${modulePath}";\n`);
-      body.push(`  byPattern("${modulePattern}", route_${i}),\n`);
+      if (isLazy) {
+        body.push(
+          `  byPattern("${modulePattern}", lazy(() => import("${modulePath}"))),\n`,
+        );
+      } else {
+        head.push(`import route_${i} from "${modulePath}";\n`);
+        body.push(`  byPattern("${modulePattern}", route_${i}),\n`);
+      }
       i++;
     }
 
