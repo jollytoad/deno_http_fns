@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.192.0/http/server.ts";
 import { intercept } from "../intercept.ts";
 import { handle } from "../handle.ts";
 import { byPattern } from "../pattern.ts";
@@ -17,17 +16,15 @@ const handlers = [
       GET: () => ok("Foo"),
     }),
   ),
-  staticRoute("/public", import.meta.resolve("./public")),
+  staticRoute("/public", import.meta.resolve("./public"), { quiet: false }),
 ];
 
-await serve(
-  intercept(
+Deno.serve({
+  handler: intercept(
     handle(handlers),
     [logRequestGroup],
     [logGroupEnd, logStatusAndContentType],
     [logGroupEnd, logError],
   ),
-  {
-    port: 3456,
-  },
-);
+  port: 3456,
+});

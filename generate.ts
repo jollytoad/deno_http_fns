@@ -3,7 +3,7 @@ import {
   dirname,
   fromFileUrl,
   relative,
-} from "https://deno.land/std@0.192.0/path/posix.ts";
+} from "https://deno.land/std@0.193.0/path/posix.ts";
 
 export interface GenerateOptions {
   dynamic?: boolean;

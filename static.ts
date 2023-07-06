@@ -1,7 +1,12 @@
 import { byPattern } from "./pattern.ts";
 import { byMethod } from "./method.ts";
-import { serveDir } from "https://deno.land/std@0.192.0/http/file_server.ts";
-import { fromFileUrl } from "https://deno.land/std@0.192.0/path/mod.ts";
+import {
+  serveDir,
+  ServeDirOptions,
+} from "https://deno.land/std@0.193.0/http/file_server.ts";
+import { fromFileUrl } from "https://deno.land/std@0.193.0/path/mod.ts";
+
+type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
 
 /**
  * Create a Request handler that serves static files under a matched URL pattern.
@@ -10,7 +15,11 @@ import { fromFileUrl } from "https://deno.land/std@0.192.0/path/mod.ts";
  * @param fileRootUrl the root from where the files are served (this should be a file:// URL)
  * @returns a Request handler that always returns a Response
  */
-export function staticRoute(pattern: string, fileRootUrl: string) {
+export function staticRoute(
+  pattern: string,
+  fileRootUrl: string,
+  options?: StaticRouteOptions,
+) {
   const fsRoot = fromFileUrl(fileRootUrl);
 
   return byPattern(
@@ -21,7 +30,7 @@ export function staticRoute(pattern: string, fileRootUrl: string) {
           1,
           -info.pathname.groups.path!.length,
         );
-        return serveDir(req, { fsRoot, urlRoot });
+        return serveDir(req, { quiet: true, ...options, fsRoot, urlRoot });
       },
     }),
   );

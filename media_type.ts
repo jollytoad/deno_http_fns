@@ -1,7 +1,7 @@
 import { appendHeaders, notAcceptable, notFound } from "./response.ts";
-import { accepts } from "https://deno.land/std@0.192.0/http/negotiation.ts";
-import { typeByExtension } from "https://deno.land/std@0.192.0/media_types/mod.ts";
-import { extname } from "https://deno.land/std@0.192.0/path/posix.ts";
+import { accepts } from "https://deno.land/std@0.193.0/http/negotiation.ts";
+import { typeByExtension } from "https://deno.land/std@0.193.0/media_types/mod.ts";
+import { extname } from "https://deno.land/std@0.193.0/path/posix.ts";
 import type { Args, CustomHandler } from "./types.ts";
 
 export type MediaType = `${string}/${string}`;

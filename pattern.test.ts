@@ -1,6 +1,6 @@
 import { byPattern } from "./pattern.ts";
 import { ok } from "./response.ts";
-import { assertInstanceOf } from "https://deno.land/std@0.192.0/testing/asserts.ts";
+import { assertInstanceOf } from "https://deno.land/std@0.193.0/testing/asserts.ts";
 
 Deno.test("byPattern with '/' pattern matches URL with no path or trailing slash", async () => {
   await assertByPatternMatches("/", "http://example.com");
