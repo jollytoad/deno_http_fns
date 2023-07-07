@@ -1,3 +1,4 @@
+import { Eagerness } from "./dynamic.ts";
 import { walkRoutes } from "./walk.ts";
 import {
   dirname,
@@ -7,12 +8,19 @@ import {
 
 export interface GenerateOptions {
   /**
-   * If `true`, the routes will be discovered dynamically at startup,
-   * otherwise the routes will be discovered at build time.
-   * `lazy` will still discover routes at build time, but will
-   * wrap the discovered routes in the `lazy` module loader.
+   * Whether to discover routes at build time and generate a static list or,
+   * discover them dynamically at startup, or when the first request is made.
+   * Defaults to `static`.
    */
-  dynamic?: boolean | "lazy";
+  routeDiscovery?: "static" | "startup" | "request";
+
+  /**
+   * Whether to generate static imports or dynamic imports,
+   * this only applies to 'static' route discovery.
+   * Defaults to `dynamic`.
+   */
+  moduleImports?: "static" | "dynamic";
+
   httpFns?: URL | string;
 }
 
@@ -25,20 +33,17 @@ export interface GenerateOptions {
  * @param opts additional options for the generated module
  * @returns true if a new/updated module was written
  */
-export function generateRoutesModule(
+export async function generateRoutesModule(
   pattern: string,
   fileRootUrl: string,
   moduleOutUrl: string,
   opts?: GenerateOptions,
-) {
+): Promise<boolean> {
   const outUrl = new URL(moduleOutUrl);
 
-  if (
-    Deno.permissions.querySync({ name: "write", path: outUrl }).state !==
-      "granted"
-  ) {
+  if (!await can("write", outUrl)) {
     // No permission to generate new module
-    return;
+    return false;
   }
 
   const httpFnsUrl = opts?.httpFns ?? new URL("./", import.meta.url).href;
@@ -52,48 +57,68 @@ export function generateRoutesModule(
     "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n",
   );
 
-  if (opts?.dynamic === true) {
-    const dynamic_ts = `${httpFnsUrl}dynamic.ts`;
+  switch (opts?.routeDiscovery) {
+    case "startup":
+    case "request":
+      {
+        const dynamic_ts = `${httpFnsUrl}dynamic.ts`;
 
-    head.push(`import { dynamicRoute } from "${dynamic_ts}";\n`);
+        head.push(`import { dynamicRoute } from "${dynamic_ts}";\n`);
 
-    let modulePath = relative(outPath, fromFileUrl(fileRootUrl));
-    if (modulePath[0] !== ".") {
-      modulePath = "./" + modulePath;
-    }
+        let modulePath = relative(outPath, fromFileUrl(fileRootUrl));
+        if (modulePath[0] !== ".") {
+          modulePath = "./" + modulePath;
+        }
 
-    body.push(
-      `export default dynamicRoute("${pattern}", import.meta.resolve("${modulePath}"));\n`,
-    );
-  } else {
-    const isLazy = opts?.dynamic === "lazy";
+        const eagerness: Eagerness = opts.routeDiscovery;
 
-    head.push(`import { byPattern } from "${httpFnsUrl}pattern.ts";\n`);
-    head.push(`import { cascade } from "${httpFnsUrl}cascade.ts";\n`);
-
-    if (isLazy) {
-      head.push(`import { lazy } from "${httpFnsUrl}lazy.ts";\n`);
-    }
-
-    body.push("export default cascade(\n");
-
-    for (const [modulePattern, moduleUrl] of walkRoutes(pattern, fileRootUrl)) {
-      let modulePath = relative(outPath, fromFileUrl(moduleUrl));
-      if (modulePath[0] !== ".") {
-        modulePath = "./" + modulePath;
-      }
-      if (isLazy) {
         body.push(
-          `  byPattern("${modulePattern}", lazy(() => import("${modulePath}"))),\n`,
+          `export default dynamicRoute("${pattern}", import.meta.resolve("${modulePath}"), "${eagerness}");\n`,
         );
-      } else {
-        head.push(`import route_${i} from "${modulePath}";\n`);
-        body.push(`  byPattern("${modulePattern}", route_${i}),\n`);
       }
-      i++;
-    }
+      break;
 
-    body.push(`);\n`);
+    case "static":
+    default: {
+      const isLazy = opts?.moduleImports !== "static";
+      const pattern_ts = `${httpFnsUrl}pattern.ts`;
+      const cascade_ts = `${httpFnsUrl}cascade.ts`;
+
+      head.push(`import { byPattern } from "${pattern_ts}";\n`);
+      head.push(`import { cascade } from "${cascade_ts}";\n`);
+
+      if (isLazy) {
+        const lazy_ts = `${httpFnsUrl}lazy.ts`;
+
+        head.push(`import { lazy } from "${lazy_ts}";\n`);
+      }
+
+      body.push("export default cascade(\n");
+
+      for (
+        const [modulePattern, moduleUrl] of await walkRoutes(
+          pattern,
+          fileRootUrl,
+          true,
+        )
+      ) {
+        let modulePath = relative(outPath, fromFileUrl(moduleUrl));
+        if (modulePath[0] !== ".") {
+          modulePath = "./" + modulePath;
+        }
+        if (isLazy) {
+          body.push(
+            `  byPattern("${modulePattern}", lazy(() => import("${modulePath}"))),\n`,
+          );
+        } else {
+          head.push(`import route_${i} from "${modulePath}";\n`);
+          body.push(`  byPattern("${modulePattern}", route_${i}),\n`);
+        }
+        i++;
+      }
+
+      body.push(`);\n`);
+    }
   }
 
   head.push(`\n`);
@@ -102,12 +127,9 @@ export function generateRoutesModule(
 
   let existingContent = undefined;
 
-  if (
-    Deno.permissions.querySync({ name: "read", path: outUrl }).state ===
-      "granted"
-  ) {
+  if (await can("read", outUrl)) {
     try {
-      existingContent = Deno.readTextFileSync(outUrl);
+      existingContent = await Deno.readTextFile(outUrl);
     } catch {
       // Ignore error
     }
@@ -115,9 +137,16 @@ export function generateRoutesModule(
 
   if (content !== existingContent) {
     console.debug("Writing new routes module:", outUrl.pathname);
-    Deno.writeTextFileSync(outUrl, content);
+    await Deno.writeTextFile(outUrl, content);
     return true;
   }
 
   return false;
+}
+
+async function can(
+  name: "read" | "write",
+  path: string | URL,
+): Promise<boolean> {
+  return (await Deno.permissions.query({ name, path })).state === "granted";
 }

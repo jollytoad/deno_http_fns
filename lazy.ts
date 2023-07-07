@@ -11,24 +11,17 @@ export function lazy<A extends Args>(
     | (() => Promise<CustomHandler<A> | { default: CustomHandler<A> }>)
     | string,
 ): CustomHandler<A> {
-  let handler: CustomHandler<A> | undefined | null = undefined;
+  let handlerPromise: Promise<CustomHandler<A> | null> | undefined = undefined;
+  let handler: CustomHandler<A> | null | undefined = undefined;
 
   return async (req, ...args) => {
-    if (handler === undefined) {
-      const loaded = typeof handlerLoader === "string"
-        ? await import(handlerLoader)
-        : typeof handlerLoader === "function"
-        ? await handlerLoader()
-        : undefined;
+    if (handler === undefined && handlerPromise === undefined) {
+      handlerPromise = init();
+    }
 
-      if (typeof loaded === "function") {
-        handler = loaded;
-      } else if (typeof loaded?.default === "function") {
-        handler = loaded.default;
-      } else {
-        console.error("Unable to lazily load handler:", handlerLoader);
-        handler = null;
-      }
+    if (handler === undefined) {
+      handler = await handlerPromise;
+      handlerPromise = undefined;
     }
 
     if (typeof handler === "function") {
@@ -37,4 +30,21 @@ export function lazy<A extends Args>(
 
     return null;
   };
+
+  async function init() {
+    const loaded = typeof handlerLoader === "string"
+      ? await import(handlerLoader)
+      : typeof handlerLoader === "function"
+      ? await handlerLoader()
+      : undefined;
+
+    if (typeof loaded === "function") {
+      return loaded;
+    } else if (typeof loaded?.default === "function") {
+      return loaded.default;
+    } else {
+      console.error("Unable to lazily load handler:", handlerLoader);
+      return null;
+    }
+  }
 }

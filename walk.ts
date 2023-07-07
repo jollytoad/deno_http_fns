@@ -15,16 +15,37 @@ export type RouteTuple = [pattern: string, moduleUrl: string];
  * @param fileRootUrl the root folder in the filesystem as a `file:` URL
  * @returns an Iterable of tuples of the URL pattern to match to the handler module URL
  */
-export function walkRoutes(pattern: string, fileRootUrl: string) {
+export async function walkRoutes(
+  pattern: string,
+  fileRootUrl: string,
+  verbose = false,
+): Promise<RouteTuple[]> {
   // TODO: Sort using something like URLPattern.compareComponent if it becomes available
   // See: https://github.com/WICG/urlpattern/issues/61
-  return sortBy([
-    ...walk(pattern === "/" ? "" : pattern, fromFileUrl(fileRootUrl)),
-  ], ([pattern]) => pattern).reverse();
+
+  const routes = [];
+  for await (
+    const pair of walk(pattern === "/" ? "" : pattern, fromFileUrl(fileRootUrl))
+  ) {
+    routes.push(pair);
+    if (verbose) {
+      console.debug(
+        `Found route: %c${pair[0]}%c -> %c${pair[1]}`,
+        "color: yellow",
+        "color: inherit",
+        "color: cyan",
+      );
+    }
+  }
+
+  return sortBy(routes, ([pattern]) => pattern).reverse();
 }
 
-function* walk(rootPattern: string, path: string): Iterable<RouteTuple> {
-  for (const entry of Deno.readDirSync(path)) {
+async function* walk(
+  rootPattern: string,
+  path: string,
+): AsyncIterable<RouteTuple> {
+  for await (const entry of Deno.readDir(path)) {
     if (entry.isDirectory) {
       yield* walk(`${rootPattern}/${entry.name}`, join(path, entry.name));
     } else {
