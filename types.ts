@@ -22,9 +22,15 @@ export type Args = readonly unknown[];
 export type Skip = null;
 
 /**
+ * Type alias for a pathname part of a URLPattern.
+ */
+export type PathPattern = string;
+
+/**
  * Define one or many URL patterns to match against.
  */
 export type RoutePattern =
-  | URLPatternInput
+  | PathPattern
+  | URLPatternInit
   | URLPattern
-  | Array<URLPatternInput | URLPattern>;
+  | Array<PathPattern | URLPatternInit | URLPattern>;

@@ -1,4 +1,9 @@
-import type { Args, CustomHandler, RoutePattern } from "./types.ts";
+import type {
+  Args,
+  CustomHandler,
+  PathPattern,
+  RoutePattern,
+} from "./types.ts";
 
 export type RouteHandler = CustomHandler<[URLPatternResult]>;
 
@@ -19,11 +24,7 @@ export function byPattern<A extends Args>(
     const url = new URL(req.url);
 
     for (const pattern of patterns) {
-      const match = typeof pattern === "string"
-        ? new URLPattern({ pathname: pattern }).exec(url)
-        : pattern instanceof URLPattern
-        ? pattern.exec(url)
-        : new URLPattern(pattern).exec(url);
+      const match = asURLPattern(pattern).exec(url);
 
       if (match) {
         const res = await handler(req, match);
@@ -35,4 +36,17 @@ export function byPattern<A extends Args>(
 
     return null;
   };
+}
+
+/**
+ * Convert a single RoutePattern to a URLPattern.
+ */
+export function asURLPattern(
+  pattern: PathPattern | URLPatternInit | URLPattern,
+): URLPattern {
+  return typeof pattern === "string"
+    ? new URLPattern({ pathname: pattern })
+    : pattern instanceof URLPattern
+    ? pattern
+    : new URLPattern(pattern);
 }
