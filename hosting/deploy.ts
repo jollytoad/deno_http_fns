@@ -6,10 +6,10 @@ import type { Args, CustomHandler, Interceptors } from "../types.ts";
 /**
  * Convenience function to generate Deno.serve init parameter for Deno Deploy.
  */
-export default async function initDeploy(
+export default function initDeploy(
   handler: CustomHandler,
   ...interceptors: Interceptors<Args, Response>[]
-): Promise<Deno.ServeInit & (Deno.ServeOptions | Deno.ServeTlsOptions)> {
+): Deno.ServeInit & (Deno.ServeOptions | Deno.ServeTlsOptions) {
   return {
     handler: intercept(withFallback(handler), logging(), ...interceptors),
   };
