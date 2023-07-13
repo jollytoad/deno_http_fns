@@ -1,3 +1,5 @@
+import type { Args, Interceptors } from "./types.ts";
+
 const requestTime = new WeakMap<Request, number>();
 
 /**
@@ -41,7 +43,7 @@ export function logGroupEnd() {
 /**
  * A ResponseInterceptor that logs the Response Status and Content-Type header.
  */
-export function logStatusAndContentType(req: Request, res: Response) {
+export function logStatusAndContentType(req: Request, res: Response | null) {
   if (res) {
     const endTime = performance.now();
     const startTime = requestTime.get(req);
@@ -68,4 +70,15 @@ export function logStatusAndContentType(req: Request, res: Response) {
  */
 export function logError(_req: unknown, _res: unknown, error: unknown) {
   console.error(error);
+}
+
+/**
+ * Set of standard logging interceptors.
+ */
+export function logging(): Interceptors<Args, Response> {
+  return {
+    request: [logRequestGroup],
+    response: [logGroupEnd, logStatusAndContentType],
+    error: [logGroupEnd, logError],
+  };
 }

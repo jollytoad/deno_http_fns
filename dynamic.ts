@@ -1,9 +1,17 @@
 import { byPattern } from "./pattern.ts";
 import { lazy } from "./lazy.ts";
 import { cascade } from "./cascade.ts";
-import { walkRoutes } from "./walk.ts";
+import {
+  type DiscoveredRoute,
+  discoverRoutes,
+  type DiscoverRoutesOptions,
+} from "./discover_routes.ts";
 
 export type Eagerness = "startup" | "request";
+
+export interface DynamicRouteOptions extends DiscoverRoutesOptions {
+  eagerness?: Eagerness;
+}
 
 /**
  * Create a handler that dynamically loads handler modules from the filesystem.
@@ -15,28 +23,26 @@ export type Eagerness = "startup" | "request";
  * @returns a Request handler
  */
 export function dynamicRoute(
-  pattern: string,
-  fileRootUrl: string,
-  eagerness: Eagerness = "startup",
+  { eagerness = "startup", ...opts }: DynamicRouteOptions,
 ) {
   switch (eagerness) {
     case "startup": {
       // Build the handler eagerly, before the first request is made
-      const handlerPromise = buildHandler(pattern, fileRootUrl);
+      const handlerPromise = buildHandler(opts);
       return lazy(() => handlerPromise);
     }
 
     case "request": {
       // Build the handler lazily, when the first request is made
-      return lazy(() => buildHandler(pattern, fileRootUrl));
+      return lazy(() => buildHandler(opts));
     }
   }
 }
 
-async function buildHandler(pattern: string, fileRootUrl: string) {
-  return cascade(...(await walkRoutes(pattern, fileRootUrl)).map(asLazyRoute));
+async function buildHandler(opts: DynamicRouteOptions) {
+  return cascade(...(await discoverRoutes(opts)).map(asLazyRoute));
 }
 
-function asLazyRoute([modulePattern, moduleUrl]: [string, string]) {
-  return byPattern(modulePattern, lazy(moduleUrl));
+function asLazyRoute({ pattern, module }: DiscoveredRoute) {
+  return byPattern(pattern, lazy(module));
 }

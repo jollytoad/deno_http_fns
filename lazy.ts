@@ -9,7 +9,8 @@ import { Args, CustomHandler } from "./types.ts";
 export function lazy<A extends Args>(
   handlerLoader:
     | (() => Promise<CustomHandler<A> | { default: CustomHandler<A> }>)
-    | string,
+    | string
+    | URL,
 ): CustomHandler<A> {
   let handlerPromise: Promise<CustomHandler<A> | null> | undefined = undefined;
   let handler: CustomHandler<A> | null | undefined = undefined;
@@ -34,6 +35,8 @@ export function lazy<A extends Args>(
   async function init() {
     const loaded = typeof handlerLoader === "string"
       ? await import(handlerLoader)
+      : handlerLoader instanceof URL
+      ? await import(handlerLoader.href)
       : typeof handlerLoader === "function"
       ? await handlerLoader()
       : undefined;

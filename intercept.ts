@@ -1,68 +1,56 @@
-import type { Args, CustomHandler, Skip } from "./types.ts";
-
-/**
- * An interceptor may return no value (void) or undefined to indicate no change.
- */
-export type PassThru = void | undefined;
-
-export type RequestInterceptor<in A extends Args = Args> = CustomHandler<
-  A,
-  Request | PassThru
->;
-export type ResponseInterceptor<in out R = Response | Skip> = CustomHandler<
-  [response: R],
-  R | void
->;
-export type ErrorInterceptor<in out R = Response | Skip> = (
-  request: Request,
-  response: R,
-  error: unknown,
-) => Response | PassThru;
+import type {
+  Args,
+  CustomHandler,
+  Interceptors,
+  ResponseInterceptor,
+  Skip,
+} from "./types.ts";
 
 /**
  * Wrap a Request handler with chains of interceptor functions that modify the
  * request or response, and optionally handle any errors.
  *
  * @param handler the original handler
- * @param pre a chain of RequestInterceptors functions that may return a
- *  new/modified Request that is passed to the handler
- * @param post a chain of ResponseInterceptors functions that may modify the
- *  Response from the handler
- * @param error a chain of ResponseInterceptors that may modify the Response from the handler
  * @returns a new Request handler
  */
 export function intercept<A extends Args, R extends Response | Skip>(
   handler: CustomHandler<A, R>,
-  pre: RequestInterceptor<A>[] = [],
-  post: ResponseInterceptor<R>[] = [],
-  error: ErrorInterceptor<R>[] = [],
+  ...interceptors: readonly Interceptors<A, R>[]
 ): typeof handler {
+  const reverseInterceptors = [...interceptors].reverse();
+
   return async (req, ...args) => {
     let res!: R;
 
     try {
-      for (const interceptor of pre) {
-        const result = await interceptor(req, ...args);
-        if (result !== undefined) {
-          req = result;
+      for (const { request } of interceptors) {
+        for (const interceptor of request ?? []) {
+          const result = await interceptor(req, ...args);
+          if (result !== undefined) {
+            req = result;
+          }
         }
       }
 
       res = await safeHandle(handler, req, ...args);
 
-      for (const interceptor of post) {
-        const result = await interceptor(req, res);
-        if (result !== undefined) {
-          res = result;
+      for (const { response } of reverseInterceptors) {
+        for (const interceptor of response ?? []) {
+          const result = await interceptor(req, res);
+          if (result !== undefined) {
+            res = result;
+          }
         }
       }
 
       return res;
     } catch (e: unknown) {
-      for (const interceptor of error) {
-        const result = await interceptor(req, res, e);
-        if (result) {
-          res = result as R;
+      for (const { error } of interceptors) {
+        for (const interceptor of error ?? []) {
+          const result = interceptor(req, res, e);
+          if (result) {
+            res = result as R;
+          }
         }
       }
       if (res) {
@@ -80,7 +68,7 @@ export function intercept<A extends Args, R extends Response | Skip>(
  * Example: `interceptResponse(..., skip(404))`
  *
  * @param handler the original handler
- * @param interceptors a chain of ResponseInterceptors functions that may modify the
+ * @param interceptors a chain of ResponseInterceptor functions that may modify the
  *  Response from the handler
  * @returns a new Request handler
  */
@@ -88,7 +76,7 @@ export function interceptResponse<A extends Args, R extends Response | Skip>(
   handler: CustomHandler<A, R>,
   ...interceptors: ResponseInterceptor<R>[]
 ): typeof handler {
-  return intercept<A, R>(handler, [], interceptors);
+  return intercept<A, R>(handler, { response: interceptors });
 }
 
 /**
