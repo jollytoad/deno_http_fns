@@ -5,14 +5,31 @@ NOTE: This is still fairly experimental.
 A collection of functions for HTTP.
 
 - Based on Request => Response functions
-- Works with Deno std lib `serve`
+- Works with Deno [std lib `serve`][std_serve], and the new
+  [`Deno.serve`][deno_serve]
 - Handlers for routing based on various criteria
 
-Read the [blog][https://jollytoad.deno.dev/blog/http_fns].
+Read the [blog].
 
-## Example
+[std_serve]: https://deno.land/std/http/server.ts?s=serve
+[deno_serve]: https://deno.land/api?s=Deno.serve
+[blog]: https://jollytoad.deno.dev/blog/http_fns
 
-See the [demo](./demo/serve.ts).
+## Examples
+
+See the [examples](./examples).
+
+You can run them after cloning this repo, for example:
+
+```sh
+deno run -A examples/logging.ts
+```
+
+or directly from deno.land:
+
+```sh
+deno run -A https://deno.land/x/http_fns/examples/logging.ts
+```
 
 ## Request Handlers
 
