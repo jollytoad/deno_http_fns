@@ -1,12 +1,9 @@
 import type {
-  Args,
-  CustomHandler,
+  Awaitable,
   RoutePattern,
   SerializableRoutePattern,
   SingleRoutePattern,
 } from "./types.ts";
-
-export type RouteHandler = CustomHandler<[URLPatternResult]>;
 
 /**
  * Create a Request handler that matches the URL of the Request based on a URLPattern.
@@ -16,11 +13,15 @@ export type RouteHandler = CustomHandler<[URLPatternResult]>;
  *  take the Request and the URLPatternResult as arguments
  * @returns a Request handler that returns a Response or null
  */
-export function byPattern<A extends Args>(
+export function byPattern<A extends unknown[]>(
   pattern: RoutePattern,
-  handler: RouteHandler,
-): CustomHandler<A> {
-  return async (req, ..._args) => {
+  handler: (
+    request: Request,
+    match: URLPatternResult,
+    ...args: A
+  ) => Awaitable<Response | null>,
+) {
+  return async (req: Request, ...args: A) => {
     const patterns = Array.isArray(pattern) ? pattern : [pattern];
     const url = new URL(req.url);
 
@@ -28,7 +29,7 @@ export function byPattern<A extends Args>(
       const match = asURLPattern(pattern).exec(url);
 
       if (match) {
-        const res = await handler(req, match);
+        const res = await handler(req, match, ...args);
         if (res) {
           return res;
         }

@@ -1,4 +1,4 @@
-import type { Args, CustomHandler } from "./types.ts";
+import type { Awaitable } from "./types.ts";
 import { notFound } from "./response.ts";
 
 /**
@@ -13,11 +13,12 @@ import { notFound } from "./response.ts";
  *  this optional and defaults to a Not Found response
  * @returns a Request handler that always returns a Response
  */
-export function withFallback<A extends Args>(
-  handler: CustomHandler<A>,
-  fallback: CustomHandler<A, Response> = () => notFound(),
-): CustomHandler<A, Response> {
-  return async (req, ...args) => {
+export function withFallback<A extends unknown[]>(
+  handler: (request: Request, ...args: A) => Awaitable<Response | null>,
+  fallback: (request: Request, ...args: A) => Awaitable<Response> = () =>
+    notFound(),
+) {
+  return async (req: Request, ...args: A) => {
     const res = await handler(req, ...args);
     if (res) {
       return res;

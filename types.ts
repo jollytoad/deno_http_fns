@@ -1,25 +1,7 @@
 /**
- * A Request handler that can take a custom set of context arguments following
- * the first Request argument, and return a Response or an indicator to Skip
- * to the next handler.
- *
- * The Deno standard `Handler` is equiv to `CustomHandler<[ConnInfo], Response>`.
+ * A result that may be `await`ed.
  */
-export type CustomHandler<in A extends Args = Args, out R = Response | Skip> = (
-  request: Request,
-  ...data: A
-) => R | Promise<R>;
-
-/**
- * The base type of a the handler context arguments.
- */
-export type Args = readonly unknown[];
-
-/**
- * A response from a handler indicating it that handling should be delegated
- * to the next handler.
- */
-export type Skip = null;
+export type Awaitable<T> = T | Promise<T>;
 
 /**
  * Type alias for a pathname part of a URLPattern.
@@ -50,43 +32,42 @@ export type SerializableRoutePattern =
   | Array<PathPattern | URLPatternInit>;
 
 /**
- * An interceptor may return no value (void) or undefined to indicate no change.
- */
-export type PassThru = void | undefined;
-
-/**
  * A RequestInterceptor function takes a Request and optionally returns a modified or new Request.
+ *
+ * May return no value (void) or undefined to indicate no change to the Request.
  */
-export type RequestInterceptor<in A extends Args = Args> = CustomHandler<
-  A,
-  Request | PassThru
->;
+export type RequestInterceptor<in A extends unknown[] = unknown[]> = (
+  req: Request,
+  ...args: A
+) => Awaitable<Request | void>;
 
 /**
  * A ResponseInterceptor function takes a Request and Response and optionally returns a modified or
- * new Response, or a skipped response (if R permits).
+ * new Response, or null to indicate a skipped response (if R permits).
+ *
+ * May also return no value (void) or undefined to indicate no change to the Response.
  */
-export type ResponseInterceptor<in out R = Response | Skip> = CustomHandler<
-  [response: R],
-  R | void
->;
+export type ResponseInterceptor<in out R = Response | null> = (
+  req: Request,
+  res: R,
+) => Awaitable<R | void>;
 
 /**
  * An ErrorInterceptor function takes a Request, Response, and error and optionally returns a modified or
- * new Response, or a skipped response (if R permits).
+ * new Response, or null to indicate a skipped response (if R permits).
  */
-export type ErrorInterceptor<in out R = Response | Skip> = (
-  request: Request,
-  response: R,
+export type ErrorInterceptor<in out R = Response | null> = (
+  req: Request,
+  res: R,
   error: unknown,
-) => Response | PassThru;
+) => R | void;
 
 /**
  * Declare a set of interceptors, for use with the `intercept` function.
  */
 export interface Interceptors<
-  in A extends Args = Args,
-  in out R = Response | Skip,
+  in A extends unknown[] = unknown[],
+  in out R = Response | null,
 > {
   /**
    * A chain of RequestInterceptor functions that may return a modified or new Request that is passed to the handler

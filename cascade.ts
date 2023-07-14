@@ -1,4 +1,4 @@
-import type { Args, CustomHandler } from "./types.ts";
+import type { Awaitable } from "./types.ts";
 
 /**
  * Create a Request handler that calls a list of handlers in turn until one returns a Response.
@@ -6,10 +6,12 @@ import type { Args, CustomHandler } from "./types.ts";
  * @param handlers the array of handler functions to be called
  * @returns a Request handler that returns a Response or null
  */
-export function cascade<A extends Args>(
-  ...handlers: CustomHandler<A>[]
-): CustomHandler<A> {
-  return async (req, ...args) => {
+export function cascade<A extends unknown[]>(
+  ...handlers: Array<
+    (request: Request, ...args: A) => Awaitable<Response | null>
+  >
+) {
+  return async (req: Request, ...args: A) => {
     for (const handler of handlers) {
       const res = await handler(req, ...args);
       if (res) {

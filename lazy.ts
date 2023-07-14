@@ -1,4 +1,4 @@
-import { Args, CustomHandler } from "./types.ts";
+import type { Awaitable } from "./types.ts";
 
 /**
  * Create a handler that lazily loads a handler fn only when required.
@@ -6,16 +6,19 @@ import { Args, CustomHandler } from "./types.ts";
  * @param handlerLoader function to load the handler fn, or a module or
  *  module specifier that exports the handler as the default export.
  */
-export function lazy<A extends Args>(
+export function lazy<
+  A extends unknown[],
+  H = (req: Request, ...args: A) => Awaitable<Response | null>,
+>(
   handlerLoader:
-    | (() => Promise<CustomHandler<A> | { default: CustomHandler<A> }>)
+    | (() => Promise<H | { default: H }>)
     | string
     | URL,
-): CustomHandler<A> {
-  let handlerPromise: Promise<CustomHandler<A> | null> | undefined = undefined;
-  let handler: CustomHandler<A> | null | undefined = undefined;
+) {
+  let handlerPromise: Promise<H | null> | undefined = undefined;
+  let handler: H | null | undefined = undefined;
 
-  return async (req, ...args) => {
+  return async (req: Request, ...args: A) => {
     if (handler === undefined && handlerPromise === undefined) {
       handlerPromise = init();
     }

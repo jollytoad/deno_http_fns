@@ -1,4 +1,4 @@
-import type { CustomHandler } from "./types.ts";
+import type { Awaitable } from "./types.ts";
 
 /**
  * Create a Request handler that maps the incoming Request and first
@@ -13,7 +13,7 @@ import type { CustomHandler } from "./types.ts";
  */
 export function mapData<O, I>(
   mapper: (req: Request, data: I) => O | Promise<O>,
-  handler: CustomHandler<[O]>,
-): CustomHandler<[I]> {
-  return async (req, data) => handler(req, await mapper(req, data));
+  handler: (req: Request, data: O) => Awaitable<Response | null>,
+) {
+  return async (req: Request, data: I) => handler(req, await mapper(req, data));
 }

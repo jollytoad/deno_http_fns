@@ -1,4 +1,4 @@
-import type { Args, CustomHandler } from "./types.ts";
+import type { Awaitable } from "./types.ts";
 import { notFound } from "./response.ts";
 import { withFallback } from "./fallback.ts";
 import { cascade } from "./cascade.ts";
@@ -14,9 +14,10 @@ import { cascade } from "./cascade.ts";
  *  this optional and defaults to a Not Found response.
  * @returns a Request handler that always returns a Response
  */
-export function handle<A extends Args>(
-  handlers: CustomHandler<A>[],
-  fallback: CustomHandler<A, Response> = () => notFound(),
-): CustomHandler<A, Response> {
+export function handle<A extends unknown[]>(
+  handlers: Array<(request: Request, ...args: A) => Awaitable<Response | null>>,
+  fallback: (request: Request, ...args: A) => Awaitable<Response> = () =>
+    notFound(),
+) {
   return withFallback(cascade(...handlers), fallback);
 }

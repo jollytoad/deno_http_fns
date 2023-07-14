@@ -2,12 +2,12 @@ import { appendHeaders, notAcceptable, notFound } from "./response.ts";
 import { accepts } from "https://deno.land/std@0.193.0/http/negotiation.ts";
 import { typeByExtension } from "https://deno.land/std@0.193.0/media_types/type_by_extension.ts";
 import { extname } from "https://deno.land/std@0.193.0/path/posix.ts";
-import type { Args, CustomHandler } from "./types.ts";
+import type { Awaitable } from "./types.ts";
 
 export type MediaType = `${string}/${string}`;
-export type MediaTypeHandlers<A extends Args> = Record<
+export type MediaTypeHandlers<A extends unknown[]> = Record<
   MediaType,
-  CustomHandler<A>
+  (req: Request, ...args: A) => Awaitable<Response | null>
 >;
 
 /**
@@ -23,12 +23,14 @@ export type MediaTypeHandlers<A extends Args> = Record<
  *  can not be matched from the `Accept` header, defaults to a Not Acceptable response
  * @returns a Request handler
  */
-export function byMediaType<A extends Args>(
+export function byMediaType<A extends unknown[]>(
   handlers: MediaTypeHandlers<A>,
-  fallbackExt: CustomHandler<A> = () => notFound(),
-  fallbackAccept: CustomHandler<A> = () => notAcceptable(),
-): CustomHandler<A> {
-  return async (req, ...args) => {
+  fallbackExt: (req: Request, ...args: A) => Awaitable<Response | null> = () =>
+    notFound(),
+  fallbackAccept: (req: Request, ...args: A) => Awaitable<Response | null> =
+    () => notAcceptable(),
+) {
+  return async (req: Request, ...args: A) => {
     const ext = getExt(req, ...args);
     if (ext) {
       // Return only the media type implied by the extension on the url, ignoring the Accept header

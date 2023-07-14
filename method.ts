@@ -1,12 +1,8 @@
 import { methodNotAllowed } from "./response.ts";
-import type { Args, CustomHandler } from "./types.ts";
+import type { Awaitable } from "./types.ts";
 import type { HttpMethod } from "https://deno.land/std@0.193.0/http/method.ts";
 
 export type { HttpMethod };
-
-export type MethodHandlers<A extends Args> = {
-  [M in HttpMethod]?: CustomHandler<A>;
-};
 
 /**
  * Create a Request handler that delegates based on the HTTP Method of the Request.
@@ -18,17 +14,23 @@ export type MethodHandlers<A extends Args> = {
  *  but may return `null` if you want the request to cascade to a later handler
  * @returns a Request handler
  */
-export function byMethod<A extends Args>(
-  handlers: MethodHandlers<A>,
-  fallback: CustomHandler<A> = () => methodNotAllowed(),
-): CustomHandler<A> {
-  const defaultHandlers: MethodHandlers<A> = {
+export function byMethod<A extends unknown[]>(
+  handlers: Partial<
+    Record<
+      HttpMethod,
+      (request: Request, ...args: A) => Awaitable<Response | null>
+    >
+  >,
+  fallback: (request: Request, ...args: A) => Awaitable<Response | null> = () =>
+    methodNotAllowed(),
+) {
+  const defaultHandlers: typeof handlers = {
     OPTIONS: optionsHandler(handlers),
   };
   if (handlers.GET) {
     defaultHandlers.HEAD = headHandler(handlers.GET);
   }
-  return (req, ...args) => {
+  return (req: Request, ...args: A) => {
     const method = req.method as HttpMethod;
     const handler = handlers[method] ?? defaultHandlers[method];
 
@@ -40,9 +42,14 @@ export function byMethod<A extends Args>(
   };
 }
 
-function optionsHandler<A extends Args>(
-  handlers: MethodHandlers<A>,
-): CustomHandler<A> {
+function optionsHandler<A extends unknown[]>(
+  handlers: Partial<
+    Record<
+      HttpMethod,
+      (request: Request, ...args: A) => Awaitable<Response | null>
+    >
+  >,
+) {
   const methods = Object.keys(handlers);
   if ("GET" in methods && !("HEAD" in methods)) {
     methods.push("HEAD");
@@ -61,9 +68,10 @@ function optionsHandler<A extends Args>(
   };
 }
 
-const headHandler =
-  <A extends Args>(handler: CustomHandler<A>): CustomHandler<A> =>
-  async (req, ...args) => {
-    const response = await handler(req, ...args);
-    return response ? new Response(null, response) : response;
-  };
+const headHandler = <A extends unknown[]>(
+  handler: (request: Request, ...args: A) => Awaitable<Response | null>,
+) =>
+async (req: Request, ...args: A) => {
+  const response = await handler(req, ...args);
+  return response ? new Response(null, response) : response;
+};

@@ -1,4 +1,4 @@
-import type { Args, Interceptors } from "./types.ts";
+import type { Interceptors } from "./types.ts";
 
 const requestTime = new WeakMap<Request, number>();
 
@@ -75,7 +75,7 @@ export function logError(_req: unknown, _res: unknown, error: unknown) {
 /**
  * Set of standard logging interceptors.
  */
-export function logging(): Interceptors<Args, Response> {
+export function logging(): Interceptors<unknown[], Response> {
   return {
     request: [logRequestGroup],
     response: [logGroupEnd, logStatusAndContentType],

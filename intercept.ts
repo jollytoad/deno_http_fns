@@ -1,10 +1,4 @@
-import type {
-  Args,
-  CustomHandler,
-  Interceptors,
-  ResponseInterceptor,
-  Skip,
-} from "./types.ts";
+import type { Interceptors, ResponseInterceptor } from "./types.ts";
 
 /**
  * Wrap a Request handler with chains of interceptor functions that modify the
@@ -13,8 +7,8 @@ import type {
  * @param handler the original handler
  * @returns a new Request handler
  */
-export function intercept<A extends Args, R extends Response | Skip>(
-  handler: CustomHandler<A, R>,
+export function intercept<A extends unknown[], R extends Response | null>(
+  handler: (req: Request, ...args: A) => R | Promise<R>,
   ...interceptors: readonly Interceptors<A, R>[]
 ): typeof handler {
   const reverseInterceptors = [...interceptors].reverse();
@@ -72,8 +66,11 @@ export function intercept<A extends Args, R extends Response | Skip>(
  *  Response from the handler
  * @returns a new Request handler
  */
-export function interceptResponse<A extends Args, R extends Response | Skip>(
-  handler: CustomHandler<A, R>,
+export function interceptResponse<
+  A extends unknown[],
+  R extends Response | null,
+>(
+  handler: (req: Request, ...args: A) => R | Promise<R>,
   ...interceptors: ResponseInterceptor<R>[]
 ): typeof handler {
   return intercept<A, R>(handler, { response: interceptors });
@@ -83,12 +80,12 @@ export function interceptResponse<A extends Args, R extends Response | Skip>(
  * A ResponseInterceptor that will catch and skip any Responses that match the given Statuses.
  */
 export function skip(...status: number[]) {
-  return (_req: unknown, res: Response | Skip) =>
+  return (_req: unknown, res: Response | null) =>
     res && status.includes(res.status) ? null : undefined;
 }
 
-async function safeHandle<A extends Args, R extends Response | null>(
-  handler: CustomHandler<A, R>,
+async function safeHandle<A extends unknown[], R extends Response | null>(
+  handler: (req: Request, ...args: A) => R | Promise<R>,
   req: Request,
   ...args: A
 ): Promise<R> {

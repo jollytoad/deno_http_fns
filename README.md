@@ -121,7 +121,3 @@ cascade to the next handler in the array of handlers passed to `handle` (or
 ### Request
 
 ### Response
-
-## Types
-
-### CustomHandler

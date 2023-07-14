@@ -5,6 +5,7 @@ import {
   ServeDirOptions,
 } from "https://deno.land/std@0.193.0/http/file_server.ts";
 import { fromFileUrl } from "https://deno.land/std@0.193.0/path/mod.ts";
+import type { Awaitable } from "./types.ts";
 
 type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
 
@@ -19,7 +20,7 @@ export function staticRoute(
   pattern: string,
   fileRootUrl: string,
   options?: StaticRouteOptions,
-) {
+): (request: Request) => Awaitable<Response | null> {
   const fsRoot = fromFileUrl(fileRootUrl);
 
   return byPattern(
