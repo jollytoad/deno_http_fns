@@ -22,13 +22,22 @@ See the [examples](./examples).
 You can run them after cloning this repo, for example:
 
 ```sh
-deno run -A examples/logging.ts
+deno run -A --import-map=examples/import_map.json examples/logging.ts
 ```
+
+(NOTE: This import will map the imports to use the local http_fns modules rather
+than fetching from deno.land)
 
 or directly from deno.land:
 
 ```sh
 deno run -A https://deno.land/x/http_fns/examples/logging.ts
+```
+
+or directly from GitHub:
+
+```sh
+deno run -A https://raw.githubusercontent.com/jollytoad/deno_http_fns/main/examples/logging.ts
 ```
 
 ## Request Handlers
