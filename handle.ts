@@ -1,5 +1,5 @@
 import type { Awaitable } from "./types.ts";
-import { notFound } from "./response.ts";
+import { notFound } from "./response/not_found.ts";
 import { withFallback } from "./fallback.ts";
 import { cascade } from "./cascade.ts";
 

@@ -1,4 +1,4 @@
-import { appendHeaders } from "./response.ts";
+import { appendHeaders } from "./response/append_headers.ts";
 
 interface CorsOptions {
   allowOrigin?: "*" | string[];

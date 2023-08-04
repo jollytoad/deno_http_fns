@@ -4,7 +4,7 @@ import {
   parse,
   type ParsedPath,
   toFileUrl,
-} from "https://deno.land/std@0.193.0/path/mod.ts";
+} from "https://deno.land/std@0.197.0/path/mod.ts";
 import { asSerializablePattern, asURLPattern } from "./pattern.ts";
 import type { PathPattern, RoutePattern } from "./types.ts";
 

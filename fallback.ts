@@ -1,5 +1,5 @@
 import type { Awaitable } from "./types.ts";
-import { notFound } from "./response.ts";
+import { notFound } from "./response/not_found.ts";
 
 /**
  * Create a Request handler that guarantees a Response, by calling a fallback handler

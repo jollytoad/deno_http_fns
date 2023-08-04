@@ -2,5 +2,8 @@
   "tasks": {
     "demo": "deno run -A --watch demo/serve.ts",
     "check": "deno fmt && deno lint && deno check --import-map=examples/import_map.json **/*.ts"
+  },
+  "compilerOptions": {
+    "verbatimModuleSyntax": true
   }
 }

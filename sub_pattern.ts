@@ -1,6 +1,6 @@
 import { byPattern } from "./pattern.ts";
 import type { Awaitable, RoutePattern } from "./types.ts";
-import { deepMerge } from "https://deno.land/x/std@0.193.0/collections/deep_merge.ts";
+import { deepMerge } from "https://deno.land/std@0.197.0/collections/deep_merge.ts";
 
 /**
  * Match a child route pattern after already matching a parent pattern,

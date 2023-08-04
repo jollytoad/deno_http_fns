@@ -2,9 +2,9 @@ import { byPattern } from "./pattern.ts";
 import { byMethod } from "./method.ts";
 import {
   serveDir,
-  ServeDirOptions,
-} from "https://deno.land/std@0.193.0/http/file_server.ts";
-import { fromFileUrl } from "https://deno.land/std@0.193.0/path/mod.ts";
+  type ServeDirOptions,
+} from "https://deno.land/std@0.197.0/http/file_server.ts";
+import { fromFileUrl } from "https://deno.land/std@0.197.0/path/mod.ts";
 import type { Awaitable } from "./types.ts";
 
 type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
