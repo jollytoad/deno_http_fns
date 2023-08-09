@@ -1,3 +1,5 @@
+import { redirect } from "./redirect.ts";
+
 /**
  * Redirect with a "303 See Other" response.
  *
@@ -9,14 +11,5 @@ export function seeOther(
   location: string | URL,
   headersInit?: HeadersInit,
 ): Response {
-  const headers = new Headers(headersInit);
-  headers.set(
-    "Location",
-    typeof location === "string" ? location : location.href,
-  );
-  return new Response(null, {
-    status: 303,
-    statusText: "See Other",
-    headers,
-  });
+  return redirect(303, "See Other", location, headersInit);
 }

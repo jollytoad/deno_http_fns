@@ -35,11 +35,14 @@ export type SerializableRoutePattern =
  * A RequestInterceptor function takes a Request and optionally returns a modified or new Request.
  *
  * May return no value (void) or undefined to indicate no change to the Request.
+ *
+ * May also return (or throw) a Response to skip further RequestInterceptors and the handler entirely,
+ * the response will still be passed through further ResponseInterceptors.
  */
 export type RequestInterceptor<in A extends unknown[] = unknown[]> = (
   req: Request,
   ...args: A
-) => Awaitable<Request | void>;
+) => Awaitable<Request | Response | void>;
 
 /**
  * A ResponseInterceptor function takes a Request and Response and optionally returns a modified or

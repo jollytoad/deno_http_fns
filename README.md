@@ -25,7 +25,13 @@ You can run them after cloning this repo, for example:
 deno run -A --import-map=examples/import_map.json examples/logging.ts
 ```
 
-(NOTE: This import will map the imports to use the local http_fns modules rather
+or (using a task defined in the deno.json file)
+
+```sh
+deno task example examples/logging.ts
+```
+
+(NOTE: The above will map the imports to use the local http_fns modules rather
 than fetching from deno.land)
 
 or directly from deno.land:

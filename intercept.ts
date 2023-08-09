@@ -17,16 +17,28 @@ export function intercept<A extends unknown[], R extends Response | null>(
     let res!: R;
 
     try {
-      for (const { request } of interceptors) {
-        for (const interceptor of request ?? []) {
-          const result = await interceptor(req, ...args);
-          if (result !== undefined) {
-            req = result;
+      try {
+        for (const { request } of interceptors) {
+          for (const interceptor of request ?? []) {
+            const result = await interceptor(req, ...args);
+            if (result instanceof Request) {
+              req = result;
+            } else if (result instanceof Response) {
+              throw result;
+            }
           }
+        }
+      } catch (e: unknown) {
+        if (e instanceof Response) {
+          res = e as R;
+        } else {
+          throw e;
         }
       }
 
-      res = await safeHandle(handler, req, ...args);
+      if (!res) {
+        res = await safeHandle(handler, req, ...args);
+      }
 
       for (const { response } of reverseInterceptors) {
         for (const interceptor of response ?? []) {
