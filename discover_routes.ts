@@ -201,7 +201,9 @@ export function defaultPathMapper(entry: DiscoveredPath): DiscoveredPath {
   if (entry.name === "index") {
     return {
       ...entry,
-      pattern: entry.pattern.replace(/index$/, "{/}?"),
+      pattern: entry.pattern === "/index"
+        ? "/"
+        : entry.pattern.replace(/\/index$/, "{/}?"),
     };
   }
   return entry;
