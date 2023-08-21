@@ -23,13 +23,15 @@ export function staticRoute(
 ): (request: Request) => Awaitable<Response | null> {
   const fsRoot = fromFileUrl(fileRootUrl);
 
+  pattern = pattern.replace(/\/$/, '');
+
   return byPattern(
-    `${pattern === "/" ? "" : pattern}/:path*`,
+    [`${pattern}/`, `${pattern}/:path+`],
     byMethod({
       GET(req, info) {
         const urlRoot = info.pathname.input.slice(
           1,
-          -info.pathname.groups.path!.length,
+          -(info.pathname.groups.path?.length ?? 0),
         );
         return serveDir(req, { quiet: true, ...options, fsRoot, urlRoot });
       },
