@@ -8,7 +8,7 @@ import {
   dirname,
   fromFileUrl,
   relative,
-} from "https://deno.land/std@0.197.0/path/posix.ts";
+} from "https://deno.land/std@0.198.0/path/posix.ts";
 
 export interface GenerateOptions extends
   Omit<

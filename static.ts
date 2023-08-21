@@ -3,8 +3,8 @@ import { byMethod } from "./method.ts";
 import {
   serveDir,
   type ServeDirOptions,
-} from "https://deno.land/std@0.197.0/http/file_server.ts";
-import { fromFileUrl } from "https://deno.land/std@0.197.0/path/mod.ts";
+} from "https://deno.land/std@0.198.0/http/file_server.ts";
+import { fromFileUrl } from "https://deno.land/std@0.198.0/path/from_file_url.ts";
 import type { Awaitable } from "./types.ts";
 
 type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
@@ -23,7 +23,7 @@ export function staticRoute(
 ): (request: Request) => Awaitable<Response | null> {
   const fsRoot = fromFileUrl(fileRootUrl);
 
-  pattern = pattern.replace(/\/$/, '');
+  pattern = pattern.replace(/\/$/, "");
 
   return byPattern(
     [`${pattern}/`, `${pattern}/:path+`],

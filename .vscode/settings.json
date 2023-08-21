@@ -1,4 +1,5 @@
 {
+  "deno.importMap": "./examples/import_map.json",
   "deno.enable": true,
   "deno.lint": true,
   "editor.defaultFormatter": "denoland.vscode-deno",

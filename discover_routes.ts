@@ -1,12 +1,11 @@
-import {
-  fromFileUrl,
-  join,
-  parse,
-  type ParsedPath,
-  toFileUrl,
-} from "https://deno.land/std@0.197.0/path/mod.ts";
+import { fromFileUrl } from "https://deno.land/std@0.198.0/path/from_file_url.ts";
+import { toFileUrl } from "https://deno.land/std@0.198.0/path/to_file_url.ts";
+import { join } from "https://deno.land/std@0.198.0/path/join.ts";
+import { parse } from "https://deno.land/std@0.198.0/path/parse.ts";
 import { asSerializablePattern, asURLPattern } from "./pattern.ts";
 import type { PathPattern, RoutePattern } from "./types.ts";
+
+type ParsedPath = ReturnType<typeof parse>;
 
 /**
  * Options for the `discoverRoutes` function
