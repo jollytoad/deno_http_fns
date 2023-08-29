@@ -30,3 +30,6 @@ jobs:
 
       - name: Run TypeScript checking
         run: deno check --import-map=examples/import_map.json **/*.ts
+
+      - name: Run tests
+        run: deno test
