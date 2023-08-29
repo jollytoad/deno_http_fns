@@ -1,6 +1,6 @@
 import { methodNotAllowed } from "./response/method_not_allowed.ts";
 import type { Awaitable } from "./types.ts";
-import type { HttpMethod } from "https://deno.land/std@0.198.0/http/method.ts";
+import type { HttpMethod } from "https://deno.land/std@0.200.0/http/method.ts";
 
 export type { HttpMethod };
 
