@@ -5,13 +5,24 @@ NOTE: This is still fairly experimental.
 A collection of functions for HTTP.
 
 - Based on Request => Response functions
-- Works with Deno [std lib `serve`][std_serve], and the new
-  [`Deno.serve`][deno_serve]
+- Works with [`Deno.serve`][deno_serve]
 - Handlers for routing based on various criteria
+  - URLPattern
+  - Method
+  - Media Type
+- Request and Response helper functions
+- Generate router module from filesystem based handlers
+  - Static or dynamic imports
+  - Build time or runtime discovery
+- Request/Response interceptor function chains
+  - Logging
+  - CORS
+- `Deno.serve` options helper fns for various hosting scenarios
+  - Development on localhost (including https support)
+  - Deno Deploy
 
 Read the [blog].
 
-[std_serve]: https://deno.land/std/http/server.ts?s=serve
 [deno_serve]: https://deno.land/api?s=Deno.serve
 [blog]: https://jollytoad.deno.dev/blog/http_fns
 
