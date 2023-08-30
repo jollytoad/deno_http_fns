@@ -96,6 +96,8 @@ await serve(
 
 `handle(handlers, fallback) => Handler`
 
+[Module](./handle.ts) | [Example](./examples/handle.ts)
+
 This is the top-level function you'll use to form a router.
 
 You pass it a list of handlers, each handler may return either a `Response` or a
@@ -111,6 +113,8 @@ later)
 ### byPattern
 
 `byPattern(pattern, handler) => Handler`
+
+[Module](./pattern.ts) | [Example](./examples/pattern.ts)
 
 Every router needs a way to delegate by actual path or URL. `byPattern` provides
 that using the standard
@@ -133,34 +137,153 @@ If no pattern matches, the handler returns `null`, allowing the request to
 cascade to the next handler in the array of handlers passed to `handle` (or
 `cascade`).
 
+### bySubPattern
+
+`bySubPattern(pattern, handler) => Handler`
+
+[Module](./sub_pattern.ts) | [Example](./examples/sub_pattern.ts)
+
+Match a child route pattern after already matching a parent pattern.
+
 ### byMethod
 
+`byMethod({ METHOD: handler }, fallback) => Handler`
+
+[Module](./method.ts) | [Example](./examples/method.ts)
+
+Select a handler based on the request method.
+
 ### byMediaType
+
+`byMediaType({ "media/type": handler }, fallbackExt, fallbackAccept) => Handler`
+
+[Module](./media_type.ts) | [Example](./examples/media_type.ts)
+
+Select the most appropriate handler based on the desired media-type of the
+request.
 
 ## Delegation
 
 ### cascade
 
+`cascade(...handlers) => Handler`
+
+[Module](./cascade.ts) | [Example](./examples/cascade.ts)
+
+Attempt each handler in turn until one returns a Response.
+
 ### withFallback
+
+`withFallback(handler, fallback) => Handler`
+
+[Module](./fallback.ts) | [Example](./examples/pattern.ts) |
+[Example](./examples/cascade.ts)
+
+Provide a fallback Response should the handler 'skip' (ie. return no response).
+
+### lazy
+
+`lazy(module url or loader) => Handler`
+
+[Module](./lazy.ts)
+
+Dynamically load a handler when first required.
 
 ## Handlers
 
 ### staticRoute
 
+`staticRoute(pattern, fileRootUrl, options) => Handler`
+
+[Module](./static.ts) | [Example](./examples/static_route.ts)
+
+Serve static files.
+
 ## Middleware
 
 ### intercept
 
+`intercept(handler, ...interceptors) => Handler`
+
+[Module](./intercept.ts) | [Example](./examples/intercept_auth.ts)
+
+Modify the Request and/or Response around the handler, and handle errors.
+
 ### interceptResponse
+
+`interceptResponse(handler, ...responseInterceptors) => Handler`
+
+[Module](./intercept.ts) | [Example](./examples/intercept_response.ts)
+
+Modify the Response from a handler.
 
 ### skip
 
+`skip(...status) => ResponseInterceptor`
+
+[Module](./intercept.ts) | [Example](./examples/intercept_response.ts)
+
+Use with `interceptResponse` to convert Responses of the given status to a
+'skipped' response.
+
+### byStatus
+
+`byStatus(status, interceptor) => ResponseInterceptor`
+
+[Module](./intercept.ts) | [Example](./examples/intercept_response.ts)
+
+Create a Response Interceptor that matches the status of the Response.
+
 ### loggers
 
+`logging() => Interceptors`
+
+[Module](./logger.ts) | [Example](./examples/logging.ts)
+
+A set of standard logging interceptors.
+
 ### cors
+
+`cors(options) => ResponseInterceptor`
+
+[Module](./cors.ts)
+
+A response intercept that adds the appropriate CORS headers, and handles the
+OPTIONS request.
+
+## Filesystem based handlers
+
+### Route discovery
+
+[Module](./discover_routes.ts) |
+[Example](./examples/scripts/discover_routes.ts)
+
+Walk the filesystem discovering potential routes and handlers modules.
+
+### Router module generation
+
+[Module](./generate.ts) |
+[Example script](./examples/scripts/generate_routes.ts) |
+[Example of generated routes](./examples/routes.ts) |
+[Example router](./examples/generated_routes.ts)
+
+Generate a TypeScript module that exports a routing handler of discovered
+modules, using `byPattern`.
+
+### Dynamic runtime router
+
+`dynamicRoute(options) => Handler`
+
+[Module](./dynamic.ts) | [Example](./examples/dynamic_route.ts)
+
+A handler that performs route discovery dynamically at runtime.
 
 ## Utilities
 
 ### Request
 
+_TODO_
+
 ### Response
+
+_TODO_
