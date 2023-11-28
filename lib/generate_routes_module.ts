@@ -2,7 +2,7 @@ import {
   discoverRoutes,
   type DiscoverRoutesOptions,
 } from "./discover_routes.ts";
-import { asSerializablePattern } from "./by_pattern.ts";
+import { asSerializablePattern } from "./as_serializable_pattern.ts";
 import type { Eagerness } from "./dynamic_route.ts";
 import { dirname } from "https://deno.land/std@0.208.0/path/posix/dirname.ts";
 import { relative } from "https://deno.land/std@0.208.0/path/posix/relative.ts";

@@ -1,9 +1,5 @@
-import type {
-  Awaitable,
-  RoutePattern,
-  SerializableRoutePattern,
-  SingleRoutePattern,
-} from "./types.ts";
+import { asURLPattern } from "./as_url_pattern.ts";
+import type { Awaitable, RoutePattern } from "./types.ts";
 
 /**
  * Create a Request handler that matches the URL of the Request based on a URLPattern.
@@ -38,68 +34,4 @@ export function byPattern<A extends unknown[]>(
 
     return null;
   };
-}
-
-/**
- * Convert a single RoutePattern to a URLPattern.
- */
-export function asURLPattern(
-  pattern: SingleRoutePattern,
-): URLPattern {
-  return typeof pattern === "string"
-    ? new URLPattern({ pathname: pattern })
-    : pattern instanceof URLPattern
-    ? pattern
-    : new URLPattern(pattern);
-}
-
-/**
- * Return the most concise serialisable representation of the given RoutePattern.
- */
-export function asSerializablePattern(
-  pattern: RoutePattern,
-): SerializableRoutePattern {
-  if (Array.isArray(pattern)) {
-    return pattern.flatMap(asSerializablePattern);
-  } else if (typeof pattern === "string") {
-    return pattern;
-  } else {
-    const {
-      protocol,
-      username,
-      password,
-      hostname,
-      port,
-      pathname,
-      search,
-      hash,
-    } = pattern;
-
-    if (
-      typeof pathname === "string" && isWild(protocol) && isWild(username) &&
-      isWild(password) && isWild(hostname) && isWild(port) && isWild(search) &&
-      isWild(hash)
-    ) {
-      return pathname;
-    } else {
-      return {
-        protocol: asPart(protocol),
-        username: asPart(username),
-        password: asPart(password),
-        hostname: asPart(hostname),
-        port: asPart(port),
-        pathname: asPart(pathname),
-        search: asPart(search),
-        hash: asPart(hash),
-      };
-    }
-  }
-}
-
-function isWild(part: string | undefined): boolean {
-  return part === undefined || part === "*";
-}
-
-function asPart(part: string | undefined): string | undefined {
-  return isWild(part) ? undefined : part;
 }
