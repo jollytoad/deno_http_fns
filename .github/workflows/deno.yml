@@ -32,4 +32,4 @@ jobs:
         run: deno check --import-map=examples/import_map.json **/*.ts
 
       - name: Run tests
-        run: deno test
+        run: deno task test
