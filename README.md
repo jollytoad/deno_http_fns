@@ -96,7 +96,7 @@ await serve(
 
 `handle(handlers, fallback) => Handler`
 
-[Module](./handle.ts) | [Example](./examples/handle.ts)
+[Module](./lib/handle.ts) | [Example](./examples/handle.ts)
 
 This is the top-level function you'll use to form a router.
 
@@ -114,7 +114,7 @@ later)
 
 `byPattern(pattern, handler) => Handler`
 
-[Module](./pattern.ts) | [Example](./examples/pattern.ts)
+[Module](./lib/by_pattern.ts) | [Example](./examples/by_pattern.ts)
 
 Every router needs a way to delegate by actual path or URL. `byPattern` provides
 that using the standard
@@ -141,7 +141,7 @@ cascade to the next handler in the array of handlers passed to `handle` (or
 
 `bySubPattern(pattern, handler) => Handler`
 
-[Module](./sub_pattern.ts) | [Example](./examples/sub_pattern.ts)
+[Module](./lib/by_sub_pattern.ts) | [Example](./examples/by_sub_pattern.ts)
 
 Match a child route pattern after already matching a parent pattern.
 
@@ -149,7 +149,7 @@ Match a child route pattern after already matching a parent pattern.
 
 `byMethod({ METHOD: handler }, fallback) => Handler`
 
-[Module](./method.ts) | [Example](./examples/method.ts)
+[Module](./lib/by_method.ts) | [Example](./examples/by_method.ts)
 
 Select a handler based on the request method.
 
@@ -157,7 +157,7 @@ Select a handler based on the request method.
 
 `byMediaType({ "media/type": handler }, fallbackExt, fallbackAccept) => Handler`
 
-[Module](./media_type.ts) | [Example](./examples/media_type.ts)
+[Module](./lib/by_media_type.ts) | [Example](./examples/by_media_type.ts)
 
 Select the most appropriate handler based on the desired media-type of the
 request.
@@ -168,7 +168,7 @@ request.
 
 `cascade(...handlers) => Handler`
 
-[Module](./cascade.ts) | [Example](./examples/cascade.ts)
+[Module](./lib/cascade.ts) | [Example](./examples/cascade.ts)
 
 Attempt each handler in turn until one returns a Response.
 
@@ -176,7 +176,7 @@ Attempt each handler in turn until one returns a Response.
 
 `withFallback(handler, fallback) => Handler`
 
-[Module](./fallback.ts) | [Example](./examples/pattern.ts) |
+[Module](./lib/fallback.ts) | [Example](./examples/by_pattern.ts) |
 [Example](./examples/cascade.ts)
 
 Provide a fallback Response should the handler 'skip' (ie. return no response).
@@ -185,7 +185,7 @@ Provide a fallback Response should the handler 'skip' (ie. return no response).
 
 `lazy(module url or loader) => Handler`
 
-[Module](./lazy.ts)
+[Module](./lib/lazy.ts)
 
 Dynamically load a handler when first required.
 
@@ -195,7 +195,7 @@ Dynamically load a handler when first required.
 
 `staticRoute(pattern, fileRootUrl, options) => Handler`
 
-[Module](./static.ts) | [Example](./examples/static_route.ts)
+[Module](./lib/static_route.ts) | [Example](./examples/static_route.ts)
 
 Serve static files.
 
@@ -205,7 +205,7 @@ Serve static files.
 
 `intercept(handler, ...interceptors) => Handler`
 
-[Module](./intercept.ts) | [Example](./examples/intercept_auth.ts)
+[Module](./lib/intercept.ts) | [Example](./examples/intercept_auth.ts)
 
 Modify the Request and/or Response around the handler, and handle errors.
 
@@ -213,7 +213,7 @@ Modify the Request and/or Response around the handler, and handle errors.
 
 `interceptResponse(handler, ...responseInterceptors) => Handler`
 
-[Module](./intercept.ts) | [Example](./examples/intercept_response.ts)
+[Module](./lib/intercept.ts) | [Example](./examples/intercept_response.ts)
 
 Modify the Response from a handler.
 
@@ -221,7 +221,7 @@ Modify the Response from a handler.
 
 `skip(...status) => ResponseInterceptor`
 
-[Module](./intercept.ts) | [Example](./examples/intercept_response.ts)
+[Module](./lib/intercept.ts) | [Example](./examples/intercept_response.ts)
 
 Use with `interceptResponse` to convert Responses of the given status to a
 'skipped' response.
@@ -230,7 +230,7 @@ Use with `interceptResponse` to convert Responses of the given status to a
 
 `byStatus(status, interceptor) => ResponseInterceptor`
 
-[Module](./intercept.ts) | [Example](./examples/intercept_response.ts)
+[Module](./lib/by_status.ts) | [Example](./examples/intercept_response.ts)
 
 Create a Response Interceptor that matches the status of the Response.
 
@@ -238,7 +238,7 @@ Create a Response Interceptor that matches the status of the Response.
 
 `logging() => Interceptors`
 
-[Module](./logger.ts) | [Example](./examples/logging.ts)
+[Module](./lib/logger.ts) | [Example](./examples/logging.ts)
 
 A set of standard logging interceptors.
 
@@ -246,7 +246,7 @@ A set of standard logging interceptors.
 
 `cors(options) => ResponseInterceptor`
 
-[Module](./cors.ts)
+[Module](./lib/cors.ts)
 
 A response intercept that adds the appropriate CORS headers, and handles the
 OPTIONS request.
@@ -255,14 +255,14 @@ OPTIONS request.
 
 ### Route discovery
 
-[Module](./discover_routes.ts) |
+[Module](./lib/discover_routes.ts) |
 [Example](./examples/scripts/discover_routes.ts)
 
 Walk the filesystem discovering potential routes and handlers modules.
 
 ### Router module generation
 
-[Module](./generate.ts) |
+[Module](./lib/generate_routes_module.ts) |
 [Example script](./examples/scripts/generate_routes.ts) |
 [Example of generated routes](./examples/routes.ts) |
 [Example router](./examples/generated_routes.ts)
@@ -274,7 +274,7 @@ modules, using `byPattern`.
 
 `dynamicRoute(options) => Handler`
 
-[Module](./dynamic.ts) | [Example](./examples/dynamic_route.ts)
+[Module](./lib/dynamic_route.ts) | [Example](./examples/dynamic_route.ts)
 
 A handler that performs route discovery dynamically at runtime.
 

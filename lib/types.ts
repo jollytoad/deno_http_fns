@@ -32,6 +32,27 @@ export type SerializableRoutePattern =
   | Array<PathPattern | URLPatternInit>;
 
 /**
+ * A record of method handlers for use with byMethod.
+ * This type is designed to aid auto-completion of method names.
+ */
+export type MethodHandlers<A extends unknown[]> = Partial<
+  MethodRecord<(request: Request, ...args: A) => Awaitable<Response | null>>
+>;
+
+type MethodRecord<T> = {
+  DELETE: T;
+  GET: T;
+  HEAD: T;
+  OPTIONS: T;
+  PATCH: T;
+  POST: T;
+  PUT: T;
+  [method: string]: T;
+};
+
+export type HttpMethod = keyof MethodRecord<unknown>;
+
+/**
  * A RequestInterceptor function takes a Request and optionally returns a modified or new Request.
  *
  * May return no value (void) or undefined to indicate no change to the Request.

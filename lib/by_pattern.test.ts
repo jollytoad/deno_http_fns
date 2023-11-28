@@ -1,4 +1,4 @@
-import { byPattern } from "./pattern.ts";
+import { byPattern } from "./by_pattern.ts";
 import { ok } from "./response/ok.ts";
 import type { RoutePattern } from "./types.ts";
 import {

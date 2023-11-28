@@ -1,4 +1,4 @@
-import { withFallback } from "../fallback.ts";
+import { withFallback } from "../with_fallback.ts";
 import { intercept } from "../intercept.ts";
 import { logging } from "../logger.ts";
 import type { Awaitable, Interceptors } from "../types.ts";

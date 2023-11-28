@@ -1,8 +1,5 @@
 import { methodNotAllowed } from "./response/method_not_allowed.ts";
-import type { Awaitable } from "./types.ts";
-import type { HttpMethod } from "https://deno.land/std@0.200.0/http/method.ts";
-
-export type { HttpMethod };
+import type { Awaitable, MethodHandlers } from "./types.ts";
 
 /**
  * Create a Request handler that delegates based on the HTTP Method of the Request.
@@ -15,12 +12,7 @@ export type { HttpMethod };
  * @returns a Request handler
  */
 export function byMethod<A extends unknown[]>(
-  handlers: Partial<
-    Record<
-      HttpMethod,
-      (request: Request, ...args: A) => Awaitable<Response | null>
-    >
-  >,
+  handlers: MethodHandlers<A>,
   fallback: (request: Request, ...args: A) => Awaitable<Response | null> = () =>
     methodNotAllowed(),
 ) {
@@ -31,7 +23,7 @@ export function byMethod<A extends unknown[]>(
     defaultHandlers.HEAD = headHandler(handlers.GET);
   }
   return (req: Request, ...args: A) => {
-    const method = req.method as HttpMethod;
+    const method = req.method;
     const handler = handlers[method] ?? defaultHandlers[method];
 
     if (handler) {
@@ -43,12 +35,7 @@ export function byMethod<A extends unknown[]>(
 }
 
 function optionsHandler<A extends unknown[]>(
-  handlers: Partial<
-    Record<
-      HttpMethod,
-      (request: Request, ...args: A) => Awaitable<Response | null>
-    >
-  >,
+  handlers: MethodHandlers<A>,
 ) {
   const methods = Object.keys(handlers);
   if ("GET" in methods && !("HEAD" in methods)) {

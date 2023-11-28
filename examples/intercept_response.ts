@@ -1,14 +1,14 @@
-import { staticRoute } from "https://deno.land/x/http_fns/static.ts";
-import { withFallback } from "https://deno.land/x/http_fns/fallback.ts";
+import { staticRoute } from "https://deno.land/x/http_fns/lib/static_route.ts";
+import { withFallback } from "https://deno.land/x/http_fns/lib/with_fallback.ts";
 import {
   interceptResponse,
   skip,
-} from "https://deno.land/x/http_fns/intercept.ts";
-import { notFound } from "https://deno.land/x/http_fns/response/not_found.ts";
-import { byStatus } from "https://deno.land/x/http_fns/status.ts";
-import { cascade } from "https://deno.land/x/http_fns/cascade.ts";
-import { byPattern } from "https://deno.land/x/http_fns/pattern.ts";
-import { forbidden } from "https://deno.land/x/http_fns/response/forbidden.ts";
+} from "https://deno.land/x/http_fns/lib/intercept.ts";
+import { notFound } from "https://deno.land/x/http_fns/lib/response/not_found.ts";
+import { byStatus } from "https://deno.land/x/http_fns/lib/by_status.ts";
+import { cascade } from "https://deno.land/x/http_fns/lib/cascade.ts";
+import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
+import { forbidden } from "https://deno.land/x/http_fns/lib/response/forbidden.ts";
 
 // This is an example of using intercept to handle 40x responses.
 //

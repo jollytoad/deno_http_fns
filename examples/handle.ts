@@ -1,5 +1,5 @@
-import { handle } from "https://deno.land/x/http_fns/handle.ts";
-import { byPattern } from "https://deno.land/x/http_fns/pattern.ts";
+import { handle } from "https://deno.land/x/http_fns/lib/handle.ts";
+import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
 
 Deno.serve(handle([
   byPattern("/hello", () => {

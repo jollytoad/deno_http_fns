@@ -1,6 +1,6 @@
-import { withFallback } from "https://deno.land/x/http_fns/fallback.ts";
-import { byPattern } from "https://deno.land/x/http_fns/pattern.ts";
-import { bySubPattern } from "https://deno.land/x/http_fns/sub_pattern.ts";
+import { withFallback } from "https://deno.land/x/http_fns/lib/with_fallback.ts";
+import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
+import { bySubPattern } from "https://deno.land/x/http_fns/lib/by_sub_pattern.ts";
 
 Deno.serve(withFallback(
   byPattern(

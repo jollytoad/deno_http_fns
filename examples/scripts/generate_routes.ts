@@ -1,4 +1,4 @@
-import { generateRoutesModule } from "https://deno.land/x/http_fns/generate.ts";
+import { generateRoutesModule } from "https://deno.land/x/http_fns/lib/generate_routes_module.ts";
 
 function generateRoutes() {
   console.log("\n%cGenerating Routes...\n", "color: green; font-weight: bold;");

@@ -2,13 +2,11 @@ import {
   discoverRoutes,
   type DiscoverRoutesOptions,
 } from "./discover_routes.ts";
-import { asSerializablePattern } from "./pattern.ts";
-import type { Eagerness } from "./dynamic.ts";
-import {
-  dirname,
-  fromFileUrl,
-  relative,
-} from "https://deno.land/std@0.200.0/path/posix.ts";
+import { asSerializablePattern } from "./by_pattern.ts";
+import type { Eagerness } from "./dynamic_route.ts";
+import { dirname } from "https://deno.land/std@0.208.0/path/posix/dirname.ts";
+import { relative } from "https://deno.land/std@0.208.0/path/posix/relative.ts";
+import { fromFileUrl } from "https://deno.land/std@0.208.0/path/posix/from_file_url.ts";
 
 export interface GenerateOptions extends
   Omit<

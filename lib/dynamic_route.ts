@@ -1,4 +1,4 @@
-import { byPattern } from "./pattern.ts";
+import { byPattern } from "./by_pattern.ts";
 import { lazy } from "./lazy.ts";
 import { cascade } from "./cascade.ts";
 import {
