@@ -2,7 +2,7 @@ import { withFallback } from "https://deno.land/x/http_fns/lib/with_fallback.ts"
 import { cascade } from "https://deno.land/x/http_fns/lib/cascade.ts";
 import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
 
-Deno.serve(withFallback(
+export default Deno.serve(withFallback(
   cascade(
     byPattern("/hello", () => {
       return new Response("Hello world");

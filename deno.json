@@ -1,6 +1,7 @@
 {
   "tasks": {
     "example": "deno run -A --import-map=examples/import_map.json",
+    "test": "deno test -A --unstable-http --import-map=examples/import_map.json --location=http://localhost:8000 --no-check",
     "check": "deno fmt && deno lint && deno check --import-map=examples/import_map.json **/*.ts"
   },
   "compilerOptions": {

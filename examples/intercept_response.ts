@@ -18,7 +18,7 @@ import { forbidden } from "https://deno.land/x/http_fns/lib/response/forbidden.t
 // A `403 Forbidden` response will be caught by the `byStatus` interceptor and a custom
 // forbidden message will be returned.
 
-Deno.serve(
+export default Deno.serve(
   withFallback(
     interceptResponse(
       // This is the main set of handlers...

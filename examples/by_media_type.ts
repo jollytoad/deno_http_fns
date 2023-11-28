@@ -3,7 +3,7 @@ import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
 import { byMethod } from "https://deno.land/x/http_fns/lib/by_method.ts";
 import { byMediaType } from "https://deno.land/x/http_fns/lib/by_media_type.ts";
 
-Deno.serve(handle([
+export default Deno.serve(handle([
   byPattern(
     "/hello{.:ext}?",
     byMethod({
@@ -17,6 +17,16 @@ Deno.serve(handle([
             {
               headers: {
                 "Content-Type": "text/html",
+              },
+            },
+          );
+        },
+        "application/json": () => {
+          return new Response(
+            JSON.stringify("Hello world"),
+            {
+              headers: {
+                "Content-Type": "application/json",
               },
             },
           );

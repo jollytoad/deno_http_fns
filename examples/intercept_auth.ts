@@ -3,7 +3,7 @@ import { intercept } from "https://deno.land/x/http_fns/lib/intercept.ts";
 import { unauthorized } from "https://deno.land/x/http_fns/lib/response/unauthorized.ts";
 import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
 
-Deno.serve(
+export default Deno.serve(
   withFallback(
     intercept(
       // This is the main handler...

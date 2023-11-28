@@ -2,7 +2,7 @@ import { handle } from "https://deno.land/x/http_fns/lib/handle.ts";
 import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
 import { byMethod } from "https://deno.land/x/http_fns/lib/by_method.ts";
 
-Deno.serve(handle([
+export default Deno.serve(handle([
   byPattern(
     "/hello",
     byMethod({

@@ -4,4 +4,4 @@ import generateRoutes from "./scripts/generate_routes.ts";
 
 await generateRoutes();
 
-Deno.serve(withFallback(routes));
+export default Deno.serve(withFallback(routes));

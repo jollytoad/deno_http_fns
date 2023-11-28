@@ -99,7 +99,7 @@ export async function generateRoutesModule({
     case "startup":
     case "request":
       {
-        const dynamic_ts = `${httpFnsUrl}dynamic.ts`;
+        const dynamic_ts = `${httpFnsUrl}dynamic_route.ts`;
 
         head.push(`import { dynamicRoute } from "${dynamic_ts}";\n`);
 
@@ -141,7 +141,7 @@ export async function generateRoutesModule({
     case "static":
     default: {
       const isLazy = moduleImports !== "static";
-      const pattern_ts = `${httpFnsUrl}pattern.ts`;
+      const pattern_ts = `${httpFnsUrl}by_pattern.ts`;
       const cascade_ts = `${httpFnsUrl}cascade.ts`;
 
       head.push(`import { byPattern } from "${pattern_ts}";\n`);

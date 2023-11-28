@@ -1,4 +1,6 @@
 import { methodNotAllowed } from "./response/method_not_allowed.ts";
+import { noContent } from "./response/no_content.ts";
+import { replaceBody } from "./response/replace_body.ts";
 import type { Awaitable, MethodHandlers } from "./types.ts";
 
 /**
@@ -38,21 +40,15 @@ function optionsHandler<A extends unknown[]>(
   handlers: MethodHandlers<A>,
 ) {
   const methods = Object.keys(handlers);
-  if ("GET" in methods && !("HEAD" in methods)) {
+  if ("GET" in handlers && !("HEAD" in handlers)) {
     methods.push("HEAD");
   }
-  if (!("OPTIONS" in methods)) {
+  if (!("OPTIONS" in handlers)) {
     methods.push("OPTIONS");
   }
   const allow = methods.join(", ");
 
-  return () => {
-    return new Response(null, {
-      headers: {
-        allow,
-      },
-    });
-  };
+  return () => noContent({ allow });
 }
 
 const headHandler = <A extends unknown[]>(
@@ -60,5 +56,5 @@ const headHandler = <A extends unknown[]>(
 ) =>
 async (req: Request, ...args: A) => {
   const response = await handler(req, ...args);
-  return response ? new Response(null, response) : response;
+  return response ? replaceBody(response, null) : response;
 };
