@@ -68,7 +68,7 @@ byPattern(
 
 This function actually creates a handler function, which attempts to match the
 request URL against the given pattern, and if it matches calls the handler given
-in its 2nd arg...
+in its 2nd arg, in this case...
 
 ```ts
 byMethod({
@@ -78,13 +78,15 @@ byMethod({
 
 Again this creates another handler function, which attempts to match the request
 HTTP method against a key in the given record of method => handlers. If it
-matches the HTTP method, the associated handler is called.
+matches the HTTP method, the associated handler is called...
 
+<!-- deno-fmt-ignore-start -->
 ```ts
-((req: Request) => {
+() => {
   return new Response("Hello world");
-});
+}
 ```
+<!-- deno-fmt-ignore-end -->
 
 So, this will be the handler function for `GET /hello`, the function is passed
 the `Request` and returns a `Response`.
@@ -94,13 +96,13 @@ pattern?
 
 Well the function can return `null` to indicate that this request cannot be
 handled, and this is where `handle` comes in. It can take an array of handlers,
-and try each one until a non-null response is returned, and if none return a
-response it calls a fallback handler that returns a `404 Not Found` by default
-(a different fallback can be supplied).
+and try each one until a non-null response is returned, and if no response comes
+a fallback handler is invoked. By default returning a `404 Not Found`, but a
+different fallback function can be supplied where necessary.
 
 Although `handle` itself is just a convenience function for a common combination
 of `cascade` and `withFallback` functions, which can be used independently for a
-more flexible approach.
+more flexible approach. See below for the full documentation of these.
 
 You can read more about the concepts in the [blog], although it may not remain
 totally up to date with the state of this library.
