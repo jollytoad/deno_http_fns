@@ -1,12 +1,16 @@
-# deno_http_fns
+# HTTP Functions for Deno
 
-NOTE: This is still fairly experimental.
+This is a collection of functions to aid building of a HTTP service in Deno.
 
-A collection of functions for HTTP.
+They can be used instead of a monolithic router framework, or in tandem with
+one.
 
-- Based on Request => Response functions
+## The bullet points
+
+- A library of composable functions rather than a monolithic router class
+- Based on web standard [Request] => [Response] functions
 - Works with [`Deno.serve`][deno_serve]
-- Handlers for routing based on various criteria
+- Routing based on various criteria
   - URLPattern
   - Method
   - Media Type
@@ -21,14 +25,154 @@ A collection of functions for HTTP.
   - Development on localhost (including https support)
   - Deno Deploy
 
-Read the [blog].
-
+[Request]: https://developer.mozilla.org/en-US/docs/Web/API/Request
+[Response]: https://developer.mozilla.org/en-US/docs/Web/API/Response
 [deno_serve]: https://deno.land/api?s=Deno.serve
+
+## An Example
+
+Let's start with a really simple example, a router for `GET /hello`...
+
+```ts
+import { handle } from "https://deno.land/x/http_fns/lib/handle.ts";
+import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
+import { byMethod } from "https://deno.land/x/http_fns/lib/by_method.ts";
+
+Deno.serve(handle([
+  byPattern(
+    "/hello",
+    byMethod({
+      GET: () => {
+        return new Response("Hello world");
+      },
+    }),
+  ),
+]));
+```
+
+As you can see this is a fairly difference approach to the routers you may be
+used to.
+
+The main idea is to compose your router from simple `Request` => `Response`
+functions.
+
+Let's take a look at each part of the example, starting with `byPattern` (we'll
+come back to `handle` later):
+
+```ts
+byPattern(
+  "/hello",
+  ...
+)
+```
+
+This function actually creates a handler function, which attempts to match the
+request URL against the given pattern, and if it matches calls the handler given
+in its 2nd arg...
+
+```ts
+byMethod({
+  GET: ...
+})
+```
+
+Again this creates another handler function, which attempts to match the request
+HTTP method against a key in the given record of method => handlers. If it
+matches the HTTP method, the associated handler is called.
+
+```ts
+((req: Request) => {
+  return new Response("Hello world");
+});
+```
+
+So, this will be the handler function for `GET /hello`, the function is passed
+the `Request` and returns a `Response`.
+
+But what if the user hits `GET /other`, and `byPattern` doesn't match the
+pattern?
+
+Well the function can return `null` to indicate that this request cannot be
+handled, and this is where `handle` comes in. It can take an array of handlers,
+and try each one until a non-null response is returned, and if none return a
+response it calls a fallback handler that returns a `404 Not Found` by default
+(a different fallback can be supplied).
+
+Although `handle` itself is just a convenience function for a common combination
+of `cascade` and `withFallback` functions, which can be used independently for a
+more flexible approach.
+
+You can read more about the concepts in the [blog], although it may not remain
+totally up to date with the state of this library.
+
 [blog]: https://jollytoad.deno.dev/blog/http_fns
+
+## Common handler concepts
+
+### Response or null
+
+Although based on `Request` => `Response` functions, there is a little more to
+it than that, for example, many functions produced by the `by*` helpers may also
+return `null` instead of a `Response`, and where a regular handler is required
+the `withFallback` function can be used to catch the `null` and return a
+concrete `Response`. The `Response` or `null` may also be as a promise.
+
+### Additional arguments
+
+Also, many handlers may also accept additional arguments beyond the first
+`Request`, for example, in the case of `byPatten(pattern, handler)`, the
+`handler` is given the request and the pattern match result as arguments...
+
+```ts
+((request: Request, match: URLPatternResult) => Awaitable<Response | null>);
+```
+
+### Argument shunting
+
+Most of the `by*` helpers will pass arguments along as it, or shunt the
+arguments along if they want to introduce their own, so for example,
+`byPattern(pattern, handler)` returns a handler with the type:
+
+```ts
+(request: Request, ...additionalArgs: SomeArgsType) => ...
+```
+
+but the actual `handler` you pass to it is actually...
+
+```ts
+(request: Request, match: URLPatternResult, ...additionalArgs: SomeArgsType) => ...
+```
+
+It has the extra `match` argument insert before all other arguments that are
+just passed along.
+
+This allows the handlers created via `by*` helpers to work with a wide variety
+of other frameworks, as it's totally agnostic to the extra arguments beyond the
+`Request`. So when you use these functions with `Deno.serve` for example, your
+pattern handler function will actually have the signature:
+
+```ts
+(request: Request, match: URLPatternResult, info: Deno.ServeHandlerInfo) => ...
+```
+
+So you still have this extra context available to you in your handler.
+
+## Take a look inside
+
+This is just a library of functions, and these are kept as simple a possible
+with the intention that it is easy to take a look inside of each function and
+see exactly what it does, the documentation below links to the source of each
+function and an example of it's usage, and I encourage you follow these and take
+a good look at the code.
+
+Also, in general each module represents a single function, intended to be
+imported individually, so you only import exactly what you need, not a mountain
+of unused features. You'll find no `mod.ts` or `deps.ts` around here.
 
 ## Examples
 
-See the [examples](./examples).
+There are many [examples](./examples) that can be executed directly, and many
+tests for these examples.
 
 You can run them after cloning this repo, for example:
 
@@ -57,37 +201,13 @@ or directly from GitHub:
 deno run -A https://raw.githubusercontent.com/jollytoad/deno_http_fns/main/examples/logging.ts
 ```
 
-## Request Handlers
+Many of the examples have accompanying tests, which I hope to improve coverage
+of as time permits. I'd encourage you to take a look at the tests to see how
+each example can be exercised. You can also run the whole test suite simply
+with:
 
-Most functions could be considered as handler factories, in that they create and
-return a Request handler function, generally of the form:
-
-`(req: Request, data: unknown) => Response`
-
-Response can also be in a Promise, and in many case may also be `null` to
-indicate that the Request cannot be handled and it should be delegated to
-another handler.
-
-Here is a very simple example of how the functions can be composed into a
-server:
-
-```ts
-await serve(
-  handle([
-    byPattern(
-      "/",
-      byMethod({
-        GET: () => ok("Hello"),
-      }),
-    ),
-    byPattern(
-      "/foo",
-      byMethod({
-        GET: () => ok("Foo"),
-      }),
-    ),
-  ]),
-);
+```sh
+deno task test
 ```
 
 ## Routing
