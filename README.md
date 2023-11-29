@@ -131,7 +131,7 @@ Also, many handlers may also accept additional arguments beyond the first
 
 ### Argument shunting
 
-Most of the `by*` helpers will pass arguments along as it, or shunt the
+Most of the `by*` helpers will pass arguments on as is, or shunt the
 arguments along if they want to introduce their own, so for example,
 `byPattern(pattern, handler)` returns a handler with the type:
 
