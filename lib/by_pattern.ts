@@ -17,12 +17,13 @@ export function byPattern<A extends unknown[]>(
     ...args: A
   ) => Awaitable<Response | null>,
 ) {
-  return async (req: Request, ...args: A) => {
-    const patterns = Array.isArray(pattern) ? pattern : [pattern];
-    const url = new URL(req.url);
+  const patterns = Array.isArray(pattern)
+    ? pattern.map(asURLPattern)
+    : [asURLPattern(pattern)];
 
+  return async (req: Request, ...args: A) => {
     for (const pattern of patterns) {
-      const match = asURLPattern(pattern).exec(url);
+      const match = pattern.exec(req.url);
 
       if (match) {
         const res = await handler(req, match, ...args);
