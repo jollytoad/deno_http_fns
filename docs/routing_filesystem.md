@@ -2,12 +2,16 @@
 
 ## Route discovery
 
+`discoverRoutes(options) => Promise<DiscoveredRoute[]>`
+
 [Module](../lib/discover_routes.ts) |
 [Example](../examples/scripts/discover_routes.ts)
 
 Walk the filesystem discovering potential routes and handlers modules.
 
 ## Router module generation
+
+`generateRoutesModule(options) => Promise<boolean>`
 
 [Module](../lib/generate_routes_module.ts) |
 [Example script](../examples/scripts/generate_routes.ts) |

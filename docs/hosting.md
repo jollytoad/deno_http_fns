@@ -6,10 +6,12 @@ These function help creating a server for a particular hosting environment.
 
 `initLocalhost(handler, ...interceptors)`
 
+[Module](../lib/hosting/init_localhost.ts)
+
 For creating a localhost development server.
 
 ```ts
-import initLocalhost from "https://deno.land/x/http_fns/lib/hosting/init_localhost.ts";
+import init from "https://deno.land/x/http_fns/lib/hosting/init_localhost.ts";
 import cors from "https://deno.land/x/http_fns/lib/cors.ts";
 
 await Deno.serve(
@@ -36,6 +38,8 @@ Once the server is running it will log the base URL to the console.
 ## Deno Deploy
 
 `initDeploy(handler, ...interceptors)`
+
+[Module](../lib/hosting/init_deploy.ts)
 
 For creating a production Deploy server.
 
