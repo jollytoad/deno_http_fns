@@ -11,7 +11,7 @@ export function lazy<
   H = (req: Request, ...args: A) => Awaitable<Response | null>,
 >(
   handlerLoader:
-    | (() => Promise<H | { default: H }>)
+    | (() => Awaitable<H | { default: H }>)
     | string
     | URL,
 ) {
