@@ -1,8 +1,10 @@
+import { getAvailablePort } from "https://deno.land/std@0.215.0/net/get_available_port.ts";
+
 /**
  * Obtain a port for your http server.
  * If reading of env vars is permitted, it will check for a PORT var.
  */
-export function port(defaultPort = 8000): number {
+export function port(preferredPort = 8000): number {
   if (
     Deno.permissions?.querySync?.({ name: "env", variable: "PORT" }).state ===
       "granted"
@@ -12,5 +14,5 @@ export function port(defaultPort = 8000): number {
       return p;
     }
   }
-  return defaultPort;
+  return getAvailablePort({ preferredPort });
 }
