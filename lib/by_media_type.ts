@@ -1,9 +1,9 @@
 import { appendHeaders } from "./response/append_headers.ts";
 import { notAcceptable } from "./response/not_acceptable.ts";
 import { notFound } from "./response/not_found.ts";
-import { accepts } from "https://deno.land/std@0.208.0/http/negotiation.ts";
-import { typeByExtension } from "https://deno.land/std@0.208.0/media_types/type_by_extension.ts";
-import { extname } from "https://deno.land/std@0.208.0/path/posix/extname.ts";
+import { accepts } from "https://deno.land/std@0.215.0/http/negotiation.ts";
+import { typeByExtension } from "https://deno.land/std@0.215.0/media_types/type_by_extension.ts";
+import { extname } from "https://deno.land/std@0.215.0/path/posix/extname.ts";
 import type { Awaitable } from "./types.ts";
 
 export type MediaType = `${string}/${string}`;

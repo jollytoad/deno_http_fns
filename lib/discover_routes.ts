@@ -1,7 +1,7 @@
-import { fromFileUrl } from "https://deno.land/std@0.208.0/path/from_file_url.ts";
-import { toFileUrl } from "https://deno.land/std@0.208.0/path/to_file_url.ts";
-import { join } from "https://deno.land/std@0.208.0/path/join.ts";
-import { parse } from "https://deno.land/std@0.208.0/path/parse.ts";
+import { fromFileUrl } from "https://deno.land/std@0.215.0/path/from_file_url.ts";
+import { toFileUrl } from "https://deno.land/std@0.215.0/path/to_file_url.ts";
+import { join } from "https://deno.land/std@0.215.0/path/join.ts";
+import { parse } from "https://deno.land/std@0.215.0/path/parse.ts";
 import { asSerializablePattern } from "./as_serializable_pattern.ts";
 import { asURLPattern } from "./as_url_pattern.ts";
 import type { PathPattern, RoutePattern } from "./types.ts";

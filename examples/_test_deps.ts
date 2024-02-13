@@ -1,7 +1,7 @@
-export * from "https://deno.land/std@0.208.0/assert/mod.ts";
-export { STATUS_CODE } from "https://deno.land/std@0.208.0/http/status.ts";
+export * from "https://deno.land/std@0.215.0/assert/mod.ts";
+export { STATUS_CODE } from "https://deno.land/std@0.215.0/http/status.ts";
 
-import { AssertionError } from "https://deno.land/std@0.208.0/assert/assertion_error.ts";
+import { AssertionError } from "https://deno.land/std@0.215.0/assert/assertion_error.ts";
 
 export function assertOk(response: Response) {
   if (!response.ok) {
