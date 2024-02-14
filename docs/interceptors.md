@@ -29,7 +29,8 @@ Use with `interceptResponse` to convert Responses of the given status to a
 
 `byStatus(status, interceptor) => ResponseInterceptor`
 
-[Module](../lib/by_status.ts) | [Example](../examples/intercept_response.ts)
+[Module](../lib/interceptor/by_status.ts) |
+[Example](../examples/intercept_response.ts)
 
 Create a Response Interceptor that matches the status of the Response.
 
@@ -37,7 +38,7 @@ Create a Response Interceptor that matches the status of the Response.
 
 `logging() => Interceptors`
 
-[Module](../lib/logger.ts) | [Example](../examples/logging.ts)
+[Module](../lib/interceptor/logger.ts) | [Example](../examples/logging.ts)
 
 A set of standard logging interceptors.
 
@@ -45,7 +46,16 @@ A set of standard logging interceptors.
 
 `cors(options) => ResponseInterceptor`
 
-[Module](../lib/cors.ts)
+[Module](../lib/interceptor/cors.ts)
 
-A response intercept that adds the appropriate CORS headers, and handles the
+A response interceptor that adds the appropriate CORS headers, and handles the
 OPTIONS request.
+
+## verifyHeader
+
+`verifyHeader(options) => RequestInterceptor`
+
+[Module](../lib/interceptor/verify_header.ts)
+
+Create a request interceptor that verifies that a header matches a given value.
+Useful for token matching.

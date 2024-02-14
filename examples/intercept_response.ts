@@ -5,7 +5,7 @@ import {
   skip,
 } from "https://deno.land/x/http_fns/lib/intercept.ts";
 import { notFound } from "https://deno.land/x/http_fns/lib/response/not_found.ts";
-import { byStatus } from "https://deno.land/x/http_fns/lib/by_status.ts";
+import { byStatus } from "https://deno.land/x/http_fns/lib/interceptor/by_status.ts";
 import { cascade } from "https://deno.land/x/http_fns/lib/cascade.ts";
 import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
 import { forbidden } from "https://deno.land/x/http_fns/lib/response/forbidden.ts";

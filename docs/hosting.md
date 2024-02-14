@@ -12,7 +12,7 @@ For creating a localhost development server.
 
 ```ts
 import init from "https://deno.land/x/http_fns/lib/hosting/init_localhost.ts";
-import cors from "https://deno.land/x/http_fns/lib/cors.ts";
+import cors from "https://deno.land/x/http_fns/lib/interceptor/cors.ts";
 
 await Deno.serve(
   await init(
@@ -45,7 +45,7 @@ For creating a production Deploy server.
 
 ```ts
 import init from "https://deno.land/x/http_fns/lib/hosting/init_deploy.ts";
-import cors from "https://deno.land/x/http_fns/lib/cors.ts";
+import cors from "https://deno.land/x/http_fns/lib/interceptor/cors.ts";
 
 await Deno.serve(
   await init(
