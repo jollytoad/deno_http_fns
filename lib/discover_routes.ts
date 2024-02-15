@@ -3,7 +3,7 @@ import { toFileUrl } from "https://deno.land/std@0.215.0/path/to_file_url.ts";
 import { join } from "https://deno.land/std@0.215.0/path/join.ts";
 import { parse } from "https://deno.land/std@0.215.0/path/parse.ts";
 import { asSerializablePattern } from "./as_serializable_pattern.ts";
-import { asURLPattern } from "./as_url_pattern.ts";
+import { asURLPatterns } from "./as_url_pattern.ts";
 import type { PathPattern, RoutePattern } from "./types.ts";
 
 type ParsedPath = ReturnType<typeof parse>;
@@ -137,18 +137,18 @@ export async function discoverRoutes(
   const routes: ComparableRoute[] = [];
 
   const iter = walk(
-    !opts?.pattern || opts?.pattern === "/" ? "" : opts.pattern,
+    !opts?.pattern || opts?.pattern === "/" ? "" : opts?.pattern ?? "",
     opts?.fileRootUrl ? fromFileUrl(opts.fileRootUrl) : ".",
   );
 
   for await (const entry of iter) {
-    for await (const { pattern, module } of routeMapper(pathMapper(entry))) {
-      const patterns = Array.isArray(pattern) ? pattern : [pattern];
+    for await (
+      const { pattern, module: module_ } of routeMapper(pathMapper(entry))
+    ) {
+      const patterns = asURLPatterns(pattern);
+      const module = asModule(module_);
       for (const pattern of patterns) {
-        routes.push({
-          pattern: asURLPattern(pattern),
-          module: asModule(module),
-        });
+        routes.push({ pattern, module });
       }
     }
   }

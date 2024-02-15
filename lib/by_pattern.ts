@@ -1,4 +1,4 @@
-import { asURLPattern } from "./as_url_pattern.ts";
+import { asURLPatterns } from "./as_url_pattern.ts";
 import type { Awaitable, RoutePattern } from "./types.ts";
 
 /**
@@ -17,9 +17,7 @@ export function byPattern<A extends unknown[]>(
     ...args: A
   ) => Awaitable<Response | null>,
 ) {
-  const patterns = Array.isArray(pattern)
-    ? pattern.map(asURLPattern)
-    : [asURLPattern(pattern)];
+  const patterns = asURLPatterns(pattern);
 
   return async (req: Request, ...args: A) => {
     for (const pattern of patterns) {

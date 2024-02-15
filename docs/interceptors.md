@@ -34,6 +34,30 @@ Use with `interceptResponse` to convert Responses of the given status to a
 
 Create a Response Interceptor that matches the status of the Response.
 
+## whenPattern
+
+`whenPattern(pattern, interceptor) => RequestInterceptor`
+
+[Module](../lib/interceptor/when_pattern.ts) |
+[Example](../examples/when_pattern.ts)
+
+Filter the application of the given interceptor for the given pattern.
+
+This is the equivalent of `byPattern` for interceptors rather than handlers,
+taking a pattern or array of patterns.
+
+The pattern can be a string (to match just the path), a `URLPatternInit` which
+can declare patterns for other parts of the URL, or a pre-constructed
+[`URLPattern`](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern).
+
+The interceptor created will attempt to match the Request URL against each given
+pattern in order until one matches, and then call the delegate interceptor
+(passed in the 2nd arg of forPattern), with the Request and the
+`URLPatternResult`:
+
+If no pattern matches, the interceptor returns `undefined`, allowing the request
+to pass unmodified to the next interceptor and eventually to a handler.
+
 ## loggers
 
 `logging() => Interceptors`
@@ -55,7 +79,8 @@ OPTIONS request.
 
 `verifyHeader(options) => RequestInterceptor`
 
-[Module](../lib/interceptor/verify_header.ts)
+[Module](../lib/interceptor/verify_header.ts) |
+[Example](../examples/verify_header.ts) | [Example](../examples/when_pattern.ts)
 
 Create a request interceptor that verifies that a header matches a given value.
 Useful for token matching.
