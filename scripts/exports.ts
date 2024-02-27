@@ -1,7 +1,7 @@
-import { resolve } from "jsr:@std/path/resolve";
-import { join } from "jsr:@std/path/join";
-import { join as posixJoin } from "jsr:@std/path/posix/join";
-import { parse as posixParse } from "jsr:@std/path/posix/parse";
+import { resolve } from "jsr:@std/path@0.217/resolve";
+import { join } from "jsr:@std/path@0.217/join";
+import { join as posixJoin } from "jsr:@std/path@0.217/posix/join";
+import { parse as posixParse } from "jsr:@std/path@0.217/posix/parse";
 
 export async function updateExports() {
   const dirname = import.meta.dirname;

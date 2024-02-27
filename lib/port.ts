@@ -1,4 +1,4 @@
-import { getAvailablePort } from "jsr:@std/net/get_available_port";
+import { getAvailablePort } from "jsr:@std/net@0.217/get_available_port";
 
 /**
  * Obtain a port for your http server.

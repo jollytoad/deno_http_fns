@@ -1,9 +1,9 @@
 import { appendHeaders } from "./response/append_headers.ts";
 import { notAcceptable } from "./response/not_acceptable.ts";
 import { notFound } from "./response/not_found.ts";
-import { accepts } from "jsr:@std/http/negotiation";
-import { typeByExtension } from "jsr:@std/media-types/type_by_extension";
-import { extname } from "jsr:@std/path/posix/extname";
+import { accepts } from "jsr:@std/http@0.217/negotiation";
+import { typeByExtension } from "jsr:@std/media-types@0.217/type_by_extension";
+import { extname } from "jsr:@std/path@0.217/posix/extname";
 import type { Awaitable } from "./types.ts";
 
 export type MediaType = `${string}/${string}`;

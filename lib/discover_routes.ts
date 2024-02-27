@@ -1,7 +1,7 @@
-import { fromFileUrl } from "jsr:@std/path/from_file_url";
-import { toFileUrl } from "jsr:@std/path/to_file_url";
-import { join } from "jsr:@std/path/join";
-import { parse } from "jsr:@std/path/parse";
+import { fromFileUrl } from "jsr:@std/path@0.217/from_file_url";
+import { toFileUrl } from "jsr:@std/path@0.217/to_file_url";
+import { join } from "jsr:@std/path@0.217/join";
+import { parse } from "jsr:@std/path@0.217/parse";
 import { asSerializablePattern } from "./as_serializable_pattern.ts";
 import { asURLPatterns } from "./as_url_pattern.ts";
 import type { PathPattern, RoutePattern } from "./types.ts";
