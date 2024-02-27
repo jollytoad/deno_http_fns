@@ -1,8 +1,8 @@
 // IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
 
-import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
-import { cascade } from "https://deno.land/x/http_fns/lib/cascade.ts";
-import { lazy } from "https://deno.land/x/http_fns/lib/lazy.ts";
+import { byPattern } from "@http/fns/by_pattern.ts";
+import { cascade } from "@http/fns/cascade.ts";
+import { lazy } from "@http/fns/lazy.ts";
 
 export default cascade(
   byPattern("/user/:name", lazy(() => import("./routes/user/[name].ts"))),

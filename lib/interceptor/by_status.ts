@@ -1,4 +1,4 @@
-import type { Awaitable } from "../types.ts";
+import type { ResponseInterceptor } from "../types.ts";
 
 /**
  * Create a Response Interceptor that matches the status of the Response.
@@ -12,12 +12,9 @@ import type { Awaitable } from "../types.ts";
  */
 export function byStatus(
   status: number | number[],
-  interceptor: (
-    request: Request,
-    response: Response | null,
-  ) => Awaitable<Response | null | void>,
-) {
-  return (req: Request, res: Response | null) => {
+  interceptor: ResponseInterceptor,
+): ResponseInterceptor {
+  return (req, res) => {
     if (
       res &&
       (Array.isArray(status)

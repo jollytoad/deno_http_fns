@@ -34,9 +34,9 @@ one.
 Let's start with a really simple example, a router for `GET /hello`...
 
 ```ts
-import { handle } from "https://deno.land/x/http_fns/lib/handle.ts";
-import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
-import { byMethod } from "https://deno.land/x/http_fns/lib/by_method.ts";
+import { handle } from "jsr:@http/fns/handle";
+import { byPattern } from "jsr:@http/fns/by_pattern";
+import { byMethod } from "jsr:@http/fns/by_method";
 
 Deno.serve(handle([
   byPattern(

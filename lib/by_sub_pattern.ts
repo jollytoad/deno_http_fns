@@ -1,6 +1,6 @@
 import { byPattern } from "./by_pattern.ts";
 import type { Awaitable, RoutePattern } from "./types.ts";
-import { deepMerge } from "https://deno.land/std@0.215.0/collections/deep_merge.ts";
+import { deepMerge } from "jsr:@std/collections/deep_merge";
 
 /**
  * Match a child route pattern after already matching a parent pattern,
@@ -13,7 +13,11 @@ export function bySubPattern<A extends unknown[]>(
     match: URLPatternResult,
     ...args: A
   ) => Awaitable<Response | null>,
-) {
+): (
+  req: Request,
+  matchParent: URLPatternResult,
+  ...args: A
+) => Awaitable<Response | null> {
   return byPattern(pattern, mergePatternResult(handler));
 }
 
@@ -27,7 +31,12 @@ export function mergePatternResult<A extends unknown[]>(
     match: URLPatternResult,
     ...args: A
   ) => Awaitable<Response | null>,
-) {
+): (
+  req: Request,
+  matchChild: URLPatternResult,
+  matchParent: URLPatternResult,
+  ...args: A
+) => Awaitable<Response | null> {
   return (
     req: Request,
     matchChild: URLPatternResult,

@@ -1,4 +1,4 @@
-import { getAvailablePort } from "https://deno.land/std@0.215.0/net/get_available_port.ts";
+import { getAvailablePort } from "jsr:@std/net/get_available_port";
 
 /**
  * Obtain a port for your http server.

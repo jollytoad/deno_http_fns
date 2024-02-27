@@ -17,7 +17,7 @@ export function withFallback<A extends unknown[]>(
   handler: (request: Request, ...args: A) => Awaitable<Response | null>,
   fallback: (request: Request, ...args: A) => Awaitable<Response> = () =>
     notFound(),
-) {
+): (req: Request, ...args: A) => Awaitable<Response> {
   return async (req: Request, ...args: A) => {
     const res = await handler(req, ...args);
     if (res) {

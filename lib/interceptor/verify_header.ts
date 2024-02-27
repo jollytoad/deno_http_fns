@@ -1,5 +1,5 @@
 import { forbidden } from "../response/forbidden.ts";
-import type { Awaitable } from "../types.ts";
+import type { Awaitable, RequestInterceptor } from "../types.ts";
 
 export interface VerifyHeaderOptions {
   /**
@@ -22,13 +22,13 @@ export interface VerifyHeaderOptions {
 /**
  * Create a RequestInterceptor that verifies that a given header matches an expected value.
  */
-export function verifyHeader(opts: VerifyHeaderOptions) {
+export function verifyHeader(opts: VerifyHeaderOptions): RequestInterceptor {
   const headerNames = Array.isArray(opts.header) ? opts.header : [opts.header];
   const expectedValues = opts.value
     ? new Set(Array.isArray(opts.value) ? opts.value : [opts.value])
     : undefined;
 
-  return (req: Request) => {
+  return (req) => {
     if (expectedValues) {
       for (const headerName of headerNames) {
         const value = req.headers.get(headerName);

@@ -17,14 +17,14 @@ export function byMethod<A extends unknown[]>(
   handlers: MethodHandlers<A>,
   fallback: (request: Request, ...args: A) => Awaitable<Response | null> = () =>
     methodNotAllowed(),
-) {
+): (req: Request, ...args: A) => Awaitable<Response | null> {
   const defaultHandlers: typeof handlers = {
     OPTIONS: optionsHandler(handlers),
   };
   if (handlers.GET) {
     defaultHandlers.HEAD = headHandler(handlers.GET);
   }
-  return (req: Request, ...args: A) => {
+  return (req, ...args) => {
     const method = req.method;
     const handler = handlers[method] ?? defaultHandlers[method];
 

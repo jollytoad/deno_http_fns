@@ -1,4 +1,5 @@
 import { appendHeaders } from "../response/append_headers.ts";
+import type { ResponseInterceptor } from "../types.ts";
 
 export interface CorsOptions {
   allowOrigin?: "*" | string[];
@@ -12,11 +13,13 @@ export interface CorsOptions {
  * @param opts configuration options
  * @returns a ResponseInterceptor that can be used with `intercept` or `interceptResponse`.
  */
-export function cors(opts?: CorsOptions) {
-  return (req: Request, res: Response) => {
+export function cors(
+  opts?: CorsOptions,
+): ResponseInterceptor {
+  return (req, res) => {
     const origin = req.headers.get("Origin");
 
-    if (origin) {
+    if (origin && res) {
       const headers = new Headers();
 
       const allowOrigin = opts?.allowOrigin ?? "*";

@@ -1,8 +1,8 @@
-import { ok } from "https://deno.land/x/http_fns/lib/response/ok.ts";
-import { intercept } from "https://deno.land/x/http_fns/lib/intercept.ts";
-import { withFallback } from "https://deno.land/x/http_fns/lib/with_fallback.ts";
-import { verifyHeader } from "https://deno.land/x/http_fns/lib/_mod.ts";
-import { forbidden } from "https://deno.land/x/http_fns/lib/response/forbidden.ts";
+import { ok } from "@http/fns/response/ok.ts";
+import { intercept } from "@http/fns/intercept.ts";
+import { withFallback } from "@http/fns/with_fallback.ts";
+import { verifyHeader } from "@http/fns/_mod.ts";
+import { forbidden } from "@http/fns/response/forbidden.ts";
 
 // This is an example of using the `verifyHeader` interceptor to check that
 // the imagined "X-Access-Token" matches a specific value.

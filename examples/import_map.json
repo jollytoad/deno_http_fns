@@ -1,5 +1,5 @@
 {
   "imports": {
-    "https://deno.land/x/http_fns/": "../"
+    "@http/fns/": "../lib/"
   }
 }

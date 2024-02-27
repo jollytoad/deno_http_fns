@@ -18,6 +18,6 @@ export function handle<A extends unknown[]>(
   handlers: Array<(request: Request, ...args: A) => Awaitable<Response | null>>,
   fallback: (request: Request, ...args: A) => Awaitable<Response> = () =>
     notFound(),
-) {
+): (req: Request, ...args: A) => Awaitable<Response> {
   return withFallback(cascade(...handlers), fallback);
 }

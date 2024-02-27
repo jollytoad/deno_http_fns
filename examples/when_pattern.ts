@@ -1,11 +1,11 @@
-import { withFallback } from "https://deno.land/x/http_fns/lib/with_fallback.ts";
-import { intercept } from "https://deno.land/x/http_fns/lib/intercept.ts";
-import { cascade } from "https://deno.land/x/http_fns/lib/cascade.ts";
-import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
-import { ok } from "https://deno.land/x/http_fns/lib/response/ok.ts";
-import { whenPattern } from "https://deno.land/x/http_fns/lib/interceptor/when_pattern.ts";
-import { verifyHeader } from "https://deno.land/x/http_fns/lib/interceptor/verify_header.ts";
-import { unauthorized } from "https://deno.land/x/http_fns/lib/_mod.ts";
+import { withFallback } from "@http/fns/with_fallback.ts";
+import { intercept } from "@http/fns/intercept.ts";
+import { cascade } from "@http/fns/cascade.ts";
+import { byPattern } from "@http/fns/by_pattern.ts";
+import { ok } from "@http/fns/response/ok.ts";
+import { whenPattern } from "@http/fns/interceptor/when_pattern.ts";
+import { verifyHeader } from "@http/fns/interceptor/verify_header.ts";
+import { unauthorized } from "@http/fns/response/unauthorized.ts";
 
 // This is an example of using the `whenPattern` interceptor to protect a specific route.
 //

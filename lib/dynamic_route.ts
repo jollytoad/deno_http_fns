@@ -24,7 +24,7 @@ export interface DynamicRouteOptions extends DiscoverRoutesOptions {
  */
 export function dynamicRoute(
   { eagerness = "startup", ...opts }: DynamicRouteOptions,
-) {
+): (req: Request, ...args: unknown[]) => Promise<Response | null> {
   switch (eagerness) {
     case "startup": {
       // Build the handler eagerly, before the first request is made

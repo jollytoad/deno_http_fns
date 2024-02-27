@@ -1,5 +1,5 @@
 import { asURLPatterns } from "../as_url_pattern.ts";
-import type { Awaitable, RoutePattern } from "../types.ts";
+import type { Awaitable, RequestInterceptor, RoutePattern } from "../types.ts";
 
 /**
  * Create a Request interceptor that filters the application of an
@@ -17,10 +17,10 @@ export function whenPattern<A extends unknown[]>(
     match: URLPatternResult,
     ...args: A
   ) => Awaitable<Request | Response | void>,
-): (request: Request, ...args: A) => Awaitable<Request | Response | void> {
+): RequestInterceptor<A> {
   const patterns = asURLPatterns(pattern);
 
-  return (req: Request, ...args: A) => {
+  return (req, ...args) => {
     for (const pattern of patterns) {
       const match = pattern.exec(req.url);
 

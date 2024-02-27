@@ -1,5 +1,5 @@
-import { discoverRoutes } from "https://deno.land/x/http_fns/lib/discover_routes.ts";
-import freshPathMapper from "https://deno.land/x/http_fns/lib/fresh/path_mapper.ts";
+import { discoverRoutes } from "@http/fns/discover_routes.ts";
+import freshPathMapper from "@http/fns/fresh/path_mapper.ts";
 
 console.log("\n%cDiscovering Routes...\n", "color: green; font-weight: bold;");
 

@@ -1,9 +1,9 @@
 import { appendHeaders } from "./response/append_headers.ts";
 import { notAcceptable } from "./response/not_acceptable.ts";
 import { notFound } from "./response/not_found.ts";
-import { accepts } from "https://deno.land/std@0.215.0/http/negotiation.ts";
-import { typeByExtension } from "https://deno.land/std@0.215.0/media_types/type_by_extension.ts";
-import { extname } from "https://deno.land/std@0.215.0/path/posix/extname.ts";
+import { accepts } from "jsr:@std/http/negotiation";
+import { typeByExtension } from "jsr:@std/media-types/type_by_extension";
+import { extname } from "jsr:@std/path/posix/extname";
 import type { Awaitable } from "./types.ts";
 
 export type MediaType = `${string}/${string}`;
@@ -31,8 +31,8 @@ export function byMediaType<A extends unknown[]>(
     notFound(),
   fallbackAccept: (req: Request, ...args: A) => Awaitable<Response | null> =
     () => notAcceptable(),
-) {
-  return async (req: Request, ...args: A) => {
+): (req: Request, ...args: A) => Awaitable<Response | null> {
+  return async (req, ...args) => {
     const ext = getExt(req, ...args);
     if (ext) {
       // Return only the media type implied by the extension on the url, ignoring the Accept header

@@ -10,8 +10,8 @@ export function cascade<A extends unknown[]>(
   ...handlers: Array<
     (request: Request, ...args: A) => Awaitable<Response | null>
   >
-) {
-  return async (req: Request, ...args: A) => {
+): (req: Request, ...args: A) => Promise<Response | null> {
+  return async (req, ...args) => {
     for (const handler of handlers) {
       const res = await handler(req, ...args);
       if (res) {

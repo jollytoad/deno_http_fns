@@ -14,11 +14,11 @@ export function lazy<
     | (() => Awaitable<H | { default: H }>)
     | string
     | URL,
-) {
+): (req: Request, ...args: A) => Promise<Response | null> {
   let handlerPromise: Promise<H | null> | undefined = undefined;
   let handler: H | null | undefined = undefined;
 
-  return async (req: Request, ...args: A) => {
+  return async (req, ...args) => {
     if (handler === undefined && handlerPromise === undefined) {
       handlerPromise = init();
     }

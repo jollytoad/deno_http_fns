@@ -14,6 +14,6 @@ import type { Awaitable } from "./types.ts";
 export function mapData<O, I>(
   mapper: (req: Request, data: I) => O | Promise<O>,
   handler: (req: Request, data: O) => Awaitable<Response | null>,
-) {
-  return async (req: Request, data: I) => handler(req, await mapper(req, data));
+): (req: Request, data: I) => Promise<Response | null> {
+  return async (req, data) => handler(req, await mapper(req, data));
 }

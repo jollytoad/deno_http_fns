@@ -1,8 +1,8 @@
 // deno-lint-ignore-file require-await
-import { handle } from "https://deno.land/x/http_fns/lib/handle.ts";
-import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
-import { lazy } from "https://deno.land/x/http_fns/lib/lazy.ts";
-import { ok } from "https://deno.land/x/http_fns/lib/response/ok.ts";
+import { handle } from "@http/fns/handle.ts";
+import { byPattern } from "@http/fns/by_pattern.ts";
+import { lazy } from "@http/fns/lazy.ts";
+import { ok } from "@http/fns/response/ok.ts";
 
 export default Deno.serve(handle([
   // `lazy` accepts an async function that loads the handler module (with default function)

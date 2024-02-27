@@ -1,4 +1,4 @@
-import { ifNoneMatch } from "https://deno.land/std@0.215.0/http/etag.ts";
+import { ifNoneMatch } from "jsr:@std/http/etag";
 import { notModified } from "./not_modified.ts";
 
 /**

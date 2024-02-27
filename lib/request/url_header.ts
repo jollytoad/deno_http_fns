@@ -1,5 +1,8 @@
-export function getUrlHeader(header: string, trailing?: "/") {
-  return (req: Request): URL | undefined => {
+export function getUrlHeader(
+  header: string,
+  trailing?: "/",
+): (req: Request) => URL | undefined {
+  return (req) => {
     const value = req.headers.get(header);
 
     try {

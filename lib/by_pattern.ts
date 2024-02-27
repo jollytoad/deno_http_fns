@@ -16,7 +16,7 @@ export function byPattern<A extends unknown[]>(
     match: URLPatternResult,
     ...args: A
   ) => Awaitable<Response | null>,
-) {
+): (req: Request, ...args: A) => Awaitable<Response | null> {
   const patterns = asURLPatterns(pattern);
 
   return async (req: Request, ...args: A) => {

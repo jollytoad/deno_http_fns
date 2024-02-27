@@ -11,8 +11,8 @@ These function help creating a server for a particular hosting environment.
 For creating a localhost development server.
 
 ```ts
-import init from "https://deno.land/x/http_fns/lib/hosting/init_localhost.ts";
-import cors from "https://deno.land/x/http_fns/lib/interceptor/cors.ts";
+import init from "jsr:@http/fns/hosting/init_localhost";
+import cors from "jsr:@http/fns/interceptor/cors";
 
 await Deno.serve(
   await init(
@@ -44,8 +44,8 @@ Once the server is running it will log the base URL to the console.
 For creating a production Deploy server.
 
 ```ts
-import init from "https://deno.land/x/http_fns/lib/hosting/init_deploy.ts";
-import cors from "https://deno.land/x/http_fns/lib/interceptor/cors.ts";
+import init from "jsr:@http/fns/hosting/init_deploy";
+import cors from "jsr:@http/fns/interceptor/cors";
 
 await Deno.serve(
   await init(
