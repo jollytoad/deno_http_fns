@@ -1,7 +1,7 @@
-export * from "jsr:@std/assert@0.217";
-export { STATUS_CODE } from "jsr:@std/http@0.217/status";
+export * from "@std/assert";
+export { STATUS_CODE } from "@std/http/status";
 
-import { AssertionError } from "jsr:@std/assert@0.217/assertion_error";
+import { AssertionError } from "@std/assert/assertion_error";
 
 export function assertOk(response: Response) {
   if (!response.ok) {

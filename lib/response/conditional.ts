@@ -1,4 +1,4 @@
-import { ifNoneMatch } from "jsr:@std/http@0.217/etag";
+import { ifNoneMatch } from "@std/http/etag";
 import { notModified } from "./not_modified.ts";
 
 /**

@@ -1,11 +1,11 @@
-import { staticRoute } from "@http/fns/static_route.ts";
-import { withFallback } from "@http/fns/with_fallback.ts";
-import { interceptResponse, skip } from "@http/fns/intercept.ts";
-import { notFound } from "@http/fns/response/not_found.ts";
-import { byStatus } from "@http/fns/interceptor/by_status.ts";
-import { cascade } from "@http/fns/cascade.ts";
-import { byPattern } from "@http/fns/by_pattern.ts";
-import { forbidden } from "@http/fns/response/forbidden.ts";
+import { staticRoute } from "@http/fns/static_route";
+import { withFallback } from "@http/fns/with_fallback";
+import { interceptResponse, skip } from "@http/fns/intercept";
+import { notFound } from "@http/fns/response/not_found";
+import { byStatus } from "@http/fns/interceptor/by_status";
+import { cascade } from "@http/fns/cascade";
+import { byPattern } from "@http/fns/by_pattern";
+import { forbidden } from "@http/fns/response/forbidden";
 
 // This is an example of using intercept to handle 40x responses.
 //

@@ -1,8 +1,8 @@
-import { ok } from "@http/fns/response/ok.ts";
-import { intercept } from "@http/fns/intercept.ts";
-import { withFallback } from "@http/fns/with_fallback.ts";
-import { verifyHeader } from "@http/fns/_mod.ts";
-import { forbidden } from "@http/fns/response/forbidden.ts";
+import { ok } from "@http/fns/response/ok";
+import { intercept } from "@http/fns/intercept";
+import { withFallback } from "@http/fns/with_fallback";
+import { verifyHeader } from "@http/fns/interceptor/verify_header";
+import { forbidden } from "@http/fns/response/forbidden";
 
 // This is an example of using the `verifyHeader` interceptor to check that
 // the imagined "X-Access-Token" matches a specific value.

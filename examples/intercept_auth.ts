@@ -1,7 +1,7 @@
-import { withFallback } from "@http/fns/with_fallback.ts";
-import { intercept } from "@http/fns/intercept.ts";
-import { unauthorized } from "@http/fns/response/unauthorized.ts";
-import { byPattern } from "@http/fns/by_pattern.ts";
+import { withFallback } from "@http/fns/with_fallback";
+import { intercept } from "@http/fns/intercept";
+import { unauthorized } from "@http/fns/response/unauthorized";
+import { byPattern } from "@http/fns/by_pattern";
 
 export default Deno.serve(
   withFallback(

@@ -1,6 +1,6 @@
-import { withFallback } from "@http/fns/with_fallback.ts";
-import { dynamicRoute } from "@http/fns/dynamic_route.ts";
-import freshPathMapper from "@http/fns/fresh/path_mapper.ts";
+import { withFallback } from "@http/fns/with_fallback";
+import { dynamicRoute } from "@http/fns/dynamic_route";
+import freshPathMapper from "@http/fns/fresh/path_mapper";
 
 export default Deno.serve(withFallback(
   dynamicRoute({

@@ -1,6 +1,6 @@
 import { byPattern } from "./by_pattern.ts";
 import type { Awaitable, RoutePattern } from "./types.ts";
-import { deepMerge } from "jsr:@std/collections@0.217/deep_merge";
+import { deepMerge } from "@std/collections/deep_merge";
 
 /**
  * Match a child route pattern after already matching a parent pattern,

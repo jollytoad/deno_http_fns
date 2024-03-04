@@ -1,14 +1,24 @@
 {
   "name": "@http/fns",
-  "version": "0.6.0",
+  "version": "0.6.1",
+  "description": "HTTP server functions (including routing)",
   "tasks": {
-    "example": "deno run -A --import-map=examples/import_map.json",
-    "test": "deno test -A --unstable-http --import-map=examples/import_map.json --location=http://localhost:8000 --no-check",
-    "check": "deno fmt && deno lint && deno check --import-map=examples/import_map.json **/*.ts && deno task exports",
+    "example": "deno run -A",
+    "test": "deno test -A --location=http://localhost:8000 --no-check",
+    "check": "deno fmt && deno lint && deno check **/*.ts && deno task exports",
     "exports": "deno run --allow-read=. --allow-write=deno.json scripts/exports.ts"
   },
   "compilerOptions": {
     "verbatimModuleSyntax": true
+  },
+  "imports": {
+    "@http/fns": "jsr:@http/fns",
+    "@std/assert": "jsr:@std/assert@0.218",
+    "@std/collections": "jsr:@std/collections@0.218",
+    "@std/http": "jsr:@std/http@0.218",
+    "@std/media-types": "jsr:@std/media-types@0.218",
+    "@std/net": "jsr:@std/net@0.218",
+    "@std/path": "jsr:@std/path@0.218"
   },
   "exports": {
     "./as_serializable_pattern": "./lib/as_serializable_pattern.ts",

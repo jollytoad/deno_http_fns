@@ -1,7 +1,7 @@
-import { handle } from "@http/fns/handle.ts";
-import { byPattern } from "@http/fns/by_pattern.ts";
-import { byMethod } from "@http/fns/by_method.ts";
-import { byMediaType } from "@http/fns/by_media_type.ts";
+import { handle } from "@http/fns/handle";
+import { byPattern } from "@http/fns/by_pattern";
+import { byMethod } from "@http/fns/by_method";
+import { byMediaType } from "@http/fns/by_media_type";
 
 export default Deno.serve(handle([
   byPattern(

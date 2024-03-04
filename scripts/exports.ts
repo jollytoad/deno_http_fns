@@ -1,13 +1,13 @@
-import { resolve } from "jsr:@std/path@0.217/resolve";
-import { join } from "jsr:@std/path@0.217/join";
-import { join as posixJoin } from "jsr:@std/path@0.217/posix/join";
-import { parse as posixParse } from "jsr:@std/path@0.217/posix/parse";
+import { resolve } from "@std/path/resolve";
+import { join } from "@std/path/join";
+import { join as posixJoin } from "@std/path/posix/join";
+import { parse as posixParse } from "@std/path/posix/parse";
 
-export async function updateExports() {
+export async function updateExports(filename = "deno.json") {
   const dirname = import.meta.dirname;
 
   if (dirname) {
-    const denoJsonPath = resolve(dirname, "..", "deno.json");
+    const denoJsonPath = resolve(dirname, "..", filename);
 
     const denoJson = await readJson(denoJsonPath);
 
@@ -72,5 +72,5 @@ async function* walk(
 }
 
 if (import.meta.main) {
-  await updateExports();
+  await updateExports(Deno.args[0]);
 }

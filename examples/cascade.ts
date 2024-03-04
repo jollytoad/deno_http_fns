@@ -1,6 +1,6 @@
-import { withFallback } from "@http/fns/with_fallback.ts";
-import { cascade } from "@http/fns/cascade.ts";
-import { byPattern } from "@http/fns/by_pattern.ts";
+import { withFallback } from "@http/fns/with_fallback";
+import { cascade } from "@http/fns/cascade";
+import { byPattern } from "@http/fns/by_pattern";
 
 export default Deno.serve(withFallback(
   cascade(

@@ -1,6 +1,6 @@
-import { handle } from "@http/fns/handle.ts";
-import { byPattern } from "@http/fns/by_pattern.ts";
-import { byMethod } from "@http/fns/by_method.ts";
+import { handle } from "@http/fns/handle";
+import { byPattern } from "@http/fns/by_pattern";
+import { byMethod } from "@http/fns/by_method";
 
 export default Deno.serve(handle([
   byPattern(

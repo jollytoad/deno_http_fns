@@ -1,4 +1,4 @@
-import { generateRoutesModule } from "@http/fns/generate_routes_module.ts";
+import { generateRoutesModule } from "@http/fns/generate_routes_module";
 
 function generateRoutes() {
   console.log("\n%cGenerating Routes...\n", "color: green; font-weight: bold;");
@@ -6,7 +6,7 @@ function generateRoutes() {
     pattern: "/",
     fileRootUrl: import.meta.resolve("../routes"),
     moduleOutUrl: import.meta.resolve("../routes.ts"),
-    pathMapper: "@http/fns/fresh/path_mapper.ts",
+    pathMapper: "@http/fns/fresh/path_mapper",
     httpFns: "@http/fns/",
     routeDiscovery: "static",
     moduleImports: "dynamic",

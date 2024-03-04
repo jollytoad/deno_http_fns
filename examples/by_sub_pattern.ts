@@ -1,6 +1,6 @@
-import { withFallback } from "@http/fns/with_fallback.ts";
-import { byPattern } from "@http/fns/by_pattern.ts";
-import { bySubPattern } from "@http/fns/by_sub_pattern.ts";
+import { withFallback } from "@http/fns/with_fallback";
+import { byPattern } from "@http/fns/by_pattern";
+import { bySubPattern } from "@http/fns/by_sub_pattern";
 
 export default Deno.serve(withFallback(
   byPattern(

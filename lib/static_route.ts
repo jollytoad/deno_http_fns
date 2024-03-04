@@ -1,10 +1,7 @@
 import { byPattern } from "./by_pattern.ts";
 import { byMethod } from "./by_method.ts";
-import {
-  serveDir,
-  type ServeDirOptions,
-} from "jsr:@std/http@0.217/file_server";
-import { fromFileUrl } from "jsr:@std/path@0.217/from_file_url";
+import { serveDir, type ServeDirOptions } from "@std/http/file_server";
+import { fromFileUrl } from "@std/path/from_file_url";
 import type { Awaitable } from "./types.ts";
 
 type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
