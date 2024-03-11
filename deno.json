@@ -1,6 +1,6 @@
 {
   "name": "@http/fns",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "HTTP server functions (including routing)",
   "tasks": {
     "example": "deno run -A --watch",
@@ -13,12 +13,12 @@
   },
   "imports": {
     "@http/fns": "jsr:@http/fns",
-    "@std/assert": "jsr:@std/assert@0.218",
-    "@std/collections": "jsr:@std/collections@0.218",
-    "@std/http": "jsr:@std/http@0.218",
-    "@std/media-types": "jsr:@std/media-types@0.218",
-    "@std/net": "jsr:@std/net@0.218",
-    "@std/path": "jsr:@std/path@0.218"
+    "@std/assert": "jsr:@std/assert@^0.219.1",
+    "@std/collections": "jsr:@std/collections@^0.219.1",
+    "@std/http": "jsr:@std/http@^0.219.1",
+    "@std/media-types": "jsr:@std/media-types@^0.219.1",
+    "@std/net": "jsr:@std/net@^0.219.1",
+    "@std/path": "jsr:@std/path@^0.219.1"
   },
   "exports": {
     "./as_serializable_pattern": "./lib/as_serializable_pattern.ts",

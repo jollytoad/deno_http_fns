@@ -42,6 +42,11 @@ export interface GenerateOptions extends
   httpFns?: string | URL;
 
   /**
+   * Should we assume http fns are imported from JSR.
+   */
+  jsr?: boolean;
+
+  /**
    * Module that supplies a PathMapper as the default function.
    */
   pathMapper?: string | URL;
@@ -69,6 +74,7 @@ export async function generateRoutesModule({
   routeDiscovery = "static",
   moduleImports = "dynamic",
   httpFns,
+  jsr,
   pathMapper,
   routeMapper,
   compare,
@@ -86,6 +92,7 @@ export async function generateRoutesModule({
 
   const httpFnsUrl = httpFns ?? new URL("./", import.meta.url).href;
   const outPath = dirname(outUrl.pathname);
+  const ext = jsr ? "" : ".ts";
 
   const head: string[] = [];
   const body: string[] = [];
@@ -99,7 +106,7 @@ export async function generateRoutesModule({
     case "startup":
     case "request":
       {
-        const dynamic_ts = `${httpFnsUrl}dynamic_route.ts`;
+        const dynamic_ts = `${httpFnsUrl}dynamic_route${ext}`;
 
         head.push(`import { dynamicRoute } from "${dynamic_ts}";\n`);
 
@@ -141,14 +148,14 @@ export async function generateRoutesModule({
     case "static":
     default: {
       const isLazy = moduleImports !== "static";
-      const pattern_ts = `${httpFnsUrl}by_pattern.ts`;
-      const cascade_ts = `${httpFnsUrl}cascade.ts`;
+      const pattern_ts = `${httpFnsUrl}by_pattern${ext}`;
+      const cascade_ts = `${httpFnsUrl}cascade${ext}`;
 
       head.push(`import { byPattern } from "${pattern_ts}";\n`);
       head.push(`import { cascade } from "${cascade_ts}";\n`);
 
       if (isLazy) {
-        const lazy_ts = `${httpFnsUrl}lazy.ts`;
+        const lazy_ts = `${httpFnsUrl}lazy${ext}`;
 
         head.push(`import { lazy } from "${lazy_ts}";\n`);
       }
