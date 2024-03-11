@@ -1,3 +1,9 @@
+/**
+ * Create a `202 Accepted` response
+ *
+ * @param body Optional body
+ * @param headers Optional headers
+ */
 export function accepted(
   body?: BodyInit | null,
   headers?: HeadersInit,

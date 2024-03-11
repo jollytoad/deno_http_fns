@@ -179,19 +179,10 @@ tests for these examples.
 You can run them after cloning this repo, for example:
 
 ```sh
-deno run -A --import-map=examples/import_map.json examples/logging.ts
+deno run -A examples/logging.ts
 ```
 
-or (using a task defined in the deno.json file)
-
-```sh
-deno task example examples/logging.ts
-```
-
-(NOTE: The above will map the imports to use the local http_fns modules rather
-than fetching from deno.land)
-
-or directly from deno.land:
+or directly from jsr:
 
 ```sh
 deno run -A https://deno.land/x/http_fns/examples/logging.ts

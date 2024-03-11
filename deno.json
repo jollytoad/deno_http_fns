@@ -1,9 +1,9 @@
 {
   "name": "@http/fns",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "HTTP server functions (including routing)",
   "tasks": {
-    "example": "deno run -A",
+    "example": "deno run -A --watch",
     "test": "deno test -A --location=http://localhost:8000 --no-check",
     "check": "deno fmt && deno lint && deno check **/*.ts && deno task exports",
     "exports": "deno run --allow-read=. --allow-write=deno.json scripts/exports.ts"
@@ -65,6 +65,7 @@
     "./response/ok": "./lib/response/ok.ts",
     "./response/permanent_redirect": "./lib/response/permanent_redirect.ts",
     "./response/plain_error": "./lib/response/plain_error.ts",
+    "./response/prepend_doctype": "./lib/response/prepend_doctype.ts",
     "./response/redirect": "./lib/response/redirect.ts",
     "./response/replace_body": "./lib/response/replace_body.ts",
     "./response/see_other": "./lib/response/see_other.ts",

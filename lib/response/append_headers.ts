@@ -3,6 +3,9 @@
  *
  * The headers will be merged directly into the headers of the Response
  * if the Response headers are mutable, otherwise a new Response will be created.
+ *
+ * @param res The response
+ * @param headers The additional headers to be appended to the response headers
  */
 export function appendHeaders(
   res: Response,

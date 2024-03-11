@@ -4,6 +4,15 @@ import { notModified } from "./not_modified.ts";
 /**
  * Check the conditions of the Request against the Response,
  * and adjust the Response as necessary.
+ *
+ * Currently checks `etag` and `last-modified` response headers
+ * against the `if-none-match` and `if-modified-since` request
+ * headers.
+ *
+ * @param req The incoming request
+ * @param res The desired response
+ * @return Either the given desired response or a `304 Not Modified`
+ *   response with only the headers of the desired response.
  */
 export function conditional(req: Request, res: Response): Response {
   const etag = res.headers.get("etag") ?? undefined;
