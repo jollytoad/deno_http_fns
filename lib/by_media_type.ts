@@ -42,7 +42,7 @@ export function byMediaType<A extends unknown[]>(
         | undefined;
 
       return mediaType && handlers[mediaType]
-        ? handlers[mediaType](req, ...args)
+        ? handlers[mediaType]!(req, ...args)
         : fallbackExt(req, ...args);
     } else {
       // Return the appropriate media type according to the Accept header
@@ -52,8 +52,8 @@ export function byMediaType<A extends unknown[]>(
         | MediaType
         | undefined;
 
-      let response = await (mediaType
-        ? handlers[mediaType](req, ...args)
+      let response = await (mediaType && handlers[mediaType]
+        ? handlers[mediaType]!(req, ...args)
         : fallbackAccept(req, ...args));
 
       if (response) {

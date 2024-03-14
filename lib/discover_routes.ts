@@ -255,7 +255,7 @@ function consolidateRoutes(routes: ComparableRoute[]): DiscoveredRoute[] {
   function nextRoute(module?: string) {
     if (currentModule && consolidatedPattern.length > 0) {
       consolidatedRoutes.push({
-        pattern: consolidatedPattern.length === 1
+        pattern: consolidatedPattern.length === 1 && consolidatedPattern[0]
           ? consolidatedPattern[0]
           : consolidatedPattern,
         module: asModule(currentModule),

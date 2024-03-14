@@ -1,14 +1,16 @@
 {
   "name": "@http/fns",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "HTTP server functions (including routing)",
   "tasks": {
     "example": "deno run -A --watch",
     "test": "deno test -A --location=http://localhost:8000 --no-check",
     "check": "deno fmt && deno lint && deno check **/*.ts && deno task exports",
-    "exports": "deno run --allow-read=. --allow-write=deno.json scripts/exports.ts"
+    "exports": "deno run --allow-read=. --allow-write=deno.json scripts/exports.ts",
+    "lock": "rm -f deno.lock && deno check **/*.ts"
   },
   "compilerOptions": {
+    "noUncheckedIndexedAccess": true,
     "verbatimModuleSyntax": true
   },
   "imports": {

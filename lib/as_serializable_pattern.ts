@@ -7,7 +7,8 @@ export function asSerializablePattern(
   pattern: RoutePattern,
 ): SerializableRoutePattern {
   if (Array.isArray(pattern)) {
-    return pattern.flatMap(asSerializablePattern);
+    const array = [...new Set(pattern.flatMap(asSerializablePattern))];
+    return array.length === 1 && array[0] ? array[0] : array;
   } else if (typeof pattern === "string") {
     return pattern;
   } else {
