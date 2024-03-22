@@ -26,7 +26,7 @@ export interface DiscoverRoutesOptions {
    */
   pathMapper?: PathMapper;
   /**
-   * Function to mapper each file entry to zero, one or many routes.
+   * Function to map each file entry to zero, one or many routes.
    * The default mapping only maps typescript files.
    */
   routeMapper?: RouteMapper;

@@ -5,6 +5,8 @@ import type { Awaitable } from "./types.ts";
  *
  * @param handlerLoader function to load the handler fn, or a module or
  *  module specifier that exports the handler as the default export.
+ * @param transformer an optional function that can transform the loaded
+ *  module before returning it.
  */
 export function lazy<
   A extends unknown[],
@@ -14,6 +16,7 @@ export function lazy<
     | (() => Awaitable<H | { default: H }>)
     | string
     | URL,
+  transformer?: (handlerOrModule: unknown) => Awaitable<unknown>,
 ): (req: Request, ...args: A) => Promise<Response | null> {
   let handlerPromise: Promise<H | null> | undefined = undefined;
   let handler: H | null | undefined = undefined;
@@ -36,13 +39,17 @@ export function lazy<
   };
 
   async function init() {
-    const loaded = typeof handlerLoader === "string"
+    let loaded = typeof handlerLoader === "string"
       ? await import(handlerLoader)
       : handlerLoader instanceof URL
       ? await import(handlerLoader.href)
       : typeof handlerLoader === "function"
       ? await handlerLoader()
       : undefined;
+
+    if (transformer) {
+      loaded = await transformer(loaded);
+    }
 
     if (typeof loaded === "function") {
       return loaded;

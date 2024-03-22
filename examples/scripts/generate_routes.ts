@@ -8,6 +8,7 @@ function generateRoutes() {
     moduleOutUrl: import.meta.resolve("../routes.ts"),
     pathMapper: "@http/fns/fresh/path_mapper",
     httpFns: "@http/fns/",
+    jsr: true,
     routeDiscovery: "static",
     moduleImports: "dynamic",
     verbose: true,

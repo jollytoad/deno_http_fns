@@ -94,21 +94,16 @@ export async function generateRoutesModule({
   const outPath = dirname(outUrl.pathname);
   const ext = jsr ? "" : ".ts";
 
+  const httpFnImports = new Map<string, string>();
   const head: string[] = [];
   const body: string[] = [];
   let i = 1;
-
-  head.push(
-    "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n",
-  );
 
   switch (routeDiscovery) {
     case "startup":
     case "request":
       {
-        const dynamic_ts = `${httpFnsUrl}dynamic_route${ext}`;
-
-        head.push(`import { dynamicRoute } from "${dynamic_ts}";\n`);
+        httpFnImports.set("dynamicRoute", "dynamic_route");
 
         let modulePath = relative(
           outPath,
@@ -148,17 +143,8 @@ export async function generateRoutesModule({
     case "static":
     default: {
       const isLazy = moduleImports !== "static";
-      const pattern_ts = `${httpFnsUrl}by_pattern${ext}`;
-      const cascade_ts = `${httpFnsUrl}cascade${ext}`;
 
-      head.push(`import { byPattern } from "${pattern_ts}";\n`);
-      head.push(`import { cascade } from "${cascade_ts}";\n`);
-
-      if (isLazy) {
-        const lazy_ts = `${httpFnsUrl}lazy${ext}`;
-
-        head.push(`import { lazy } from "${lazy_ts}";\n`);
-      }
+      httpFnImports.set("cascade", "cascade");
 
       body.push("export default cascade(\n");
 
@@ -183,21 +169,52 @@ export async function generateRoutesModule({
         if (modulePath[0] !== ".") {
           modulePath = "./" + modulePath;
         }
+
+        const m = await import(String(module));
+
+        const hasDefault = !!m.default;
+
         const patternJson = JSON.stringify(asSerializablePattern(pattern));
+
+        httpFnImports.set("byPattern", "by_pattern");
+
         if (isLazy) {
-          body.push(
-            `  byPattern(${patternJson}, lazy(() => import("${modulePath}"))),\n`,
-          );
+          httpFnImports.set("lazy", "lazy");
+          if (hasDefault) {
+            body.push(
+              `  byPattern(${patternJson}, lazy(() => import("${modulePath}"))),\n`,
+            );
+          } else {
+            httpFnImports.set("byMethod", "by_method");
+            body.push(
+              `  byPattern(${patternJson}, lazy(async () => byMethod(await import("${modulePath}")))),\n`,
+            );
+          }
         } else {
-          head.push(`import route_${i} from "${modulePath}";\n`);
-          body.push(`  byPattern(${patternJson}, route_${i}),\n`);
+          if (hasDefault) {
+            head.push(`import route_${i} from "${modulePath}";\n`);
+            body.push(`  byPattern(${patternJson}, route_${i}),\n`);
+          } else {
+            httpFnImports.set("byMethod", "by_method");
+            head.push(`import * as route_${i} from "${modulePath}";\n`);
+            body.push(`  byPattern(${patternJson}, byMethod(route_${i})),\n`);
+          }
         }
+
         i++;
       }
 
       body.push(`);\n`);
     }
   }
+
+  for (const [fn, module] of httpFnImports.entries()) {
+    head.unshift(`import { ${fn} } from "${httpFnsUrl}${module}${ext}";\n`);
+  }
+
+  head.unshift(
+    "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n",
+  );
 
   head.push(`\n`);
 

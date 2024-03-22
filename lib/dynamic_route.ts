@@ -44,5 +44,14 @@ async function buildHandler(opts: DynamicRouteOptions) {
 }
 
 function asLazyRoute({ pattern, module }: DiscoveredRoute) {
-  return byPattern(pattern, lazy(module));
+  return byPattern(pattern, lazy(module, transformMethodExports));
+}
+
+async function transformMethodExports(loaded: unknown): Promise<unknown> {
+  if (loaded && typeof loaded === "object" && !("default" in loaded)) {
+    // assume module of individually exported http method functions
+    const { byMethod } = await import("./by_method.ts");
+    return byMethod(loaded);
+  }
+  return loaded;
 }
