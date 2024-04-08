@@ -1,0 +1,13 @@
+{
+  "name": "@http/interceptor",
+  "version": "0.8.0",
+  "exports": {
+    "./by-status": "./by_status.ts",
+    "./cors": "./cors.ts",
+    "./intercept": "./intercept.ts",
+    "./logger": "./logger.ts",
+    "./types": "./types.ts",
+    "./verify-header": "./verify_header.ts",
+    "./when-pattern": "./when_pattern.ts"
+  }
+}

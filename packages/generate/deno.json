@@ -1,0 +1,7 @@
+{
+  "name": "@http/generate",
+  "version": "0.8.0",
+  "exports": {
+    "./generate-routes-module": "./generate_routes_module.ts"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@http/examples",
+  "version": "0.8.0",
+  "exports": {
+    "./by-media-type": "./by_media_type.ts",
+    "./by-method": "./by_method.ts",
+    "./by-pattern": "./by_pattern.ts",
+    "./by-sub-pattern": "./by_sub_pattern.ts",
+    "./cascade": "./cascade.ts",
+    "./dynamic-route": "./dynamic_route.ts",
+    "./generated-routes": "./generated_routes.ts",
+    "./handle": "./handle.ts",
+    "./intercept-auth": "./intercept_auth.ts",
+    "./intercept-response": "./intercept_response.ts",
+    "./lazy": "./lazy.ts",
+    "./logging": "./logging.ts",
+    "./scripts/discover-routes": "./scripts/discover_routes.ts",
+    "./scripts/generate-routes": "./scripts/generate_routes.ts",
+    "./static-route": "./static_route.ts",
+    "./verify-header": "./verify_header.ts",
+    "./when-pattern": "./when_pattern.ts"
+  }
+}

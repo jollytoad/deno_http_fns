@@ -1,0 +1,28 @@
+{
+  "name": "@http/response",
+  "version": "0.8.0",
+  "exports": {
+    "./accepted": "./accepted.ts",
+    "./append-headers": "./append_headers.ts",
+    "./bad-gateway": "./bad_gateway.ts",
+    "./bad-request": "./bad_request.ts",
+    "./conditional": "./conditional.ts",
+    "./forbidden": "./forbidden.ts",
+    "./html": "./html.ts",
+    "./json": "./json.ts",
+    "./method-not-allowed": "./method_not_allowed.ts",
+    "./no-content": "./no_content.ts",
+    "./not-acceptable": "./not_acceptable.ts",
+    "./not-found": "./not_found.ts",
+    "./not-modified": "./not_modified.ts",
+    "./ok": "./ok.ts",
+    "./permanent-redirect": "./permanent_redirect.ts",
+    "./plain-error": "./plain_error.ts",
+    "./prepend-doctype": "./prepend_doctype.ts",
+    "./redirect": "./redirect.ts",
+    "./replace-body": "./replace_body.ts",
+    "./see-other": "./see_other.ts",
+    "./temporary-redirect": "./temporary_redirect.ts",
+    "./unauthorized": "./unauthorized.ts"
+  }
+}

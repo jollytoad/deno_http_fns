@@ -1,0 +1,10 @@
+{
+  "name": "@http/request",
+  "version": "0.8.0",
+  "exports": {
+    "./body-as-object": "./body_as_object.ts",
+    "./required-header": "./required_header.ts",
+    "./search-values": "./search_values.ts",
+    "./url-header": "./url_header.ts"
+  }
+}
