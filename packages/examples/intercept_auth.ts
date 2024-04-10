@@ -1,4 +1,4 @@
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "@http/route/with-fallback";
 import { intercept } from "@http/interceptor/intercept";
 import { unauthorized } from "@http/response/unauthorized";
 import { byPattern } from "@http/route/by-pattern";

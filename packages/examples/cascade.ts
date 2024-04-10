@@ -1,4 +1,4 @@
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "@http/route/with-fallback";
 import { cascade } from "@http/route/cascade";
 import { byPattern } from "@http/route/by-pattern";
 

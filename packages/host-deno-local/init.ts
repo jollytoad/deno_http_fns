@@ -1,4 +1,4 @@
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "@http/route/with-fallback";
 import { intercept } from "@http/interceptor/intercept";
 import { logging } from "@http/interceptor/logger";
 import { port } from "./port.ts";

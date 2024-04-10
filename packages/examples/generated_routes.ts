@@ -1,4 +1,4 @@
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "@http/route/with-fallback";
 import routes from "./_routes.ts";
 import generateRoutes from "./scripts/generate_routes.ts";
 

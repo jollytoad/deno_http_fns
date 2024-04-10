@@ -4,7 +4,6 @@
   "exports": {
     "./lazy": "./lazy.ts",
     "./map-data": "./map_data.ts",
-    "./types": "./types.ts",
-    "./with-fallback": "./with_fallback.ts"
+    "./types": "./types.ts"
   }
 }

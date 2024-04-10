@@ -1,5 +1,5 @@
 import { staticRoute } from "@http/route-deno/static-route";
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "@http/route/with-fallback";
 import { interceptResponse, skip } from "@http/interceptor/intercept";
 import { notFound } from "@http/response/not-found";
 import { byStatus } from "@http/interceptor/by-status";

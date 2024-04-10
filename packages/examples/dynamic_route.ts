@@ -1,4 +1,4 @@
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "@http/route/with-fallback";
 import { dynamicRoute } from "@http/discovery/dynamic-route";
 import freshPathMapper from "@http/discovery/fresh-path-mapper";
 

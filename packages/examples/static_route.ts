@@ -1,5 +1,5 @@
 import { staticRoute } from "@http/route-deno/static-route";
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "@http/route/with-fallback";
 
 const server = Deno.serve(withFallback(
   staticRoute("/", import.meta.resolve("./public"), { quiet: false }),

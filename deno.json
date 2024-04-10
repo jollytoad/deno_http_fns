@@ -1,9 +1,10 @@
 {
   "tasks": {
-    "example": "deno run -A --watch",
-    "test": "deno test -A --location=http://localhost:8000 --no-check",
-    "check": "deno fmt && deno lint && deno check **/*.ts && deno task packages",
+    "example": "deno run -A --import-map=./import_map_local.json --watch",
+    "test": "deno test -A --import-map=./import_map_local.json --location=http://localhost:8000 --no-check",
+    "check": "deno fmt && deno lint && deno check **/*.ts && deno task packages && deno task local-import-map",
     "packages": "deno run --allow-read=. --allow-write=. scripts/packages.ts",
+    "local-import-map": "deno run --allow-read=. --allow-write=. scripts/local-import-map.ts",
     "outdated": "deno run --allow-read=. --allow-net=jsr.io,registry.npmjs.org jsr:@check/deps",
     "lock": "rm -f deno.lock && deno check **/*.ts"
   },
@@ -12,23 +13,24 @@
     "verbatimModuleSyntax": true
   },
   "imports": {
+    "@http/discovery": "jsr:@http/discovery@0.8.0",
+    "@http/examples": "jsr:@http/examples@0.8.0",
+    "@http/examples-deno": "jsr:@http/examples-deno@undefined",
+    "@http/generate": "jsr:@http/generate@0.8.0",
+    "@http/handler": "jsr:@http/handler@0.8.0",
+    "@http/host-deno-deploy": "jsr:@http/host-deno-deploy@0.8.0",
+    "@http/host-deno-local": "jsr:@http/host-deno-local@0.8.0",
+    "@http/interceptor": "jsr:@http/interceptor@0.8.0",
+    "@http/request": "jsr:@http/request@0.8.0",
+    "@http/response": "jsr:@http/response@0.8.0",
+    "@http/route": "jsr:@http/route@0.8.0",
+    "@http/route-deno": "jsr:@http/route-deno@0.8.0",
     "@std/assert": "jsr:@std/assert@^0.221.0",
     "@std/collections": "jsr:@std/collections@^0.221.0",
     "@std/http": "jsr:@std/http@^0.221.0",
     "@std/media-types": "jsr:@std/media-types@^0.221.0",
     "@std/net": "jsr:@std/net@^0.221.0",
-    "@std/path": "jsr:@std/path@^0.221.0",
-    "@http/handler": "jsr:@http/handler",
-    "@http/response": "jsr:@http/response",
-    "@http/route": "jsr:@http/route",
-    "@http/route-deno": "jsr:@http/route-deno",
-    "@http/discovery": "jsr:@http/discovery",
-    "@http/generate": "jsr:@http/generate",
-    "@http/request": "jsr:@http/request",
-    "@http/interceptor": "jsr:@http/interceptor",
-    "@http/host-deno-deploy": "jsr:@http/host-deno-deploy",
-    "@http/host-deno-local": "jsr:@http/host-deno-local",
-    "@http/examples": "jsr:@http/examples"
+    "@std/path": "jsr:@std/path@^0.221.0"
   },
   "workspaces": [
     "./packages/discovery",

@@ -1,8 +1,9 @@
 import { resolve } from "@std/path/resolve";
 import { join } from "@std/path/join";
-import { relative } from "@std/path/relative";
 import { join as posixJoin } from "@std/path/posix/join";
 import { parse as posixParse } from "@std/path/posix/parse";
+import { readDenoConfig, writeDenoConfig } from "./_utils.ts";
+import { sortByKey } from "./_utils.ts";
 
 const rootPath = import.meta.dirname
   ? resolve(import.meta.dirname, "..")
@@ -10,20 +11,19 @@ const rootPath = import.meta.dirname
 
 export async function updatePackages(version?: string) {
   if (rootPath) {
-    const rootDenoJsonPath = resolve(rootPath, "deno.json");
     const packagesPath = resolve(rootPath, "packages");
 
-    const rootDenoJson = await readJson(rootDenoJsonPath);
+    const rootDenoJson = await readDenoConfig();
 
     if (!rootDenoJson) {
-      throw new Error(`${rootDenoJsonPath} not found!`);
+      throw new Error(`deno.json not found!`);
     }
 
     rootDenoJson.workspaces ??= [];
 
     for await (const entry of Deno.readDir(packagesPath)) {
-      const pkgDenoJsonPath = resolve(packagesPath, entry.name, "deno.json");
-      const pkgDenoJson = await readJson(pkgDenoJsonPath) ?? {};
+      const pkgPath = resolve(packagesPath, entry.name);
+      const pkgDenoJson = await readDenoConfig(pkgPath) ?? {};
 
       pkgDenoJson.name = `@http/${entry.name}`;
       if (version) {
@@ -34,7 +34,7 @@ export async function updatePackages(version?: string) {
 
       pkgDenoJson.exports = generateExports(modules);
 
-      await writeJson(pkgDenoJsonPath, pkgDenoJson);
+      await writeDenoConfig(pkgDenoJson, pkgPath);
 
       const workspacePath = `./packages/${entry.name}`;
 
@@ -43,49 +43,30 @@ export async function updatePackages(version?: string) {
         rootDenoJson.workspaces.sort();
       }
 
-      if (!rootDenoJson.imports[`@http/${entry.name}`]) {
-        rootDenoJson.imports[`@http/${entry.name}`] = `jsr:@http/${entry.name}`;
+      const importAlias = `@http/${entry.name}`;
+      const importTarget = `jsr:@http/${entry.name}@${pkgDenoJson.version}`;
+
+      if (rootDenoJson.imports?.[importAlias] !== importTarget) {
+        rootDenoJson.imports = sortByKey({
+          ...rootDenoJson.imports,
+          [importAlias]: importTarget,
+        });
       }
     }
 
-    await writeJson(rootDenoJsonPath, rootDenoJson);
+    await writeDenoConfig(rootDenoJson);
   }
-}
-
-async function readJson(path: string) {
-  try {
-    return JSON.parse(await Deno.readTextFile(path));
-  } catch (e) {
-    if (e instanceof Deno.errors.NotFound) {
-      return undefined;
-    } else {
-      throw e;
-    }
-  }
-}
-
-async function writeJson(path: string, content: unknown) {
-  const newContent = JSON.stringify(content, null, 2) + "\n";
-  const oldContent = JSON.stringify(await readJson(path), null, 2) + "\n";
-
-  if (newContent !== oldContent) {
-    await Deno.writeTextFile(path, newContent);
-    console.log(`Updated: %c${relative(rootPath!, path)}`, "font-weight: bold");
-    return true;
-  }
-
-  return false;
 }
 
 function generateExports(modules: string[]) {
   const exports: Record<string, string> = {};
 
   for (const modulePath of modules) {
+    if (!modulePath.endsWith(".ts") || modulePath.endsWith("test.ts")) continue;
+
     const parsed = posixParse(modulePath);
-    if (parsed.ext === ".ts") {
-      const name = parsed.name.replaceAll("_", "-");
-      exports[`./${posixJoin(parsed.dir, name)}`] = `./${modulePath}`;
-    }
+    const name = parsed.name.replaceAll("_", "-");
+    exports[`./${posixJoin(parsed.dir, name)}`] = `./${modulePath}`;
   }
 
   return exports;
@@ -108,10 +89,7 @@ async function* walk(
   exportPath = "",
 ): AsyncIterable<string> {
   for await (const entry of Deno.readDir(parentPath)) {
-    if (
-      entry.name.startsWith("_") || entry.name.endsWith("test.ts") ||
-      entry.name === "deno.json"
-    ) {
+    if (entry.name.startsWith("_")) {
       continue;
     }
 

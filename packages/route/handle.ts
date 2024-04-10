@@ -1,6 +1,6 @@
 import type { Awaitable } from "@http/handler/types";
 import { notFound } from "@http/response/not-found";
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "./with_fallback.ts";
 import { cascade } from "./cascade.ts";
 
 /**

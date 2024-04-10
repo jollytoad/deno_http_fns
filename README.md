@@ -34,9 +34,9 @@ one.
 Let's start with a really simple example, a router for `GET /hello`...
 
 ```ts
-import { handle } from "jsr:@http/fns/handle";
-import { byPattern } from "jsr:@http/fns/by_pattern";
-import { byMethod } from "jsr:@http/fns/by_method";
+import { handle } from "@http/route/handle";
+import { byPattern } from "@http/route/by_pattern";
+import { byMethod } from "@http/route/by_method";
 
 Deno.serve(handle([
   byPattern(
@@ -173,25 +173,19 @@ of unused features. You'll find no `mod.ts` or `deps.ts` around here.
 
 ## Examples
 
-There are many [examples](./examples) that can be executed directly, and many
-tests for these examples.
+There are many [examples](./packages/examples) that can be executed directly,
+and many tests for these examples.
 
 You can run them after cloning this repo, for example:
 
 ```sh
-deno run -A examples/logging.ts
+deno task example packages/examples/logging.ts
 ```
 
 or directly from jsr:
 
 ```sh
-deno run -A https://deno.land/x/http_fns/examples/logging.ts
-```
-
-or directly from GitHub:
-
-```sh
-deno run -A https://raw.githubusercontent.com/jollytoad/deno_http_fns/main/examples/logging.ts
+deno run -A jsr:@http/examples/logging
 ```
 
 Many of the examples have accompanying tests, which I hope to improve coverage

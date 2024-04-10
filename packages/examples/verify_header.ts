@@ -1,6 +1,6 @@
 import { ok } from "@http/response/ok";
 import { intercept } from "@http/interceptor/intercept";
-import { withFallback } from "@http/handler/with-fallback";
+import { withFallback } from "@http/route/with-fallback";
 import { verifyHeader } from "@http/interceptor/verify-header";
 import { forbidden } from "@http/response/forbidden";
 
