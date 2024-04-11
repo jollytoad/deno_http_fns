@@ -4,8 +4,6 @@
     "@http/discovery/discover-routes": "./packages/discovery/discover_routes.ts",
     "@http/discovery/dynamic-route": "./packages/discovery/dynamic_route.ts",
     "@http/discovery/fresh-path-mapper": "./packages/discovery/fresh_path_mapper.ts",
-    "@http/examples-deno": "jsr:@http/examples-deno@undefined",
-    "@http/examples-deno/": "jsr:/@http/examples-deno@undefined/",
     "@http/examples/by-media-type": "./packages/examples/by_media_type.ts",
     "@http/examples/by-method": "./packages/examples/by_method.ts",
     "@http/examples/by-pattern": "./packages/examples/by_pattern.ts",

@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - jsr
+      - workspaces
 
 jobs:
   publish:

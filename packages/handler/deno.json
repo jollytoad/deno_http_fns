@@ -1,6 +1,6 @@
 {
   "name": "@http/handler",
-  "version": "0.8.0",
+  "version": "0.9.0-beta.1",
   "exports": {
     "./lazy": "./lazy.ts",
     "./map-data": "./map_data.ts",
