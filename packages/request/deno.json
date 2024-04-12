@@ -1,6 +1,6 @@
 {
   "name": "@http/request",
-  "version": "0.9.0-beta.1",
+  "version": "0.9.0-beta.2",
   "exports": {
     "./body-as-object": "./body_as_object.ts",
     "./required-header": "./required_header.ts",

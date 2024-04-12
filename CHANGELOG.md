@@ -6,9 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [Unreleased]
+
+### Changed
 
 - Split `@http/fns` into separate packages.
+- [@http/generate/generate-routes-module] `httpModulePrefix` replaces `httpFns`
+  and `jsr` options, defaulting to `@http/`.
+- [@http/interceptor/cors] `cors()` now returns an `Interceptors` objects for
+  direct use with `intercept()` or `init()`.
 
 ## [0.7.0]
 

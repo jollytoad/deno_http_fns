@@ -1,5 +1,5 @@
 import { appendHeaders } from "@http/response/append-headers";
-import type { ResponseInterceptor } from "./types.ts";
+import type { Interceptors } from "./types.ts";
 
 export interface CorsOptions {
   allowOrigin?: "*" | string[];
@@ -8,14 +8,25 @@ export interface CorsOptions {
 }
 
 /**
+ * Set of interceptors to handle CORS (Cross-Origin Resource Sharing) requests.
+ *
+ * @param opts configuration options
+ */
+export function cors(opts?: CorsOptions): Interceptors<unknown[], Response> {
+  return {
+    response: [corsResponse(opts)],
+  };
+}
+
+/**
  * Create a ResponseInterceptor that adds the appropriate CORS headers when required.
  *
  * @param opts configuration options
  * @returns a ResponseInterceptor that can be used with `intercept` or `interceptResponse`.
  */
-export function cors(
+export function corsResponse(
   opts?: CorsOptions,
-): ResponseInterceptor {
+): (req: Request, res: Response) => Response {
   return (req, res) => {
     const origin = req.headers.get("Origin");
 
@@ -87,8 +98,6 @@ const SAFELIST = new Set([
 ]);
 
 function exposedHeaders(response: Response) {
-  const keys = [
-    ...(response.headers as unknown as DomIterable<string, string>).keys(),
-  ];
+  const keys = [...response.headers.keys()];
   return keys.filter((key) => !SAFELIST.has(key.toLowerCase())).join(", ");
 }
