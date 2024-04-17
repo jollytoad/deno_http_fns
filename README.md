@@ -8,7 +8,8 @@ one.
 ## The bullet points
 
 - A library of composable functions rather than a monolithic router class
-- Based on web standard [Request] => [Response] functions
+- Based on web standard [Request] => [Response] functions, aka
+  [Fetch handlers](https://blog.val.town/blog/the-api-we-forgot-to-name/)
 - Works with [`Deno.serve`][deno_serve]
 - Routing based on various criteria
   - URLPattern
