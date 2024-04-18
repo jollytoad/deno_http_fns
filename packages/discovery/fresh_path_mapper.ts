@@ -7,6 +7,8 @@ import type { DiscoveredPath } from "./discover_routes.ts";
  *
  * `[name]` - to match a single path segment, translates to `:name` in the URLPattern
  * `[...name]` - to match multiple path segments, translates to `:name*` in the URLPattern
+ * `[[name]]` - match an optional path segment, translates to `:name?`
+ * `(name)` - for grouping, the segment is not added to the URLPattern
  *
  * Also, extends the syntax with support for file extensions (see `byMediaType`) by adding
  * `.ext` (for a required extension) or `[.ext]` (for an optional extension).
@@ -25,30 +27,36 @@ export default freshPathMapper;
 function freshPath(path: string): string {
   let segments = path.split("/");
   const last = segments.pop();
-  segments = segments.map(freshPart);
+  segments = segments.flatMap(freshPart);
   if (last && last !== "index") {
-    segments.push(freshName(last));
+    segments.push(...freshName(last));
   }
-  return segments.join("/") || "/";
+  return segments.join("") || "/";
 }
 
-function freshPart(part: string): string {
+function freshPart(part: string): string[] {
   if (part.startsWith("[...") && part.endsWith("]")) {
-    return `:${part.slice(4, part.length - 1)}*`;
+    return [`/:${part.slice(4, part.length - 1)}*`];
+  }
+  if (part.startsWith("[[") && part.endsWith("]]")) {
+    return [`/:${part.slice(2, part.length - 2)}?`];
   }
   if (part.startsWith("[") && part.endsWith("]")) {
-    return `:${part.slice(1, part.length - 1)}`;
+    return [`/:${part.slice(1, part.length - 1)}`];
   }
-  return part;
+  if (part.startsWith("(") && part.endsWith(")")) {
+    return [];
+  }
+  return part ? [`/${part}`] : [];
 }
 
-function freshName(part: string): string {
+function freshName(part: string): string[] {
   if (part.endsWith(".ext")) {
     // a required extension
-    return freshPart(part.slice(0, -4)) + "{.:ext}";
+    return [...freshPart(part.slice(0, -4)), "{.:ext}"];
   } else if (part.endsWith("[.ext]")) {
     // an optional extension
-    return freshPart(part.slice(0, -6)) + "{.:ext}?";
+    return [...freshPart(part.slice(0, -6)), "{.:ext}?"];
   } else {
     return freshPart(part);
   }

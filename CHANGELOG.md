@@ -22,6 +22,11 @@ and this project adheres to
   `appendHeaders()`
 - [@http/request] `memoize()`
 
+### Fixed
+
+- [@http/discovery] updated `freshPathMapper` to support latest Fresh route
+  syntax
+
 ## [0.7.0]
 
 ### Added
