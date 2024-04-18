@@ -1,6 +1,6 @@
 {
   "name": "@http/response",
-  "version": "0.9.0-beta.2",
+  "version": "0.9.0-beta.3",
   "exports": {
     "./accepted": "./accepted.ts",
     "./append-headers": "./append_headers.ts",
@@ -8,6 +8,7 @@
     "./bad-request": "./bad_request.ts",
     "./conditional": "./conditional.ts",
     "./forbidden": "./forbidden.ts",
+    "./header-entries": "./header_entries.ts",
     "./html": "./html.ts",
     "./json": "./json.ts",
     "./method-not-allowed": "./method_not_allowed.ts",
@@ -22,6 +23,7 @@
     "./redirect": "./redirect.ts",
     "./replace-body": "./replace_body.ts",
     "./see-other": "./see_other.ts",
+    "./set-headers": "./set_headers.ts",
     "./temporary-redirect": "./temporary_redirect.ts",
     "./unauthorized": "./unauthorized.ts"
   }

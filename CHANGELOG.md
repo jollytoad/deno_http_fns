@@ -16,6 +16,17 @@ and this project adheres to
 - [@http/interceptor/cors] `cors()` now returns an `Interceptors` objects for
   direct use with `intercept()` or `init()`.
 
+### Added
+
+- [@http/response] `setHeaders()`, `headerEntries()` to accompany
+  `appendHeaders()`
+- [@http/request] `memoize()`
+
+### Fixed
+
+- [@http/discovery] updated `freshPathMapper` to support latest Fresh route
+  syntax
+
 ## [0.7.0]
 
 ### Added
