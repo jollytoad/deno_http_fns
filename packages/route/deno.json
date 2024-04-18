@@ -1,6 +1,6 @@
 {
   "name": "@http/route",
-  "version": "0.9.0-beta.2",
+  "version": "0.9.0-beta.3",
   "exports": {
     "./as-url-pattern": "./as_url_pattern.ts",
     "./by-media-type": "./by_media_type.ts",
