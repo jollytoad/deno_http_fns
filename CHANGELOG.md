@@ -8,6 +8,8 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [0.10.0]
+
 ### Changed
 
 - Split `@http/fns` into separate packages.
