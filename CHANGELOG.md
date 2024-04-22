@@ -15,12 +15,15 @@ and this project adheres to
   and `jsr` options, defaulting to `@http/`.
 - [@http/interceptor/cors] `cors()` now returns an `Interceptors` objects for
   direct use with `intercept()` or `init()`.
+- [@http/generate] use [ts-poet](https://github.com/stephenh/ts-poet) to
+  generate code.
 
 ### Added
 
 - [@http/response] `setHeaders()`, `headerEntries()` to accompany
   `appendHeaders()`
 - [@http/request] `memoize()`
+- [@http/assert] new package of assertions for use in server tests.
 
 ### Fixed
 

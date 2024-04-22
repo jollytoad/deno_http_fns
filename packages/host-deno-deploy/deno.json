@@ -1,6 +1,6 @@
 {
   "name": "@http/host-deno-deploy",
-  "version": "0.9.0-beta.3",
+  "version": "0.9.0-beta.4",
   "exports": {
     "./init": "./init.ts"
   }

@@ -3,10 +3,23 @@ import {
   type DiscoverRoutesOptions,
 } from "@http/discovery/discover-routes";
 import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
-import type { Eagerness } from "@http/discovery/dynamic-route";
+import type {
+  DynamicRouteOptions,
+  Eagerness,
+} from "@http/discovery/dynamic-route";
 import { dirname } from "@std/path/posix/dirname";
 import { relative } from "@std/path/posix/relative";
 import { fromFileUrl } from "@std/path/posix/from-file-url";
+import type { RoutePattern } from "@http/route/types";
+import {
+  type Code,
+  code,
+  importAll,
+  importDefault,
+  importNamed,
+  joinCode,
+  literalOf,
+} from "./_code_builder.ts";
 
 export interface GenerateOptions extends
   Omit<
@@ -16,7 +29,7 @@ export interface GenerateOptions extends
   /**
    * The absolute path of the module to be generated, as a `file:` URL.
    */
-  moduleOutUrl: string;
+  moduleOutUrl: string | URL;
 
   /**
    * Whether to discover routes at build time and generate a static list or,
@@ -61,173 +74,233 @@ export interface GenerateOptions extends
  *
  * The generated code will vary depending on the options given.
  */
-export async function generateRoutesModule({
-  pattern,
-  fileRootUrl,
-  moduleOutUrl,
-  routeDiscovery = "static",
-  moduleImports = "dynamic",
-  httpModulePrefix = "@http/",
-  pathMapper,
-  routeMapper,
-  compare,
-  verbose,
-}: GenerateOptions): Promise<boolean> {
+export async function generateRoutesModule(
+  opts: GenerateOptions,
+): Promise<boolean> {
+  const {
+    fileRootUrl,
+    moduleOutUrl,
+    httpModulePrefix = "@http/",
+  } = opts;
+
   assertIsFileUrl(fileRootUrl, "fileRootUrl");
   assertIsFileUrl(moduleOutUrl, "moduleOutUrl");
 
-  const outUrl = new URL(moduleOutUrl);
-
-  if (!await can("write", outUrl)) {
+  if (!await can("write", moduleOutUrl)) {
     // No permission to generate new module
     return false;
   }
 
-  const outPath = dirname(outUrl.pathname);
+  const content = await generateRoutesModuleContent({
+    ...opts,
+    httpModulePrefix,
+  });
 
-  const httpFnImports = new Map<string, string>();
-  const head: string[] = [];
-  const body: string[] = [];
-  let i = 1;
+  return await writeIfDiff(moduleOutUrl, content);
+}
 
-  switch (routeDiscovery) {
-    case "startup":
-    case "request":
-      {
-        httpFnImports.set("dynamicRoute", "discovery/dynamic-route");
+/**
+ * Generate routes module content.
+ */
+export async function generateRoutesModuleContent(
+  opts: GenerateOptions,
+): Promise<string> {
+  const {
+    httpModulePrefix = "@http/",
+  } = opts;
 
-        let modulePath = relative(
-          outPath,
-          fileRootUrl ? fromFileUrl(fileRootUrl) : Deno.cwd(),
-        );
-        if (modulePath[0] !== ".") {
-          modulePath = "./" + modulePath;
-        }
+  const handlerCode = await generateHandler({ ...opts, httpModulePrefix });
+  const moduleCode = code`export default ${handlerCode}`;
 
-        const eagerness: Eagerness = routeDiscovery;
+  return moduleCode.toString({
+    prefix:
+      "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n",
+  });
+}
 
-        body.push(`export default dynamicRoute({\n`);
-        if (pattern !== undefined) {
-          body.push(`  pattern: "${pattern}",\n`);
-        }
-        body.push(`  fileRootUrl: import.meta.resolve("${modulePath}"),\n`);
-        body.push(`  eagerness: "${eagerness}",\n`);
-        if (pathMapper) {
-          head.push(`import pathMapper from "${pathMapper}";\n`);
-          body.push(`  pathMapper,\n`);
-        }
-        if (routeMapper) {
-          head.push(`import routeMapper from "${routeMapper}";\n`);
-          body.push(`  routeMapper,\n`);
-        }
-        if (compare) {
-          head.push(`import compare from "${compare}";\n`);
-          body.push(`  compare,\n`);
-        }
-        if (verbose) {
-          body.push(`  verbose: true,\n`);
-        }
-        body.push(`});\n`);
-      }
-      break;
-
-    case "static":
-    default: {
-      const isLazy = moduleImports !== "static";
-
-      httpFnImports.set("cascade", "route/cascade");
-
-      body.push("export default cascade(\n");
-
-      const routes = await discoverRoutes({
-        pattern,
-        fileRootUrl,
-        pathMapper: pathMapper
-          ? (await import(pathMapper.toString())).default
-          : undefined,
-        routeMapper: routeMapper
-          ? (await import(routeMapper.toString())).default
-          : undefined,
-        compare: compare
-          ? (await import(compare.toString())).default
-          : undefined,
-        consolidate: true,
-        verbose,
-      });
-
-      for (const { pattern, module } of routes) {
-        let modulePath = relative(outPath, fromFileUrl(module));
-        if (modulePath[0] !== ".") {
-          modulePath = "./" + modulePath;
-        }
-
-        const m = await import(String(module));
-
-        const hasDefault = !!m.default;
-
-        const patternJson = JSON.stringify(asSerializablePattern(pattern));
-
-        httpFnImports.set("byPattern", "route/by-pattern");
-
-        if (isLazy) {
-          httpFnImports.set("lazy", "handler/lazy");
-          if (hasDefault) {
-            body.push(
-              `  byPattern(${patternJson}, lazy(() => import("${modulePath}"))),\n`,
-            );
-          } else {
-            httpFnImports.set("byMethod", "route/by-method");
-            body.push(
-              `  byPattern(${patternJson}, lazy(async () => byMethod(await import("${modulePath}")))),\n`,
-            );
-          }
-        } else {
-          if (hasDefault) {
-            head.push(`import route_${i} from "${modulePath}";\n`);
-            body.push(`  byPattern(${patternJson}, route_${i}),\n`);
-          } else {
-            httpFnImports.set("byMethod", "route/by-method");
-            head.push(`import * as route_${i} from "${modulePath}";\n`);
-            body.push(`  byPattern(${patternJson}, byMethod(route_${i})),\n`);
-          }
-        }
-
-        i++;
-      }
-
-      body.push(`);\n`);
-    }
-  }
-
-  for (const [fn, module] of httpFnImports.entries()) {
-    head.unshift(`import { ${fn} } from "${httpModulePrefix}${module}";\n`);
-  }
-
-  head.unshift(
-    "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n",
-  );
-
-  head.push(`\n`);
-
-  const content = head.concat(body).join("");
+async function writeIfDiff(url: string | URL, content: string) {
+  const path = fromFileUrl(url);
 
   let existingContent = undefined;
 
-  if (await can("read", outUrl)) {
+  if (await can("read", path)) {
     try {
-      existingContent = await Deno.readTextFile(outUrl);
+      existingContent = await Deno.readTextFile(path);
     } catch {
       // Ignore error
     }
   }
 
   if (content !== existingContent) {
-    console.debug("Writing new routes module:", outUrl.pathname);
-    await Deno.writeTextFile(outUrl, content);
+    console.debug("Writing new routes module:", path);
+    await Deno.writeTextFile(path, content);
     return true;
   }
 
   return false;
+}
+
+function relativeModulePath(from: string, to: string): string {
+  let modulePath = relative(from, to);
+  if (modulePath[0] !== ".") {
+    modulePath = "./" + modulePath;
+  }
+  return modulePath;
+}
+
+function generateHandler(opts: GenerateOptions): Code | Promise<Code> {
+  switch (opts.routeDiscovery) {
+    case "startup":
+    case "request":
+      return generateDynamicRouteHandler(opts as GenerateDynamicRouteOptions);
+
+    case "static":
+    default:
+      return generateStaticRoutesHandler(opts);
+  }
+}
+
+type GenerateDynamicRouteOptions = GenerateOptions & {
+  routeDiscovery: Eagerness;
+};
+
+function generateDynamicRouteHandler(opts: GenerateDynamicRouteOptions): Code {
+  const outPath = dirname(fromFileUrl(opts.moduleOutUrl));
+
+  const dynamicRoute = importNamed(
+    `${opts.httpModulePrefix}discovery/dynamic-route`,
+    "dynamicRoute",
+  );
+
+  const modulePath = relativeModulePath(
+    outPath,
+    opts.fileRootUrl ? fromFileUrl(opts.fileRootUrl) : Deno.cwd(),
+  );
+
+  const optsCode: Partial<Record<keyof DynamicRouteOptions, unknown>> = {
+    ...(opts.pattern !== undefined
+      ? { pattern: literalOf(opts.pattern) }
+      : null),
+    fileRootUrl: code`import.meta.resolve(${literalOf(modulePath)})`,
+    eagerness: opts.routeDiscovery,
+    ...(opts.pathMapper
+      ? { pathMapper: importDefault(opts.pathMapper, "pathMapper") }
+      : null),
+    ...(opts.routeMapper
+      ? { routeMapper: importDefault(opts.routeMapper, "routeMapper") }
+      : null),
+    ...(opts.compare
+      ? { compare: importDefault(opts.compare, "compare") }
+      : null),
+    consolidate: true,
+    ...(opts.verbose ? { verbose: opts.verbose } : null),
+  };
+
+  return code`${dynamicRoute}(${optsCode})`;
+}
+
+async function generateStaticRoutesHandler(
+  opts: GenerateOptions,
+): Promise<Code> {
+  const cascade = importNamed(
+    `${opts.httpModulePrefix}route/cascade`,
+    "cascade",
+  );
+
+  return code`${cascade}(${
+    joinCode(await generateStaticRoutes(opts), { on: "," })
+  })`;
+}
+
+async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
+  const outPath = dirname(fromFileUrl(opts.moduleOutUrl));
+
+  const isLazy = opts.moduleImports !== "static";
+
+  const byPattern = importNamed(
+    `${opts.httpModulePrefix}route/by-pattern`,
+    "byPattern",
+  );
+  const byMethod = importNamed(
+    `${opts.httpModulePrefix}route/by-method`,
+    "byMethod",
+  );
+  const lazy = importNamed(`${opts.httpModulePrefix}handler/lazy`, "lazy");
+
+  const routesCode: Code[] = [];
+
+  const routes = await discoverRoutes({
+    pattern: opts.pattern,
+    fileRootUrl: opts.fileRootUrl,
+    pathMapper: opts.pathMapper
+      ? (await import(opts.pathMapper.toString())).default
+      : undefined,
+    routeMapper: opts.routeMapper
+      ? (await import(opts.routeMapper.toString())).default
+      : undefined,
+    compare: opts.compare
+      ? (await import(opts.compare.toString())).default
+      : undefined,
+    consolidate: true,
+    verbose: opts.verbose,
+  });
+
+  let i = 1;
+
+  for (const { pattern, module } of routes) {
+    let modulePath = relative(outPath, fromFileUrl(module));
+    if (modulePath[0] !== ".") {
+      modulePath = "./" + modulePath;
+    }
+
+    const m = await import(String(module));
+
+    const hasDefault = !!m.default;
+
+    const patternCode = asCodePattern(pattern);
+
+    if (isLazy) {
+      if (hasDefault) {
+        routesCode.push(
+          code`${byPattern}(${patternCode}, ${lazy}(() => import(${
+            literalOf(modulePath)
+          })))`,
+        );
+      } else {
+        routesCode.push(
+          code`${byPattern}(${patternCode}, ${lazy}(async () => ${byMethod}(await import(${
+            literalOf(modulePath)
+          }))))`,
+        );
+      }
+    } else {
+      if (hasDefault) {
+        const routeModule = importDefault(modulePath, `route_${i}`);
+        routesCode.push(code`${byPattern}(${patternCode}, ${routeModule})`);
+      } else {
+        const routeModule = importAll(modulePath, `route_${i}`);
+        routesCode.push(
+          code`${byPattern}(${patternCode}, ${byMethod}(${routeModule}))`,
+        );
+      }
+    }
+
+    i++;
+  }
+
+  return routesCode;
+}
+
+function asCodePattern(pattern: RoutePattern) {
+  const serializablePattern = asSerializablePattern(pattern);
+  if (
+    typeof serializablePattern === "string" ||
+    Array.isArray(serializablePattern)
+  ) {
+    return literalOf(serializablePattern);
+  } else {
+    return serializablePattern;
+  }
 }
 
 async function can(

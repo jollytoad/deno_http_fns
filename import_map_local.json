@@ -1,5 +1,9 @@
 {
   "imports": {
+    "@http/assert": "./packages/assert/mod.ts",
+    "@http/assert/assert-header": "./packages/assert/assert_header.ts",
+    "@http/assert/assert-ok": "./packages/assert/assert_ok.ts",
+    "@http/assert/assert-status": "./packages/assert/assert_status.ts",
     "@http/discovery/as-serializable-pattern": "./packages/discovery/as_serializable_pattern.ts",
     "@http/discovery/discover-routes": "./packages/discovery/discover_routes.ts",
     "@http/discovery/dynamic-route": "./packages/discovery/dynamic_route.ts",
@@ -89,7 +93,11 @@
     "@std/net/": "jsr:/@std/net@^0.223.0/",
     "@std/path": "jsr:@std/path@^0.223.0",
     "@std/path/": "jsr:/@std/path@^0.223.0/",
+    "@std/testing": "jsr:@std/testing@^0.223.0",
+    "@std/testing/": "jsr:/@std/testing@^0.223.0/",
     "@std/url": "jsr:@std/url@^0.223.0",
-    "@std/url/": "jsr:/@std/url@^0.223.0/"
+    "@std/url/": "jsr:/@std/url@^0.223.0/",
+    "ts-poet": "npm:ts-poet@^6.8.1",
+    "ts-poet/": "npm:/ts-poet@^6.8.1/"
   }
 }
