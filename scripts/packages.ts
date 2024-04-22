@@ -66,7 +66,10 @@ function generateExports(modules: string[]) {
 
     const parsed = posixParse(modulePath);
     const name = parsed.name.replaceAll("_", "-");
-    exports[`./${posixJoin(parsed.dir, name)}`] = `./${modulePath}`;
+    const exportKey = name === "mod"
+      ? (parsed.dir ? `./${parsed.dir}` : ".")
+      : `./${posixJoin(parsed.dir, name)}`;
+    exports[exportKey] = `./${modulePath}`;
   }
 
   return exports;

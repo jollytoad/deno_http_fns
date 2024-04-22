@@ -1,6 +1,6 @@
 {
   "name": "@http/discovery",
-  "version": "0.9.0-beta.3",
+  "version": "0.10.0",
   "exports": {
     "./as-serializable-pattern": "./as_serializable_pattern.ts",
     "./discover-routes": "./discover_routes.ts",
