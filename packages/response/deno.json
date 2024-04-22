@@ -1,6 +1,6 @@
 {
   "name": "@http/response",
-  "version": "0.9.0-beta.4",
+  "version": "0.10.0",
   "exports": {
     "./accepted": "./accepted.ts",
     "./append-headers": "./append_headers.ts",
