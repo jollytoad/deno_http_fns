@@ -26,5 +26,11 @@
     "./set-headers": "./set_headers.ts",
     "./temporary-redirect": "./temporary_redirect.ts",
     "./unauthorized": "./unauthorized.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
   }
 }

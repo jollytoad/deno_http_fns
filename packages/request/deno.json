@@ -7,5 +7,11 @@
     "./required-header": "./required_header.ts",
     "./search-values": "./search_values.ts",
     "./url-header": "./url_header.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
   }
 }

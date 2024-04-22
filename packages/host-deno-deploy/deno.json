@@ -3,5 +3,11 @@
   "version": "0.10.0",
   "exports": {
     "./init": "./init.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
   }
 }

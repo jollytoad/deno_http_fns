@@ -5,7 +5,11 @@ import {
 } from "./generate_routes_module.ts";
 import { assertSnapshot } from "@std/testing/snapshot";
 import { getAvailablePort } from "@std/net/get-available-port";
-import { assertStatus, STATUS_CODE } from "@http/assert/assert-status";
+import {
+  assertStatus,
+  STATUS_CODE,
+  type StatusCode,
+} from "@http/assert/assert-status";
 
 const fileRootUrl = import.meta.resolve("./_test/routes");
 
@@ -107,7 +111,7 @@ async function testRoute(
   t: Deno.TestContext,
   method: string,
   url: string,
-  expectedStatus: number,
+  expectedStatus: StatusCode,
 ) {
   await t.step(`${method} ${url} -> ${expectedStatus}`, async () => {
     const response = await fetch(url, { method });
