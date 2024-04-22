@@ -5,5 +5,11 @@
     "./lazy": "./lazy.ts",
     "./map-data": "./map_data.ts",
     "./types": "./types.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
   }
 }

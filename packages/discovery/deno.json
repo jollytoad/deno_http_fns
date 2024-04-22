@@ -6,5 +6,11 @@
     "./discover-routes": "./discover_routes.ts",
     "./dynamic-route": "./dynamic_route.ts",
     "./fresh-path-mapper": "./fresh_path_mapper.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
   }
 }

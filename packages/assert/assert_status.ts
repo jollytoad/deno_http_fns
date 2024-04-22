@@ -1,6 +1,6 @@
 import { STATUS_TEXT, type StatusCode } from "@std/http/status";
 import { AssertionError } from "@std/assert/assertion-error";
-export { STATUS_CODE } from "@std/http/status";
+export { STATUS_CODE, type StatusCode } from "@std/http/status";
 
 export function assertStatus(response: Response, expectedStatus: StatusCode) {
   const expectedStatusText = STATUS_TEXT[expectedStatus];

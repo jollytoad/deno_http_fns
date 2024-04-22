@@ -9,5 +9,11 @@
     "./types": "./types.ts",
     "./verify-header": "./verify_header.ts",
     "./when-pattern": "./when_pattern.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
   }
 }

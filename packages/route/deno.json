@@ -11,5 +11,12 @@
     "./handle": "./handle.ts",
     "./types": "./types.ts",
     "./with-fallback": "./with_fallback.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts",
+      "_test_deps.ts"
+    ]
   }
 }
