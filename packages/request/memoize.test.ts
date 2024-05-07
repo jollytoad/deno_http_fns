@@ -1,5 +1,5 @@
 import { assertEquals, assertStrictEquals } from "@std/assert";
-import { invalidate, memoize } from "./memoize.ts";
+import { dispose, invalidate, memoize } from "./memoize.ts";
 
 Deno.test("memoized function is called only once for same arg", () => {
   let callCount = 0;
@@ -90,4 +90,30 @@ Deno.test("invalidate a particular memo associated with an argument", () => {
   getUrl(req);
 
   assertEquals(callCount, 2);
+});
+
+Deno.test("dispose a cached result", () => {
+  const getUrl = memoize((req: Request) => {
+    return new URL(req.url);
+  });
+
+  const req = new Request("http://example.com");
+
+  getUrl(req);
+
+  const val = dispose(req, getUrl);
+
+  assertEquals(val?.href, req.url);
+});
+
+Deno.test("dispose when uncached", () => {
+  const getUrl = memoize((req: Request) => {
+    return new URL(req.url);
+  });
+
+  const req = new Request("http://example.com");
+
+  const val = dispose(req, getUrl);
+
+  assertEquals(val, undefined);
 });
