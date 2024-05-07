@@ -44,22 +44,41 @@ export function memoize<I extends WeakKey, O>(
 }
 
 /**
- * Invalidate the cached results of a particular function and argument combo,
- * or all functions results for a given argument.
+ * Invalidate the cached results of a particular argument and function combination,
+ * or all function results for a given argument.
  *
- * @param arg the function argument to invalidate all memoized results of
+ * @param arg the argument to invalidate memoized results of
  * @param key limit to a particular key/function, this can be the original function or memoized function
  */
 export function invalidate(arg: WeakKey, key?: WeakKey) {
   if (key) {
-    cache.get(arg)?.delete(key);
-    if (
-      typeof key === "function" && originalFunctionSymbol in key &&
-      key[originalFunctionSymbol]
-    ) {
-      cache.get(arg)?.delete(key[originalFunctionSymbol]);
-    }
+    cache.get(arg)?.delete(getOriginalKey(key));
   } else {
     cache.delete(arg);
   }
+}
+
+/**
+ * Invalidate the cached result of a particular argument and function,
+ * returning the cached value, if it exists for further disposal.
+ *
+ * @param arg the argument to invalidate a memoized result of
+ * @param key the key/function result to invalidate
+ * @returns the cached result of the function for the argument if present
+ */
+export function dispose<I extends WeakKey, O>(
+  arg: WeakKey,
+  key: WeakKey | ((arg: I) => O),
+): O | undefined {
+  const originalKey = getOriginalKey(key);
+  const val = cache.get(arg)?.get(originalKey) as O;
+  cache.get(arg)?.delete(originalKey);
+  return val;
+}
+
+function getOriginalKey(key: WeakKey): WeakKey {
+  return typeof key === "function" && originalFunctionSymbol in key &&
+      key[originalFunctionSymbol]
+    ? key[originalFunctionSymbol]
+    : key;
 }
