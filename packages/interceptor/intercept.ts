@@ -1,5 +1,9 @@
 import type { Awaitable } from "@http/handler/types";
-import type { Interceptors, ResponseInterceptor } from "./types.ts";
+import type {
+  InterceptorKind,
+  InterceptorKinds,
+  Interceptors,
+} from "./types.ts";
 
 /**
  * Wrap a Request handler with chains of interceptor functions that modify the
@@ -12,104 +16,98 @@ export function intercept<A extends unknown[], R extends Response | null>(
   handler: (req: Request, ...args: A) => Awaitable<R>,
   ...interceptors: readonly Interceptors<A, R>[]
 ): typeof handler {
-  const reverseInterceptors = [...interceptors].reverse();
+  const hasFinally = interceptors.some((i) => i.finally);
+
+  function* reversedInterceptors() {
+    for (let i = interceptors.length - 1; i >= 0; i--) {
+      yield interceptors[i]!;
+    }
+  }
+
+  function* flatten<K extends InterceptorKind>(
+    kind: K,
+    reverse = false,
+  ): Iterable<InterceptorKinds<A, R>[K]> {
+    for (
+      const { [kind]: i } of reverse ? reversedInterceptors() : interceptors
+    ) {
+      if (Array.isArray(i)) {
+        yield* i;
+      } else if (i) {
+        yield i as InterceptorKinds<A, R>[K];
+      }
+    }
+  }
 
   return async (req, ...args) => {
     let res!: R;
 
+    async function applyRequestInterceptors() {
+      for (const interceptor of flatten("request")) {
+        const result = await interceptor(req, ...args);
+        if (result instanceof Request) {
+          req = result;
+        } else if (result instanceof Response) {
+          res = result as R;
+          return;
+        }
+      }
+    }
+
+    async function applyResponseInterceptors() {
+      for (const interceptor of flatten("response", true)) {
+        const result = await interceptor(req, res);
+        if (result !== undefined) {
+          res = result;
+        }
+      }
+    }
+
+    async function applyErrorInterceptors(e: unknown) {
+      for (const interceptor of flatten("error")) {
+        const result = await interceptor(req, res, e);
+        if (result) {
+          res = result as R;
+        }
+      }
+    }
+
+    function applyFinallyInterceptors(reason: unknown) {
+      for (const interceptor of flatten("finally", true)) {
+        try {
+          interceptor(req, res, reason);
+        } catch (e: unknown) {
+          console.error("Error during finally interceptor", e);
+        }
+      }
+    }
+
+    if (hasFinally) {
+      req.signal.addEventListener("abort", function () {
+        applyFinallyInterceptors(this.reason);
+      }, { once: true });
+    }
+
     try {
-      try {
-        for (const { request } of interceptors) {
-          for (const interceptor of request ?? []) {
-            const result = await interceptor(req, ...args);
-            if (result instanceof Request) {
-              req = result;
-            } else if (result instanceof Response) {
-              throw result;
-            }
-          }
-        }
-      } catch (e: unknown) {
-        if (e instanceof Response) {
-          res = e as R;
-        } else {
-          throw e;
-        }
-      }
-
-      if (!res) {
-        res = await safeHandle(handler, req, ...args);
-      }
-
-      for (const { response } of reverseInterceptors) {
-        for (const interceptor of response ?? []) {
-          const result = await interceptor(req, res);
-          if (result !== undefined) {
-            res = result;
-          }
-        }
-      }
-
-      return res;
+      await applyRequestInterceptors();
     } catch (e: unknown) {
-      for (const { error } of interceptors) {
-        for (const interceptor of error ?? []) {
-          const result = interceptor(req, res, e);
-          if (result) {
-            res = result as R;
-          }
-        }
-      }
-      if (res) {
-        return res;
-      } else {
-        throw e;
+      await applyErrorInterceptors(e);
+    }
+
+    if (!res) {
+      try {
+        res = await handler(req, ...args);
+      } catch (e: unknown) {
+        await applyErrorInterceptors(e);
       }
     }
+
+    try {
+      await applyResponseInterceptors();
+    } catch (e: unknown) {
+      await applyErrorInterceptors(e);
+    }
+
+    return res;
   };
-}
-
-/**
- * Shortcut for `intercept` when you only need to provide ResponseInterceptors.
- *
- * Example: `interceptResponse(..., skip(404))`
- *
- * @param handler the original handler
- * @param interceptors a chain of ResponseInterceptor functions that may modify the
- *  Response from the handler
- * @returns a new Request handler
- */
-export function interceptResponse<
-  A extends unknown[],
-  R extends Response | null,
->(
-  handler: (req: Request, ...args: A) => Awaitable<R>,
-  ...interceptors: ResponseInterceptor<R>[]
-): typeof handler {
-  return intercept<A, R>(handler, { response: interceptors });
-}
-
-/**
- * A ResponseInterceptor that will catch and skip any Responses that match the given Statuses.
- */
-export function skip(
-  ...status: number[]
-): (req: Request, res: Response | null) => null | undefined {
-  return (_req, res) => res && status.includes(res.status) ? null : undefined;
-}
-
-async function safeHandle<A extends unknown[], R extends Response | null>(
-  handler: (req: Request, ...args: A) => Awaitable<R>,
-  req: Request,
-  ...args: A
-): Promise<R> {
-  try {
-    return await handler(req, ...args);
-  } catch (error: unknown) {
-    if (error instanceof Response) {
-      return error as R;
-    } else {
-      throw error;
-    }
-  }
 }

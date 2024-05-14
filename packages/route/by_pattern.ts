@@ -8,6 +8,7 @@ import type { RoutePattern } from "./types.ts";
  * @param pattern the URL pattern to match against the Request URL
  * @param handler handler to call if the pattern matches, it should
  *  take the Request and the URLPatternResult as arguments
+ * @template A the additional arguments passed to the handler
  * @returns a Request handler that returns a Response or null
  */
 export function byPattern<A extends unknown[]>(

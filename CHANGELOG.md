@@ -8,6 +8,26 @@ and this project adheres to
 
 ## [Unreleased]
 
+This changelog will need to be split between individual packages
+
+## [0.12.0]
+
+### Changed
+
+- [@http/interceptor] `intercept()` error handlers applied at each lifecycle
+  stage, and no longer implicitly handles thrown Responses
+- [@http/interceptor] `interceptResponse()` moved into own module
+- [@http/interceptor] `skip()` moved into own module
+- [@http/request] utility functions now take a Request as first parameter rather
+  than returning a function
+
+### Added
+
+- [@http/interceptor] `catchResponse()` to explicitly handle thrown Responses
+- [@http/interceptor] tests added
+- [@http/request] `despose()` added to `memoize` module
+- [@http/assert] `assertHeader()` now supports `Request` and `Headers` object
+
 ## [0.10.0]
 
 ### Changed

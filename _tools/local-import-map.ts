@@ -1,3 +1,5 @@
+#!/usr/bin/env -S deno run --allow-read=. --allow-write=.
+
 import { resolve } from "@std/path/resolve";
 import { join } from "@std/path/posix/join";
 import { readDenoConfig, readJson, rootPath, writeJson } from "./_utils.ts";

@@ -6,7 +6,16 @@ import { typeByExtension } from "@std/media-types/type-by-extension";
 import { extname } from "@std/path/posix/extname";
 import type { Awaitable } from "@http/handler/types";
 
+/**
+ * String literal type for media types
+ */
 export type MediaType = `${string}/${string}`;
+
+/**
+ * Declare a mapping of media type to request handler
+ *
+ * @template A the additional arguments passed to the handler
+ */
 export type MediaTypeHandlers<A extends unknown[]> = Record<
   MediaType,
   (req: Request, ...args: A) => Awaitable<Response | null>

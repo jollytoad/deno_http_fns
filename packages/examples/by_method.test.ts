@@ -1,10 +1,10 @@
+import { assertEquals } from "@std/assert";
 import {
-  assertEquals,
   assertHeader,
   assertOk,
   assertStatus,
   STATUS_CODE,
-} from "./_test_deps.ts";
+} from "@http/assert";
 
 Deno.test("by_method", async (t) => {
   await using _server = (await import("./by_method.ts")).default;

@@ -1,4 +1,5 @@
-import { assertEquals, assertStatus } from "./_test_deps.ts";
+import { assertEquals } from "@std/assert";
+import { assertStatus, STATUS_CODE } from "@http/assert";
 
 Deno.test("verifyHeader", async (t) => {
   await using _server = (await import("./verify_header.ts")).default;
@@ -6,7 +7,7 @@ Deno.test("verifyHeader", async (t) => {
   await t.step("providing no header fails", async () => {
     const response = await fetch("/");
 
-    assertStatus(response, 403);
+    assertStatus(response, STATUS_CODE.Forbidden);
 
     const body = await response.text();
     assertEquals(body, "You are not welcome here");
@@ -19,7 +20,7 @@ Deno.test("verifyHeader", async (t) => {
       },
     });
 
-    assertStatus(response, 403);
+    assertStatus(response, STATUS_CODE.Forbidden);
 
     const body = await response.text();
     assertEquals(body, "You are not welcome here");
@@ -32,7 +33,7 @@ Deno.test("verifyHeader", async (t) => {
       },
     });
 
-    assertStatus(response, 200);
+    assertStatus(response, STATUS_CODE.OK);
 
     const body = await response.text();
     assertEquals(body, "You have access");

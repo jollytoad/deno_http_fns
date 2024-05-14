@@ -4,7 +4,10 @@ import { serveDir, type ServeDirOptions } from "@std/http/file-server";
 import { fromFileUrl } from "@std/path/from-file-url";
 import type { Awaitable } from "@http/handler/types";
 
-type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
+/**
+ * Options for creating a static route handler.
+ */
+export type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
 
 /**
  * Create a Request handler that serves static files under a matched URL pattern.

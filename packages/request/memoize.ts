@@ -13,6 +13,8 @@ const originalFunctionSymbol = Symbol();
  * This alleviates the need to pre-calculate Request context/state in middleware on the off-chance a
  * handler may require it, and avoids the need to extend the Request object with additional properties.
  *
+ * @template I the type of the argument of the memoized function, it must be usable as a WeakKey
+ * @template O the return type of the memoized function
  * @param fn the function to memoize
  * @param key a unique key to represent the function in the cache, defaults to the function itself.
  * @returns a function that caches the result

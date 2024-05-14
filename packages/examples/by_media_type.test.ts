@@ -1,11 +1,10 @@
+import { assertEquals, assertStringIncludes } from "@std/assert";
 import {
-  assertEquals,
   assertHeader,
   assertOk,
   assertStatus,
-  assertStringIncludes,
   STATUS_CODE,
-} from "./_test_deps.ts";
+} from "@http/assert";
 
 Deno.test("by_media_type", async (t) => {
   await using _server = (await import("./by_media_type.ts")).default;

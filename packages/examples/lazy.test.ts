@@ -1,4 +1,5 @@
-import { assertEquals, assertOk } from "./_test_deps.ts";
+import { assertEquals } from "@std/assert";
+import { assertOk } from "@http/assert";
 
 Deno.test("lazy", async (t) => {
   await using _server = (await import("./lazy.ts")).default;

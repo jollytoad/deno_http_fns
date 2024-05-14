@@ -36,7 +36,11 @@ export type MethodHandlers<A extends unknown[]> = Partial<
   MethodRecord<(request: Request, ...args: A) => Awaitable<Response | null>>
 >;
 
-type MethodRecord<T> = {
+/**
+ * Map HTTP methods to something
+ * @private
+ */
+export type MethodRecord<T> = {
   DELETE: T;
   GET: T;
   HEAD: T;
@@ -47,4 +51,7 @@ type MethodRecord<T> = {
   [method: string]: T;
 };
 
+/**
+ * A common HTTP method name
+ */
 export type HttpMethod = keyof MethodRecord<unknown>;

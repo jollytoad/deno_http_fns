@@ -1,6 +1,6 @@
 {
   "name": "@http/assert",
-  "version": "0.10.0",
+  "version": "0.12.0",
   "exports": {
     "./assert-header": "./assert_header.ts",
     "./assert-ok": "./assert_ok.ts",

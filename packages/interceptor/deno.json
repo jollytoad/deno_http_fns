@@ -1,11 +1,14 @@
 {
   "name": "@http/interceptor",
-  "version": "0.10.0",
+  "version": "0.12.0",
   "exports": {
     "./by-status": "./by_status.ts",
+    "./catch-response": "./catch_response.ts",
     "./cors": "./cors.ts",
     "./intercept": "./intercept.ts",
+    "./intercept-response": "./intercept_response.ts",
     "./logger": "./logger.ts",
+    "./skip": "./skip.ts",
     "./types": "./types.ts",
     "./verify-header": "./verify_header.ts",
     "./when-pattern": "./when_pattern.ts"

@@ -1,4 +1,4 @@
-import { walk } from "jsr:@std/fs@^0.221.0/walk";
+import { walk } from "@std/fs/walk";
 
 export async function fixStdLibImports(root: string) {
   for await (const entry of walk(root, { exts: [".ts"] })) {

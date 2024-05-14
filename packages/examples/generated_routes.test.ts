@@ -1,9 +1,5 @@
-import {
-  assertEquals,
-  assertOk,
-  assertStatus,
-  STATUS_CODE,
-} from "./_test_deps.ts";
+import { assertEquals } from "@std/assert";
+import { assertOk, assertStatus, STATUS_CODE } from "@http/assert";
 
 Deno.test("generated routes.ts", async (t) => {
   await using _server = (await import("./generated_routes.ts")).default;
