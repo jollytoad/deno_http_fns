@@ -1,0 +1,22 @@
+{
+  "name": "@http/route",
+  "version": "0.12.0",
+  "exports": {
+    "./as-url-pattern": "./as_url_pattern.ts",
+    "./by-media-type": "./by_media_type.ts",
+    "./by-method": "./by_method.ts",
+    "./by-pattern": "./by_pattern.ts",
+    "./by-sub-pattern": "./by_sub_pattern.ts",
+    "./cascade": "./cascade.ts",
+    "./handle": "./handle.ts",
+    "./types": "./types.ts",
+    "./with-fallback": "./with_fallback.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts",
+      "_test_deps.ts"
+    ]
+  }
+}

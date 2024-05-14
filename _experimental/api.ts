@@ -15,7 +15,7 @@ export type ApiProvider = (opts?: ApiProviderOptions) => ApiDefinition;
  * Symbol for the property of an ApiProvider on a handler function
  */
 export const Symbol_apiProvider = Symbol.for(
-  "https://deno.land/x/http_fns/ApiProvider",
+  "jsr:@http/fns/ApiProvider",
 );
 
 export type WithApiProvider = {

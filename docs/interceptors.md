@@ -4,7 +4,8 @@
 
 `intercept(handler, ...interceptors) => Handler`
 
-[Module](../lib/intercept.ts) | [Example](../examples/intercept_auth.ts)
+[Module](../packages/interceptor/intercept.ts) |
+[Example](../packages/examples/intercept_auth.ts)
 
 Modify the Request and/or Response around the handler, and handle errors.
 
@@ -12,7 +13,8 @@ Modify the Request and/or Response around the handler, and handle errors.
 
 `interceptResponse(handler, ...responseInterceptors) => Handler`
 
-[Module](../lib/intercept.ts) | [Example](../examples/intercept_response.ts)
+[Module](../packages/interceptor/intercept.ts) |
+[Example](../packages/examples/intercept_response.ts)
 
 Modify the Response from a handler.
 
@@ -20,7 +22,8 @@ Modify the Response from a handler.
 
 `skip(...status) => ResponseInterceptor`
 
-[Module](../lib/intercept.ts) | [Example](../examples/intercept_response.ts)
+[Module](../packages/interceptor/intercept.ts) |
+[Example](../packages/examples/intercept_response.ts)
 
 Use with `interceptResponse` to convert Responses of the given status to a
 'skipped' response.
@@ -29,7 +32,7 @@ Use with `interceptResponse` to convert Responses of the given status to a
 
 `byStatus(status, interceptor) => ResponseInterceptor`
 
-[Module](../lib/interceptor/by_status.ts) |
+[Module](../packages/interceptor/by_status.ts) |
 [Example](../examples/intercept_response.ts)
 
 Create a Response Interceptor that matches the status of the Response.
@@ -38,8 +41,8 @@ Create a Response Interceptor that matches the status of the Response.
 
 `whenPattern(pattern, interceptor) => RequestInterceptor`
 
-[Module](../lib/interceptor/when_pattern.ts) |
-[Example](../examples/when_pattern.ts)
+[Module](../packages/interceptor/when_pattern.ts) |
+[Example](../packages/examples/when_pattern.ts)
 
 Filter the application of the given interceptor for the given pattern.
 
@@ -62,7 +65,8 @@ to pass unmodified to the next interceptor and eventually to a handler.
 
 `logging() => Interceptors`
 
-[Module](../lib/interceptor/logger.ts) | [Example](../examples/logging.ts)
+[Module](../packages/interceptor/logger.ts) |
+[Example](../packages/examples/logging.ts)
 
 A set of standard logging interceptors.
 
@@ -70,7 +74,7 @@ A set of standard logging interceptors.
 
 `cors(options) => ResponseInterceptor`
 
-[Module](../lib/interceptor/cors.ts)
+[Module](../packages/interceptor/cors.ts)
 
 A response interceptor that adds the appropriate CORS headers, and handles the
 OPTIONS request.
@@ -79,8 +83,9 @@ OPTIONS request.
 
 `verifyHeader(options) => RequestInterceptor`
 
-[Module](../lib/interceptor/verify_header.ts) |
-[Example](../examples/verify_header.ts) | [Example](../examples/when_pattern.ts)
+[Module](../packages/interceptor/verify_header.ts) |
+[Example](../packages/examples/verify_header.ts) |
+[Example](../packages/examples/when_pattern.ts)
 
 Create a request interceptor that verifies that a header matches a given value.
 Useful for token matching.

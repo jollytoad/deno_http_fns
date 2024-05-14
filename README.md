@@ -8,7 +8,8 @@ one.
 ## The bullet points
 
 - A library of composable functions rather than a monolithic router class
-- Based on web standard [Request] => [Response] functions
+- Based on web standard [Request] => [Response] functions, aka
+  [Fetch handlers](https://blog.val.town/blog/the-api-we-forgot-to-name/)
 - Works with [`Deno.serve`][deno_serve]
 - Routing based on various criteria
   - URLPattern
@@ -34,9 +35,9 @@ one.
 Let's start with a really simple example, a router for `GET /hello`...
 
 ```ts
-import { handle } from "https://deno.land/x/http_fns/lib/handle.ts";
-import { byPattern } from "https://deno.land/x/http_fns/lib/by_pattern.ts";
-import { byMethod } from "https://deno.land/x/http_fns/lib/by_method.ts";
+import { handle } from "@http/route/handle";
+import { byPattern } from "@http/route/by_pattern";
+import { byMethod } from "@http/route/by_method";
 
 Deno.serve(handle([
   byPattern(
@@ -173,34 +174,19 @@ of unused features. You'll find no `mod.ts` or `deps.ts` around here.
 
 ## Examples
 
-There are many [examples](./examples) that can be executed directly, and many
-tests for these examples.
+There are many [examples](./packages/examples) that can be executed directly,
+and many tests for these examples.
 
 You can run them after cloning this repo, for example:
 
 ```sh
-deno run -A --import-map=examples/import_map.json examples/logging.ts
+deno task example packages/examples/logging.ts
 ```
 
-or (using a task defined in the deno.json file)
+or directly from jsr:
 
 ```sh
-deno task example examples/logging.ts
-```
-
-(NOTE: The above will map the imports to use the local http_fns modules rather
-than fetching from deno.land)
-
-or directly from deno.land:
-
-```sh
-deno run -A https://deno.land/x/http_fns/examples/logging.ts
-```
-
-or directly from GitHub:
-
-```sh
-deno run -A https://raw.githubusercontent.com/jollytoad/deno_http_fns/main/examples/logging.ts
+deno run -A jsr:@http/examples/logging
 ```
 
 Many of the examples have accompanying tests, which I hope to improve coverage

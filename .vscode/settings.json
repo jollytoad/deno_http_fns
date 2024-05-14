@@ -1,7 +1,12 @@
 {
-  "deno.importMap": "./examples/import_map.json",
   "deno.enable": true,
   "deno.lint": true,
+  "deno.importMap": "./import_map_local.json",
   "editor.defaultFormatter": "denoland.vscode-deno",
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "deno.codeLens.testArgs": [
+    "--allow-all",
+    "--no-check",
+    "--location=http://localhost:8000"
+  ]
 }

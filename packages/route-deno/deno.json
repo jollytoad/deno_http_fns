@@ -1,0 +1,13 @@
+{
+  "name": "@http/route-deno",
+  "version": "0.12.0",
+  "exports": {
+    "./static-route": "./static_route.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
+  }
+}

@@ -6,6 +6,7 @@ These are common, but more complex handlers for specific use cases.
 
 `staticRoute(pattern, fileRootUrl, options) => Handler`
 
-[Module](../lib/static_route.ts) | [Example](../examples/static_route.ts)
+[Module](../packages/route-deno/static_route.ts) |
+[Example](../packages/examples/static_route.ts)
 
 Serve static files.

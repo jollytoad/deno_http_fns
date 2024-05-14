@@ -4,7 +4,8 @@
 
 `byPattern(pattern, handler) => Handler`
 
-[Module](../lib/by_pattern.ts) | [Example](../examples/by_pattern.ts)
+[Module](../packages/route/by_pattern.ts) |
+[Example](../packages/examples/by_pattern.ts)
 
 Every router needs a way to delegate by actual path or URL. `byPattern` provides
 that using the standard
@@ -31,7 +32,8 @@ cascade to the next handler in the array of handlers passed to `handle` (or
 
 `bySubPattern(pattern, handler) => Handler`
 
-[Module](../lib/by_sub_pattern.ts) | [Example](../examples/by_sub_pattern.ts)
+[Module](../packages/route/by_sub_pattern.ts) |
+[Example](../packages/examples/by_sub_pattern.ts)
 
 Match a child route pattern after already matching a parent pattern.
 
@@ -39,8 +41,9 @@ Match a child route pattern after already matching a parent pattern.
 
 `byMethod({ METHOD: handler }, fallback) => Handler`
 
-[Module](../lib/by_method.ts) | [Example](../examples/by_method.ts) |
-[Test](../examples/by_method.test.ts)
+[Module](../packages/route/by_method.ts) |
+[Example](../packages/examples/by_method.ts) |
+[Test](../packages/examples/by_method.test.ts)
 
 Select a handler based on the request method.
 
@@ -48,8 +51,9 @@ Select a handler based on the request method.
 
 `byMediaType({ "media/type": handler }, fallbackExt, fallbackAccept) => Handler`
 
-[Module](../lib/by_media_type.ts) | [Example](../examples/by_media_type.ts) |
-[Test](../examples/by_media_type.test.ts)
+[Module](../packages/route/by_media_type.ts) |
+[Example](../packages/examples/by_media_type.ts) |
+[Test](../packages/examples/by_media_type.test.ts)
 
 Select the most appropriate handler based on the desired media-type of the
 request.

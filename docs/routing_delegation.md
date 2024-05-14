@@ -4,7 +4,8 @@
 
 `handle(handlers, fallback) => Handler`
 
-[Module](../lib/handle.ts) | [Example](../examples/handle.ts)
+[Module](../packages/route/handle.ts) |
+[Example](../packages/examples/handle.ts)
 
 This is the top-level function you'll use to form a router.
 
@@ -22,7 +23,8 @@ below)
 
 `cascade(...handlers) => Handler`
 
-[Module](../lib/cascade.ts) | [Example](../examples/cascade.ts)
+[Module](../packages/route/cascade.ts) |
+[Example](../packages/examples/cascade.ts)
 
 Attempt each handler in turn until one returns a Response.
 
@@ -30,8 +32,9 @@ Attempt each handler in turn until one returns a Response.
 
 `withFallback(handler, fallback) => Handler`
 
-[Module](../lib/fallback.ts) | [Example](../examples/by_pattern.ts) |
-[Example](../examples/cascade.ts)
+[Module](../packages/route/with_fallback.ts) |
+[Example](../packages/examples/by_pattern.ts) |
+[Example](../packages/examples/cascade.ts)
 
 Provide a fallback Response should the handler 'skip' (ie. return no response).
 
@@ -42,7 +45,7 @@ argument and the default fallback handler will just return a `404 Not Found`.
 
 `lazy(module url or loader) => Handler`
 
-[Module](../lib/lazy.ts) | [Example](../examples/lazy.ts) |
-[Test](../examples/lazy.test.ts)
+[Module](../packages/handler/lazy.ts) | [Example](../packages/examples/lazy.ts)
+| [Test](../packages/examples/lazy.test.ts)
 
 Dynamically load a handler when first required.

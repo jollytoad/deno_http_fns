@@ -1,0 +1,16 @@
+{
+  "name": "@http/host-deno-local",
+  "version": "0.12.0",
+  "exports": {
+    "./init": "./init.ts",
+    "./load-key-and-cert": "./load_key_and_cert.ts",
+    "./port": "./port.ts",
+    "./server-url": "./server_url.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@http/handler",
+  "version": "0.12.0",
+  "exports": {
+    "./lazy": "./lazy.ts",
+    "./map-data": "./map_data.ts",
+    "./types": "./types.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
+  }
+}
