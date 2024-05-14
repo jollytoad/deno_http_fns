@@ -1,9 +1,9 @@
 name: Publish
+
 on:
-  push:
-    branches:
-      - jsr
-      - workspaces
+  release:
+    types:
+      - published
 
 jobs:
   publish:
@@ -14,7 +14,8 @@ jobs:
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Install Deno
         uses: denoland/setup-deno@v1
