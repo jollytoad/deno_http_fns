@@ -34,5 +34,13 @@ jobs:
       - name: Run tests
         run: deno task test
 
+      - name: Generate coverage
+        run: deno task cov:gen
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Publish dry run
         run: deno publish --dry-run

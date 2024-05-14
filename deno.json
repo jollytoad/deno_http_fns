@@ -2,6 +2,8 @@
   "tasks": {
     "example": "deno run -A --import-map=./import_map_local.json --watch",
     "test": "deno test -A --import-map=./import_map_local.json --location=http://localhost:8000 --coverage --no-check",
+    "cov:gen": "deno coverage coverage --lcov --output=cov.lcov",
+    "cov:view": "deno coverage --html coverage",
     "check": "deno check --import-map=./import_map_local.json **/*.ts",
     "ok": "deno fmt && deno lint && deno task packages && deno task local-import-map && deno task check && deno task test && deno publish --dry-run --allow-dirty",
     "packages": "./_tools/packages.ts",
