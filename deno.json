@@ -13,6 +13,12 @@
     "noUncheckedIndexedAccess": true,
     "verbatimModuleSyntax": true
   },
+  "fmt": {
+    "exclude": [
+      "./packages/examples/_routes.ts",
+      "./packages/generate/_test/*.ts"
+    ]
+  },
   "imports": {
     "@http/assert": "jsr:@http/assert@0.12.0",
     "@http/discovery": "jsr:@http/discovery@0.12.0",
