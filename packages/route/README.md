@@ -149,8 +149,8 @@ of unused features. You'll find no `mod.ts` or `deps.ts` around here.
 
 ## Examples
 
-There are many [examples](https://jsr.io/@http/examples) that can be executed directly,
-and many tests for these examples.
+There are many [examples](https://jsr.io/@http/examples) that can be executed
+directly, and many tests for these examples.
 
 You can run them after cloning this repo, for example:
 
