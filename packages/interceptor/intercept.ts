@@ -1,5 +1,5 @@
-import type { Awaitable } from "@http/handler/types";
 import type {
+  Awaitable,
   InterceptorKind,
   InterceptorKinds,
   Interceptors,

@@ -6,6 +6,7 @@ import { ok } from "@http/response/ok";
 import { whenPattern } from "@http/interceptor/when-pattern";
 import { verifyHeader } from "@http/interceptor/verify-header";
 import { unauthorized } from "@http/response/unauthorized";
+import { port } from "@http/host-deno-local/port";
 
 // This is an example of using the `whenPattern` interceptor to protect a specific route.
 //
@@ -13,6 +14,7 @@ import { unauthorized } from "@http/response/unauthorized";
 // for which a regular HTTP Basic Authorization is required.
 
 const server = Deno.serve(
+  { port: port() },
   withFallback(
     intercept(
       // This is the main set of handlers...

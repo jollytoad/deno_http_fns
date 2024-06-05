@@ -1,8 +1,9 @@
 {
   "name": "@http/host-deno-deploy",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "exports": {
-    "./init": "./init.ts"
+    "./init": "./init.ts",
+    "./types": "./types.ts"
   },
   "publish": {
     "exclude": [

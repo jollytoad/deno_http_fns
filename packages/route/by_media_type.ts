@@ -4,7 +4,7 @@ import { notFound } from "@http/response/not-found";
 import { accepts } from "@std/http/negotiation";
 import { typeByExtension } from "@std/media-types/type-by-extension";
 import { extname } from "@std/path/posix/extname";
-import type { Awaitable } from "@http/handler/types";
+import type { Awaitable } from "./types.ts";
 
 /**
  * String literal type for media types
@@ -33,6 +33,31 @@ export type MediaTypeHandlers<A extends unknown[]> = Record<
  * @param fallbackAccept called when the URL doesn't have an extension and a type handler
  *  can not be matched from the `Accept` header, defaults to a Not Acceptable response
  * @returns a Request handler
+ *
+ * @example
+ * ```ts
+ * Deno.serve(handle([
+ *   byPattern(
+ *     "/hello{.:ext}?",
+ *     byMediaType({
+ *       "text/plain": () => {
+ *         return new Response("Hello world");
+ *       },
+ *       "text/html": () => {
+ *         return new Response(
+ *           "<html><body><h1>Hello world</h1></body></html>",
+ *           { headers: { "Content-Type": "text/html" }
+ *         );
+ *       },
+ *       "application/json": () => {
+ *         return new Response(
+ *           JSON.stringify("Hello world"),
+ *           { headers: { "Content-Type": "application/json" }
+ *         );
+ *       }
+ *     })
+ *   )
+ * ]));
  */
 export function byMediaType<A extends unknown[]>(
   handlers: MediaTypeHandlers<A>,

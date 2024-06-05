@@ -12,7 +12,7 @@ export function getServerProtocol(options: unknown): string {
 export function getServerUrl(
   hostname: string,
   port: number,
-  options: unknown,
+  options?: unknown,
 ): string {
   return `${getServerProtocol(options)}://${displayHost(hostname)}:${port}`;
 }

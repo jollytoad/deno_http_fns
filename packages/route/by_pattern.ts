@@ -1,6 +1,5 @@
 import { asURLPatterns } from "./as_url_pattern.ts";
-import type { Awaitable } from "@http/handler/types";
-import type { RoutePattern } from "./types.ts";
+import type { Awaitable, RoutePattern } from "./types.ts";
 
 /**
  * Create a Request handler that matches the URL of the Request based on a URLPattern.
@@ -10,6 +9,19 @@ import type { RoutePattern } from "./types.ts";
  *  take the Request and the URLPatternResult as arguments
  * @template A the additional arguments passed to the handler
  * @returns a Request handler that returns a Response or null
+ *
+ * @example
+ * ```ts
+ * import { byPattern } from "@http/route/by-pattern";
+ * import { handle } from "@http/route/handle";
+ *
+ * Deno.serve(handle([
+ *   byPattern("/hello/:name", (_req, match) => {
+ *     const { name } = match.pathname.groups;
+ *     return new Response(`Hello ${name}!`);
+ *   })
+ * ]));
+ * ```
  */
 export function byPattern<A extends unknown[]>(
   pattern: RoutePattern,

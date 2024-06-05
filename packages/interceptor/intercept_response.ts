@@ -1,5 +1,4 @@
-import type { Awaitable } from "@http/handler/types";
-import type { ResponseInterceptor } from "./types.ts";
+import type { Awaitable, ResponseInterceptor } from "./types.ts";
 import { intercept } from "./intercept.ts";
 
 /**

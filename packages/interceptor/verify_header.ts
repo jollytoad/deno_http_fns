@@ -1,6 +1,5 @@
 import { forbidden } from "@http/response/forbidden";
-import type { RequestInterceptor } from "./types.ts";
-import type { Awaitable } from "@http/handler/types";
+import type { Awaitable, RequestInterceptor } from "./types.ts";
 
 export interface VerifyHeaderOptions {
   /**

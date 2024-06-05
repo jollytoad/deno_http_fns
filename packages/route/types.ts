@@ -1,4 +1,7 @@
-import type { Awaitable } from "@http/handler/types";
+/**
+ * A result that may be `await`ed.
+ */
+export type Awaitable<T> = T | Promise<T>;
 
 /**
  * Type alias for a pathname part of a URLPattern.
@@ -48,7 +51,7 @@ export type MethodRecord<T> = {
   PATCH: T;
   POST: T;
   PUT: T;
-  [method: string]: T;
+  [method: `${Uppercase<string>}`]: T;
 };
 
 /**

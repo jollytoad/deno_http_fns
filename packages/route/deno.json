@@ -1,6 +1,6 @@
 {
   "name": "@http/route",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "exports": {
     "./as-url-pattern": "./as_url_pattern.ts",
     "./by-media-type": "./by_media_type.ts",
@@ -9,6 +9,7 @@
     "./by-sub-pattern": "./by_sub_pattern.ts",
     "./cascade": "./cascade.ts",
     "./handle": "./handle.ts",
+    "./lazy": "./lazy.ts",
     "./types": "./types.ts",
     "./with-fallback": "./with_fallback.ts"
   },

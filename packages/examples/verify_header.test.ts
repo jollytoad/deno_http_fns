@@ -1,11 +1,13 @@
 import { assertEquals } from "@std/assert";
 import { assertStatus, STATUS_CODE } from "@http/assert";
+import { getBaseUrl } from "./_base_url.ts";
 
 Deno.test("verifyHeader", async (t) => {
-  await using _server = (await import("./verify_header.ts")).default;
+  await using server = (await import("./verify_header.ts")).default;
+  const baseUrl = getBaseUrl(server);
 
   await t.step("providing no header fails", async () => {
-    const response = await fetch("/");
+    const response = await fetch(`${baseUrl}/`);
 
     assertStatus(response, STATUS_CODE.Forbidden);
 
@@ -14,7 +16,7 @@ Deno.test("verifyHeader", async (t) => {
   });
 
   await t.step("providing an invalid header fails", async () => {
-    const response = await fetch("/", {
+    const response = await fetch(`${baseUrl}/`, {
       headers: {
         "X-Access-Token": "this-is-not-the-token",
       },
@@ -27,7 +29,7 @@ Deno.test("verifyHeader", async (t) => {
   });
 
   await t.step("providing a valid header succeeds", async () => {
-    const response = await fetch("/", {
+    const response = await fetch(`${baseUrl}/`, {
       headers: {
         "X-Access-Token": "super-secret-token",
       },

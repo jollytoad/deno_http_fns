@@ -1,8 +1,7 @@
 import { withFallback } from "@http/route/with-fallback";
 import { intercept } from "@http/interceptor/intercept";
 import { logging } from "@http/interceptor/logger";
-import type { Awaitable } from "@http/handler/types";
-import type { Interceptors } from "@http/interceptor/types";
+import type { Awaitable, Interceptors } from "@http/interceptor/types";
 
 /**
  * Convenience function to generate Deno.serve init parameter for Deno Deploy.

@@ -2,7 +2,7 @@ import { byPattern } from "@http/route/by-pattern";
 import { byMethod } from "@http/route/by-method";
 import { serveDir, type ServeDirOptions } from "@std/http/file-server";
 import { fromFileUrl } from "@std/path/from-file-url";
-import type { Awaitable } from "@http/handler/types";
+import type { Awaitable } from "./types.ts";
 
 /**
  * Options for creating a static route handler.

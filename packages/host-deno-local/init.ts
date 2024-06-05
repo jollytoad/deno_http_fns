@@ -4,7 +4,7 @@ import { logging } from "@http/interceptor/logger";
 import { port } from "./port.ts";
 import { loadKeyAndCert } from "./load_key_and_cert.ts";
 import { logServerUrl } from "./server_url.ts";
-import type { Awaitable } from "@http/handler/types";
+import type { Awaitable } from "@http/route/types";
 import type { Interceptors } from "@http/interceptor/types";
 
 /**

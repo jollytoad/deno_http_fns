@@ -7,6 +7,7 @@ import { byStatus } from "@http/interceptor/by-status";
 import { cascade } from "@http/route/cascade";
 import { byPattern } from "@http/route/by-pattern";
 import { forbidden } from "@http/response/forbidden";
+import { port } from "@http/host-deno-local/port";
 
 // This is an example of using intercept to handle 40x responses.
 //
@@ -17,6 +18,7 @@ import { forbidden } from "@http/response/forbidden";
 // forbidden message will be returned.
 
 const server = Deno.serve(
+  { port: port() },
   withFallback(
     interceptResponse(
       // This is the main set of handlers...

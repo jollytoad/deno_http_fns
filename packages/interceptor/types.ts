@@ -1,4 +1,7 @@
-import type { Awaitable } from "@http/handler/types";
+/**
+ * A result that may be `await`ed.
+ */
+export type Awaitable<T> = T | Promise<T>;
 
 /**
  * A function that is called before the handler,

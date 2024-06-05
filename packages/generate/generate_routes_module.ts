@@ -225,7 +225,7 @@ async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
     `${opts.httpModulePrefix}route/by-method`,
     "byMethod",
   );
-  const lazy = importNamed(`${opts.httpModulePrefix}handler/lazy`, "lazy");
+  const lazy = importNamed(`${opts.httpModulePrefix}route/lazy`, "lazy");
 
   const routesCode: Code[] = [];
 

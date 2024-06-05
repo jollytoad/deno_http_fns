@@ -5,12 +5,14 @@ import {
   assertStatus,
   STATUS_CODE,
 } from "@http/assert";
+import { getBaseUrl } from "./_base_url.ts";
 
 Deno.test("by_media_type", async (t) => {
-  await using _server = (await import("./by_media_type.ts")).default;
+  await using server = (await import("./by_media_type.ts")).default;
+  const baseUrl = getBaseUrl(server);
 
   await t.step("/hello", async () => {
-    const response = await fetch("/hello");
+    const response = await fetch(`${baseUrl}/hello`);
 
     assertOk(response);
     assertHeader(response, "Content-Type", "text/plain;charset=UTF-8");
@@ -18,7 +20,7 @@ Deno.test("by_media_type", async (t) => {
   });
 
   await t.step("/hello.txt", async () => {
-    const response = await fetch("/hello.txt");
+    const response = await fetch(`${baseUrl}/hello.txt`);
 
     assertOk(response);
     assertHeader(response, "Content-Type", "text/plain;charset=UTF-8");
@@ -26,7 +28,7 @@ Deno.test("by_media_type", async (t) => {
   });
 
   await t.step("/hello.html", async () => {
-    const response = await fetch("/hello.html");
+    const response = await fetch(`${baseUrl}/hello.html`);
 
     assertOk(response);
     assertHeader(response, "Content-Type", "text/html");
@@ -34,7 +36,7 @@ Deno.test("by_media_type", async (t) => {
   });
 
   await t.step("/hello.json", async () => {
-    const response = await fetch("/hello.json");
+    const response = await fetch(`${baseUrl}/hello.json`);
 
     assertOk(response);
     assertHeader(response, "Content-Type", "application/json");
@@ -42,14 +44,14 @@ Deno.test("by_media_type", async (t) => {
   });
 
   await t.step("/hello.md (404)", async () => {
-    const response = await fetch("/hello.md");
+    const response = await fetch(`${baseUrl}/hello.md`);
 
     assertStatus(response, STATUS_CODE.NotFound);
     await response.body?.cancel();
   });
 
   await t.step("Accept: text/plain", async () => {
-    const response = await fetch("/hello", {
+    const response = await fetch(`${baseUrl}/hello`, {
       headers: { Accept: "text/plain" },
     });
 
@@ -59,7 +61,7 @@ Deno.test("by_media_type", async (t) => {
   });
 
   await t.step("Accept: text/html", async () => {
-    const response = await fetch("/hello", {
+    const response = await fetch(`${baseUrl}/hello`, {
       headers: { Accept: "text/html" },
     });
 
@@ -69,7 +71,7 @@ Deno.test("by_media_type", async (t) => {
   });
 
   await t.step("Accept: application/json", async () => {
-    const response = await fetch("/hello", {
+    const response = await fetch(`${baseUrl}/hello`, {
       headers: { Accept: "application/json" },
     });
 
@@ -79,7 +81,7 @@ Deno.test("by_media_type", async (t) => {
   });
 
   await t.step("Accept: text/markdown (406)", async () => {
-    const response = await fetch("/hello", {
+    const response = await fetch(`${baseUrl}/hello`, {
       headers: { Accept: "text/markdown" },
     });
 

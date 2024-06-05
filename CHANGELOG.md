@@ -10,6 +10,23 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.13.0]
+
+### Added
+
+- [@http/route] `lazy()` moved into here from `@http/handler`
+
+### Removed
+
+- [@http/handler] package removed, `mapData()` was no longer used, and
+  `Awaitable` type copied into `types` module of individual packages where
+  required
+
+### Fixed
+
+- [@http/example] use a random port if 8000 is not available, and fix tests to
+  use this port
+
 ## [0.12.0]
 
 ### Changed

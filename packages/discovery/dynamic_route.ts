@@ -1,5 +1,5 @@
 import { byPattern } from "@http/route/by-pattern";
-import { lazy } from "@http/handler/lazy";
+import { lazy } from "@http/route/lazy";
 import { cascade } from "@http/route/cascade";
 import {
   type DiscoveredRoute,

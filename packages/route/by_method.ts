@@ -1,8 +1,7 @@
 import { methodNotAllowed } from "@http/response/method-not-allowed";
 import { noContent } from "@http/response/no-content";
 import { replaceBody } from "@http/response/replace-body";
-import type { Awaitable } from "@http/handler/types";
-import type { MethodHandlers } from "./types.ts";
+import type { Awaitable, HttpMethod, MethodHandlers } from "./types.ts";
 
 /**
  * Create a Request handler that delegates based on the HTTP Method of the Request.
@@ -13,6 +12,23 @@ import type { MethodHandlers } from "./types.ts";
  * @param fallback a handler for any method not given, defaults to return a Method Not Allowed response,
  *  but may return `null` if you want the request to cascade to a later handler
  * @returns a Request handler
+ *
+ * @example Usage with `Deno.serve`, `byPattern` and `handle`
+ * ```ts
+ * Deno.serve(handle([
+ *   byPattern(
+ *     "/:path*",
+ *     byMethod({
+ *       GET: (_req, match) => {
+ *         return new Response(`GET from ${match.pathname.groups.path}`);
+ *       },
+ *       PUT: (_req, match) => {
+ *         return new Response(`PUT to ${match.pathname.groups.path}`);
+ *       }
+ *     })
+ *  ),
+ * ]));
+ * ```
  */
 export function byMethod<A extends unknown[]>(
   handlers: MethodHandlers<A>,
@@ -26,7 +42,7 @@ export function byMethod<A extends unknown[]>(
     defaultHandlers.HEAD = headHandler(handlers.GET);
   }
   return (req, ...args) => {
-    const method = req.method;
+    const method = req.method as HttpMethod;
     const handler = handlers[method] ?? defaultHandlers[method];
 
     if (handler) {

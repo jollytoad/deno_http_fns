@@ -1,4 +1,4 @@
-import type { Awaitable } from "@http/handler/types";
+import type { Awaitable } from "./types.ts";
 import { notFound } from "@http/response/not-found";
 
 /**

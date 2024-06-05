@@ -1,6 +1,5 @@
 import { asURLPatterns } from "@http/route/as-url-pattern";
-import type { RequestInterceptor } from "./types.ts";
-import type { Awaitable } from "@http/handler/types";
+import type { Awaitable, RequestInterceptor } from "./types.ts";
 import type { RoutePattern } from "@http/route/types";
 
 /**
