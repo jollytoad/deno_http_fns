@@ -9,6 +9,39 @@ import type {
  * Wrap a Request handler with chains of interceptor functions that modify the
  * request or response, and optionally handle any errors.
  *
+ * @example
+ * ```ts
+ * Deno.serve(
+ *   withFallback(
+ *     intercept(
+ *
+ *       // This is the main handler...
+ *       byPattern("/", () => {
+ *         return new Response("Hello world");
+ *       }),
+ *
+ *       // The remaining params are the interceptors...
+ *
+ *       logging(),  // an off-the-self console logger of Request/Response,
+ *
+ *       cors(),     // adds CORS support for requests
+ *
+ *       // or add your own custom interceptor...
+ *       {
+ *         // This is a RequestInterceptor that requires the Request to have an
+ *         // Authorization header otherwise responds with a `401 Unauthorized`,
+ *         // and asks for credentials.
+ *         request: (req) => {
+ *           if (!req.headers.has("Authorization")) {
+ *             return unauthorized(`Basic realm="Who are you?"`);
+ *           }
+ *         },
+ *       },
+ *     ),
+ *   ),
+ * )
+ * ```
+ *
  * @param handler the original handler
  * @returns a new Request handler
  */

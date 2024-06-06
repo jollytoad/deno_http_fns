@@ -4,7 +4,10 @@ import { intercept } from "./intercept.ts";
 /**
  * Shortcut for `intercept` when you only need to provide ResponseInterceptors.
  *
- * Example: `interceptResponse(..., skip(404))`
+ * @example
+ * ```ts
+ * interceptResponse(handler, skip(404))
+ * ```
  *
  * @param handler the original handler
  * @param interceptors a chain of ResponseInterceptor functions that may modify the

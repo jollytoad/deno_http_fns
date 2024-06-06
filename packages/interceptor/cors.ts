@@ -10,6 +10,11 @@ export interface CorsOptions {
 /**
  * Set of interceptors to handle CORS (Cross-Origin Resource Sharing) requests.
  *
+ * @example
+ * ```ts
+ * Deno.serve(intercept(handler, cors()));
+ * ```
+ *
  * @param opts configuration options
  */
 export function cors(opts?: CorsOptions): Interceptors<unknown[], Response> {

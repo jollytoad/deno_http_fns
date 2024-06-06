@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.14.0]
+
+### Changed
+
+- [@http/interceptor] `byStatus()` renamed to `whenStatus()`
+
 ## [0.13.0]
 
 ### Added

@@ -3,7 +3,7 @@ import { withFallback } from "@http/route/with-fallback";
 import { interceptResponse } from "@http/interceptor/intercept-response";
 import { skip } from "@http/interceptor/skip";
 import { notFound } from "@http/response/not-found";
-import { byStatus } from "@http/interceptor/by-status";
+import { whenStatus } from "@http/interceptor/when-status";
 import { cascade } from "@http/route/cascade";
 import { byPattern } from "@http/route/by-pattern";
 import { forbidden } from "@http/response/forbidden";
@@ -28,7 +28,7 @@ const server = Deno.serve(
       ),
       // These are the Response Interceptors...
       skip(404),
-      byStatus(
+      whenStatus(
         403,
         () => forbidden("I'm sorry Dave, but I'm afraid you can't do that."),
       ),

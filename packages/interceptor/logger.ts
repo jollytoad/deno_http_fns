@@ -1,5 +1,41 @@
 import type { Interceptors } from "./types.ts";
 
+/**
+ * A set of interceptors to log Request and Response details to the console.
+ *
+ * Generally you'd use the {@linkcode logging} interceptors to introduce the
+ * standard set of concise loggers...
+ *
+ * @example
+ * ```ts
+ * Deno.serve(intercept(handler, logging()))
+ * ```
+ *
+ * but you may also use the interceptor functions individually to construct
+ * logging for your needs...
+ *
+ * @example
+ * ```ts
+ * Deno.serve(intercept(
+ *   handler,
+ *   {
+ *     request: [
+ *       logRequestGroup,
+ *       whenPattern("/hello", logHeaders)    // also log request header for just '/hello'
+ *     ],
+ *     response: [
+ *       logGroupEnd,
+ *       logStatusAndContentType,
+ *       whenStatus(304, logResponseHeaders)  // also log response headers when the status is 304 Not Modified
+ *     ],
+ *     error: [logGroupEnd, logError],
+ *   }
+ * ))
+ * ```
+ *
+ * @module
+ */
+
 const requestTime = new WeakMap<Request, number>();
 
 /**
@@ -74,6 +110,11 @@ export function logError(_req: unknown, _res: unknown, error: unknown) {
 
 /**
  * Set of standard logging interceptors.
+ *
+ * @example
+ * ```ts
+ * Deno.serve(intercept(handler, logging()))
+ * ```
  */
 export function logging(): Interceptors<unknown[], Response> {
   return {

@@ -10,7 +10,7 @@ import type { ResponseInterceptor } from "./types.ts";
  *  null to indicate a skipped response.
  * @returns a Response Interceptor
  */
-export function byStatus(
+export function whenStatus(
   status: number | number[],
   interceptor: ResponseInterceptor,
 ): ResponseInterceptor {
