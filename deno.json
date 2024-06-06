@@ -28,7 +28,7 @@
     "@http/generate": "jsr:@http/generate@0.14.0",
     "@http/host-deno-deploy": "jsr:@http/host-deno-deploy@0.14.0",
     "@http/host-deno-local": "jsr:@http/host-deno-local@0.14.0",
-    "@http/interceptor": "jsr:@http/interceptor@0.14.0",
+    "@http/interceptor": "jsr:@http/interceptor@0.14.1",
     "@http/request": "jsr:@http/request@0.14.0",
     "@http/response": "jsr:@http/response@0.14.0",
     "@http/route": "jsr:@http/route@0.14.0",

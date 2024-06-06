@@ -1,5 +1,7 @@
 # Request/Response Interceptors
 
+_Similar to middleware, but more outerwear._
+
 ## What is Middleware?
 
 Middleware in most HTTP routers is form of
@@ -21,9 +23,9 @@ Specifically:
 - _after_ the handler - allowing interception of the
   [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)
 
-Interceptors are registered using a function that wraps the handler, and it
-given the set of interceptors, return a new handler function with all the
-interception baked in.
+Interceptors are registered using the `intercept()` function that wraps the
+handler, which is given the set of interceptors, returning a new handler
+function with all the interception baked in.
 
 Here's an example of a Request Interceptor that ensures an
 [`Authorization`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization)
@@ -86,8 +88,8 @@ function supports registration of four different
 
 - [`request`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.request)
 - [`response`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.response)
-- [`error`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.response)
-- [`finally`]((https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.response)
+- [`error`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.error)
+- [`finally`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.finally)
 
 These maybe supplied as the keys of an object, and you may supply a single
 function or and array of functions for each type. You may also supply either a
@@ -106,6 +108,7 @@ be used to modify or block requests entirely before they get to the handler.
 
 The Request Interceptor is a function, that accepts the incoming `Request`, and
 any additional arguments passed to the handler that is created by `intercept`.
+
 It may return one of the following:
 
 - Nothing (`undefined`/`void`) - to indicate no action is to be taken, the
@@ -122,6 +125,8 @@ It may return one of the following:
   functions of [@http/route] - but use of `null` and those functions is entirely
   optional.
 
+The return value can optionally be wrapped in a `Promise`.
+
 It may also throw an error, to be handled by the Error Interceptors.
 
 So in our example above, we check the header and either return nothing, or an
@@ -130,14 +135,16 @@ unauthorized `Response`.
 ### [Response Interceptor](https://jsr.io/@http/interceptor/doc/types/~/ResponseInterceptor)
 
 These are called with the outgoing `Response`, after the handler, or an
-interceptor that returned a `Response`. This is can be used, for example, to
-test whether something like a Not Modified response should be sent instead, or
-to render a full page for an error or a Not Found, or to add CORS or other
-custom headers.
+interceptor that returned a `Response`.
+
+This is can be used, for example, to test whether something like a Not Modified
+response should be sent instead, or to render a full page for an error or a Not
+Found, or to add CORS or other custom headers.
 
 Again, this just another function, that accepts the `Request` received by the
-handler (or interceptor), and the `Response` returned from it. It may return one
-of the following:
+handler (or interceptor), and the `Response` returned from it.
+
+It may return one of the following:
 
 - Nothing (`undefined`/`void`) - to indicate no action is to be taken, and the
   original `Response` should be passed on
@@ -145,8 +152,9 @@ of the following:
   next interceptor or eventually out from the server
 - `null` (if allowed) - indicate that this handler as a whole cannot handle the
   request, this is used in combination with `cascade` and `withFallback`
-  functions of [@http/route] - but use of `null` and those functions is entirely
-  optional.
+  functions - but use of `null` and those functions is entirely optional.
+
+The return value can optionally be wrapped in a `Promise`.
 
 It may also throw an error, to be handled by the Error Interceptors.
 
@@ -157,12 +165,15 @@ error. They can be used to provide a reasonable Response, and/or log the error.
 
 An Error Interceptor function accepts the `Request`, optionally a `Response` (if
 one has been produced so far), and the error (or other object) that was caught.
+
 It may return one of the following:
 
 - Nothing (`undefined`/`void`) - if it is unable to handle the error
 - A `Response` - to become the new outgoing `Response`, this will be passed to
   further Error Interceptors, and may still be passed to Response Interceptors
   if the throw occurred from a Request Interceptor or the handler.
+
+The return value can optionally be wrapped in a `Promise`.
 
 If an Error Interceptor throws an error, it will NOT be handled by any other
 interceptors and will immediately propagate out from the handler created by
@@ -171,20 +182,24 @@ interceptors and will immediately propagate out from the handler created by
 ### [Finally Interceptor](https://jsr.io/@http/interceptor/doc/types/~/FinallyInterceptor)
 
 These are called when a Response has completed or been aborted, and after all
-data from it's body has been drained. This is useful for logging, recording
-metrics, and cleaning up resources after a request.
+data from it's body has been drained.
+
+This is useful for logging, recording metrics, and cleaning up resources after a
+request.
 
 The interceptor function accepts the `Request`, optionally a `Response` (if one
 was created before being aborted), and optionally the reason for the abort (from
-the dispatched `abort` event). It doesn't need to return anything, anything
-returned is ignored.
+the dispatched `abort` event).
 
-Any errors thrown are simply caught and logged to the console, further
-interceptors will continue to be called.
+It should not return anything, but anything that is returned is ignored. These
+interceptors are not `await`ed.
+
+It should not throw any errors, but any errors thrown are simply caught and
+logged to the console, and any further interceptors will continue to be called.
 
 ## Shortcuts
 
-### [`interceptResponse()`](https://jsr.io/@http/interceptor@0.13.0/doc/intercept-response/~/interceptResponse)
+### [`interceptResponse()`](https://jsr.io/@http/interceptor/doc/intercept-response/~/interceptResponse)
 
 Use of just Response Interceptors is the most common pattern, and so there is a
 shortcut to `intercept()` for just those.
@@ -194,8 +209,8 @@ This example looks for static files first using the
 which results in a 404 response if the file is not found. So we use the
 [skip](https://jsr.io/@http/interceptor/doc/skip/~/skip) interceptor to convert
 any 404 response to a `null` (unhandled) response, the request can then be
-delegated to latter handlers supplied to the
-[handle](https://jsr.io/@http/route/doc/handle/~/handle) function.
+delegated to later handlers supplied to the
+[handle](https://jsr.io/@http/route/doc/handle/~/handle) function...
 
 ```ts
 Deno.serve(
