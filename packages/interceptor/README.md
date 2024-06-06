@@ -1,6 +1,6 @@
 # Request/Response Interceptors
 
-### What is Middleware?
+## What is Middleware?
 
 Middleware in most HTTP routers is form of
 [aspect-oriented programming](https://en.wikipedia.org/wiki/Aspect-oriented_programming),
@@ -9,7 +9,7 @@ given a `next()` function, that calls the next middleware or eventually the
 request handler itself, but it may perform any logic it wants _around_ this
 call.
 
-### What are Interceptors?
+## What are Interceptors?
 
 Interceptors also take a leaf out of AOP, but instead let you define _before_
 and _after_ advice.
@@ -50,7 +50,7 @@ Deno.serve(
 );
 ```
 
-### Off the Shelf Interceptors
+## Off the Shelf Interceptors
 
 This package contains a number of pre-built interceptors...
 
@@ -78,7 +78,7 @@ These are in a similar vein to the `by*` functions of
 [@http/route](https://jsr.io/@http/route), the naming convention of `when*` is
 used to distinguish these interceptor functions from the routing functions.
 
-### Types of Interceptor
+## Types of Interceptor
 
 The [`intercept()`](https://jsr.io/@http/interceptor/doc/intercept/~/intercept)
 function supports registration of four different
@@ -99,7 +99,7 @@ ensures that a top-level feature that provides multiple types of interceptor
 (such as a logger) would be the first to intercept the `Request`, and the last
 to intercept the `Response`.
 
-## [Request Interceptor](https://jsr.io/@http/interceptor/doc/types/~/RequestInterceptor)
+### [Request Interceptor](https://jsr.io/@http/interceptor/doc/types/~/RequestInterceptor)
 
 These are called before the `Request` is passed to the actual handler, and may
 be used to modify or block requests entirely before they get to the handler.
@@ -127,7 +127,7 @@ It may also throw an error, to be handled by the Error Interceptors.
 So in our example above, we check the header and either return nothing, or an
 unauthorized `Response`.
 
-## [Response Interceptor](https://jsr.io/@http/interceptor/doc/types/~/ResponseInterceptor)
+### [Response Interceptor](https://jsr.io/@http/interceptor/doc/types/~/ResponseInterceptor)
 
 These are called with the outgoing `Response`, after the handler, or an
 interceptor that returned a `Response`. This is can be used, for example, to
@@ -150,7 +150,7 @@ of the following:
 
 It may also throw an error, to be handled by the Error Interceptors.
 
-## [Error Interceptor](https://jsr.io/@http/interceptor/doc/types/~/ErrorInterceptor)
+### [Error Interceptor](https://jsr.io/@http/interceptor/doc/types/~/ErrorInterceptor)
 
 These are called if a Request or Response interceptor, or the handler throws an
 error. They can be used to provide a reasonable Response, and/or log the error.
@@ -168,7 +168,7 @@ If an Error Interceptor throws an error, it will NOT be handled by any other
 interceptors and will immediately propagate out from the handler created by
 `intercept()`.
 
-## [Finally Interceptor](https://jsr.io/@http/interceptor/doc/types/~/FinallyInterceptor)
+### [Finally Interceptor](https://jsr.io/@http/interceptor/doc/types/~/FinallyInterceptor)
 
 These are called when a Response has completed or been aborted, and after all
 data from it's body has been drained. This is useful for logging, recording
@@ -181,6 +181,8 @@ returned is ignored.
 
 Any errors thrown are simply caught and logged to the console, further
 interceptors will continue to be called.
+
+## Shortcuts
 
 ### [`interceptResponse()`](https://jsr.io/@http/interceptor@0.13.0/doc/intercept-response/~/interceptResponse)
 
