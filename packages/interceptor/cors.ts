@@ -10,16 +10,31 @@ export interface CorsOptions {
 /**
  * Set of interceptors to handle CORS (Cross-Origin Resource Sharing) requests.
  *
+ * NOTE: This simply add the appropriate headers to the outgoing Response, your
+ * handler needs to handle OPTIONS requests appropriately for CORS pre-flight
+ * checks to work.
+ *
+ * If the `allowMethods` option is the `*` wildcard (the default if not given),
+ * the if your OPTIONS response contains an [Allow](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Allow)
+ * header, then the interceptor will use this for the [Access-Control-Allow-Methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods)
+ * header in the response.
+ *
+ * The simplest way to support CORS preflight properly is to make use of the
+ * {@linkcode byMethod} helper which implicitly handles `OPTIONS` (and also `HEAD`)
+ * for you.
+ *
  * @example
  * ```ts
- * Deno.serve(intercept(handler, cors()));
+ * Deno.serve(intercept(byMethod({
+ *   GET: handler
+ * }), cors()));
  * ```
  *
  * @param opts configuration options
  */
 export function cors(opts?: CorsOptions): Interceptors<unknown[], Response> {
   return {
-    response: [corsResponse(opts)],
+    response: [addCorsHeaders(opts)],
   };
 }
 
@@ -29,7 +44,7 @@ export function cors(opts?: CorsOptions): Interceptors<unknown[], Response> {
  * @param opts configuration options
  * @returns a ResponseInterceptor that can be used with `intercept` or `interceptResponse`.
  */
-export function corsResponse(
+export function addCorsHeaders(
   opts?: CorsOptions,
 ): (req: Request, res: Response) => Response {
   return (req, res) => {
