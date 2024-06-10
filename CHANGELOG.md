@@ -14,9 +14,9 @@ This changelog will need to be split between individual packages
 
 ### Fixed
 
-- [@http/discovery/fresh-path-mapper] replace all `[name]` and `[[name]]`
-  groups within a path segment rather than having just a single group match the
-  whole segment
+- [@http/discovery/fresh-path-mapper] replace all `[name]` and `[[name]]` groups
+  within a path segment rather than having just a single group match the whole
+  segment
 
 ### Changed
 
