@@ -34,18 +34,21 @@ function freshPath(path: string): string {
   return segments.join("") || "/";
 }
 
+const DOUBLE_BRACKET_RE = /\[\[(.+?)\]\]/g;
+const SINGLE_BRACKET_RE = /\[(.+?)\]/g;
+
 function freshPart(part: string): string[] {
+  if (part.startsWith("(") && part.endsWith(")")) {
+    return [];
+  }
   if (part.startsWith("[...") && part.endsWith("]")) {
     return [`/:${part.slice(4, part.length - 1)}*`];
   }
-  if (part.startsWith("[[") && part.endsWith("]]")) {
-    return [`/:${part.slice(2, part.length - 2)}?`];
+  if (DOUBLE_BRACKET_RE.test(part)) {
+    part = part.replaceAll(DOUBLE_BRACKET_RE, ":$1?");
   }
-  if (part.startsWith("[") && part.endsWith("]")) {
-    return [`/:${part.slice(1, part.length - 1)}`];
-  }
-  if (part.startsWith("(") && part.endsWith(")")) {
-    return [];
+  if (SINGLE_BRACKET_RE.test(part)) {
+    part = part.replaceAll(SINGLE_BRACKET_RE, ":$1");
   }
   return part ? [`/${part}`] : [];
 }
