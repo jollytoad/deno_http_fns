@@ -3,9 +3,9 @@
 **@http functions** is not a framework, it's a library of functions that work
 well together, but also with other frameworks (that use standard web APIs).
 
-At present there is no `init` command to create an app template.
+At present there is no `init` command to create a template app.
 
-I see the main benefit of using `@http` functions is the transparency of the
+I feel the main benefit of using `@http` functions is the transparency of the
 code, it is deliberated designed so that the runtime path is simple and easy to
 follow. Indeed I encourage you to look inside the functions and get a feel for
 what they do and how they work, they should hopefully be clear, and if not
@@ -27,6 +27,9 @@ your favourite IDE ready to work with it.
 - Generate a router from filesystem based routing structure
 - Add static file routing
 - Add production and development entry points
+- Add a route with a pattern
+- Add a path syntax mapper
+- Add JSX support
 
 ## Project structure
 
@@ -41,7 +44,9 @@ mkdir app scripts
 
 ## Filesystem based routing
 
-This is completely optional, you can manually construct a router if you want to.
+This is completely optional when using `@http` functions, you can manually
+construct a router if you want to, and you can mix fs routing and manual routes
+if you need to.
 
 I like to put all my routes under `app/routes`:
 
@@ -72,6 +77,9 @@ export function GET() {
   return ok("Hello");
 }
 ```
+
+Again, these helpers are completely optional, you can just use `new Response()`
+if you prefer.
 
 ### Generate the router module
 
@@ -122,7 +130,8 @@ and run it:
 deno task gen
 ```
 
-This should have created a file at `app/routes.ts`, have a browser of this.
+This should have created a file at `app/routes.ts`, take a look at this in your
+editor.
 
 You'll notice it imports some packages we haven't yet added...
 
@@ -133,7 +142,8 @@ deno add @http/route
 The default export of this module is a simple Request -> Response handler for
 all the routes in your filesystem.
 
-Try switching `moduleImports` to `"dynamic"` and see what is generated then.
+Try switching `moduleImports` to `"dynamic"` and see what is generated in
+`app/routes.ts` now, I'll let you work out what it's doing.
 
 Take a look at the
 [generateRoutesModule()](https://jsr.io/@http/generate/doc/generate-routes-module/~/generateRoutesModule)
@@ -181,6 +191,9 @@ export default handle([
 This creates and exports a complete Request -> Response handler for our app,
 serving the filesystem based routes first, and then fallback to static files,
 and eventually falling back to a default `Not Found` response.
+
+This `handler.ts` is module is where I'd add patterns that are too complex for
+filesystem routing.
 
 ### The production entry point
 
@@ -381,3 +394,13 @@ function Hello({ name }: { name: string }) {
 NOTE: The `renderBody` will serialize your JSX verbatim as a `ReadableStream` of
 HTML. So the `prependDocType` function is required to tag `<!DOCTYPE html>` to
 the start of your Response body.
+
+### Now what?
+
+Go and start tinkering.
+
+And/or take a look at my [personal homepage](https://github.com/jollytoad/home),
+which is built using `@http` functions, and runs on Deno Deploy. It may vary a
+little from the conventions I describe here, but if you find the `dev.ts` &
+`main.ts` entrypoints you should be able to follow every path in the entire app
+from there.
