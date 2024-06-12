@@ -169,7 +169,7 @@ different entry points.
 And in this example, we'll add the ability to serve up static files.
 
 ```sh
-mkdir static
+mkdir app/static
 deno add @http/route-deno
 ```
 
@@ -244,7 +244,9 @@ During development we may want to do some additional or alternative
 configuration, so I like to create a separate entry point for that, and use a
 helper function to add logging, read local TLS certs etc.
 
-We're also going to rebuild our routes module automatically on restart.
+We're also going to rebuild our routes module automatically on restart, so we
+also need to be able to deal with an initially non-existing or modified routes
+module.
 
 ```sh
 deno add @http/host-deno-local
@@ -256,10 +258,12 @@ Create a `app/dev.ts`:
 !/usr/bin/env -S deno run --allow-ffi --allow-read=. --allow-write=. --allow-net --watch
 
 import generateRoutes from "../scripts/gen.ts";
-import handler from "./handler.ts";
 import init from "@http/host-deno-local/init";
 
 await generateRoutes();
+
+// This allows loading of a new or modified routes.ts module
+const handler = lazy(import.meta.resolve("./handler.ts"));
 
 await Deno.serve(await init(handler)).finished;
 ```

@@ -8,10 +8,29 @@ import { verifyHeader } from "@http/interceptor/verify-header";
 import { unauthorized } from "@http/response/unauthorized";
 import { port } from "@http/host-deno-local/port";
 
-// This is an example of using the `whenPattern` interceptor to protect a specific route.
-//
-// All routes within the site are publicly accessible, except for routes under `/private`,
-// for which a regular HTTP Basic Authorization is required.
+/**
+ * This is an example of using {@linkcode whenPattern} to filter
+ * the application of an intercept based on the URL of the request.
+ *
+ * In this case it protects all resources under `/private` with
+ * a password, but allows anonymous access to everything else.
+ *
+ * You can run the example directly from JSR with:
+ *
+ * ```sh
+ * deno run --allow-net jsr:@http/examples/when-pattern
+ * ```
+ *
+ * And try hitting the following URLs in your browser:
+ *
+ * - http://localhost:8000
+ * - http://localhost:8000/public/stuff
+ * - http://localhost:8000/private/stuff
+ *
+ * Enter `username` and `password` when prompted for credentials.
+ *
+ * @module
+ */
 
 const server = Deno.serve(
   { port: port() },

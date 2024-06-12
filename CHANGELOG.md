@@ -21,6 +21,7 @@ This changelog will need to be split between individual packages
 ### Changed
 
 - [@http/interceptor/cors] `corsResponse()` renamed to `addCorsHeaders()`
+- Lots more documentation
 
 ## [0.14.0]
 

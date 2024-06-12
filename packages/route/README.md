@@ -7,6 +7,13 @@ standard [Request] => [Response] handler function, aka
 [Request]: https://developer.mozilla.org/en-US/docs/Web/API/Request
 [Response]: https://developer.mozilla.org/en-US/docs/Web/API/Response
 
+These functions should be usable on any platform that supports the web
+standards: Deno, Bun, Cloudflare Workers, browsers, ServiceWorker.
+
+There is also a platform specific
+[@http/route-deno](https://jsr.io/@http/route-deno) package that provides static
+routing functions.
+
 ## An Example
 
 Let's start with a really simple example, a router for `GET /hello`...

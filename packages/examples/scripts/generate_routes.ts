@@ -1,4 +1,30 @@
+#!/usr/bin/env -S deno run --allow-ffi --allow-read=. --allow-write=. --allow-net=jsr.io
+
 import { generateRoutesModule } from "@http/generate/generate-routes-module";
+
+/**
+ * This is an example script to generate a static routes module using
+ * {@linkcode generateRoutesModule}.
+ *
+ * This can be executed directly as script, or added as deno task,
+ * or imported into a dev server and called before the server is
+ * started (see the [generated-routes](../generated_routes.ts) example).
+ *
+ * This example needs access to the filesystem.
+ * So, unlike other examples, it cannot be run directly from JSR.
+ *
+ * If you checkout this repo with git though, you can run it from
+ * the local filesystem:
+ *
+ * ```sh
+ * rm ./packages/examples/_routes.ts
+ * deno task example:gen
+ * ```
+ *
+ * Then take a look at the generated `./packages/examples/_routes.ts` file.
+ *
+ * @module
+ */
 
 function generateRoutes(): Promise<boolean> {
   console.log("\n%cGenerating Routes...\n", "color: green; font-weight: bold;");

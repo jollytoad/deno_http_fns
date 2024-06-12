@@ -1,6 +1,7 @@
 {
   "tasks": {
     "example": "deno run -A --import-map=./import_map_local.json --watch",
+    "example:gen": "deno run --import-map=./import_map_local.json --allow-ffi --allow-read=. --allow-write=. --allow-net=jsr.io ./packages/examples/scripts/generate_routes.ts",
     "test": "deno test -A --import-map=./import_map_local.json --coverage --no-check",
     "cov:gen": "deno coverage coverage --lcov --output=cov.lcov",
     "cov:view": "deno coverage --html coverage",
