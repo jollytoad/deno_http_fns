@@ -1,8 +1,3 @@
-import generateRoutes from "./scripts/generate_routes.ts";
-import { withFallback } from "@http/route/with-fallback";
-import { port } from "@http/host-deno-local/port";
-import { lazy } from "@http/route/lazy";
-
 /**
  * This is an example of serving a routes module generated using
  * {@linkcode generateRoutesModule} at development time.
@@ -27,6 +22,11 @@ import { lazy } from "@http/route/lazy";
  *
  * @module
  */
+
+import generateRoutes from "./scripts/generate_routes.ts";
+import { withFallback } from "@http/route/with-fallback";
+import { port } from "@http/host-deno-local/port";
+import { lazy } from "@http/route/lazy";
 
 await generateRoutes();
 

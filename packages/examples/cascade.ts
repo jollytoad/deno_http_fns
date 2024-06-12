@@ -1,8 +1,3 @@
-import { withFallback } from "@http/route/with-fallback";
-import { cascade } from "@http/route/cascade";
-import { byPattern } from "@http/route/by-pattern";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode cascade} to delegate
  * request handling attempts to a chain of handler functions.
@@ -29,6 +24,11 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { withFallback } from "@http/route/with-fallback";
+import { cascade } from "@http/route/cascade";
+import { byPattern } from "@http/route/by-pattern";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

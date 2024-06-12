@@ -1,11 +1,3 @@
-import { discoverRoutes } from "@http/discovery/discover-routes";
-import freshPathMapper from "@http/discovery/fresh-path-mapper";
-import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
-import { byPattern } from "@http/route/by-pattern";
-import { byMethod } from "@http/route/by-method";
-import { handle } from "@http/route/handle";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode discoverRoutes} directly to build a
  * router from handlers in the filesystem.
@@ -32,6 +24,14 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { discoverRoutes } from "@http/discovery/discover-routes";
+import freshPathMapper from "@http/discovery/fresh-path-mapper";
+import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
+import { byPattern } from "@http/route/by-pattern";
+import { byMethod } from "@http/route/by-method";
+import { handle } from "@http/route/handle";
+import { port } from "@http/host-deno-local/port";
 
 console.log("\n%cDiscovering Routes...\n", "color: green; font-weight: bold;");
 

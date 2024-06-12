@@ -1,7 +1,3 @@
-import { withFallback } from "@http/route/with-fallback";
-import { byPattern } from "@http/route/by-pattern";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode byPattern} to determine
  * whether a handler function should handle the request based on
@@ -24,6 +20,10 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { withFallback } from "@http/route/with-fallback";
+import { byPattern } from "@http/route/by-pattern";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

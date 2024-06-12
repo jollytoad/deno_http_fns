@@ -1,8 +1,3 @@
-import { withFallback } from "@http/route/with-fallback";
-import { dynamicRoute } from "@http/discovery/dynamic-route";
-import freshPathMapper from "@http/discovery/fresh-path-mapper";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode dynamicRoute} to dynamically
  * build a router from a filesystem convention.
@@ -21,6 +16,11 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { withFallback } from "@http/route/with-fallback";
+import { dynamicRoute } from "@http/discovery/dynamic-route";
+import freshPathMapper from "@http/discovery/fresh-path-mapper";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

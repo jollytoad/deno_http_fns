@@ -1,7 +1,3 @@
-import { staticRoute } from "@http/route-deno/static-route";
-import { withFallback } from "@http/route/with-fallback";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode staticRoute} to serve
  * static files from the filesystem.
@@ -21,6 +17,10 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { staticRoute } from "@http/route-deno/static-route";
+import { withFallback } from "@http/route/with-fallback";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

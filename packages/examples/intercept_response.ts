@@ -1,14 +1,3 @@
-import { staticRoute } from "@http/route-deno/static-route";
-import { withFallback } from "@http/route/with-fallback";
-import { interceptResponse } from "@http/interceptor/intercept-response";
-import { skip } from "@http/interceptor/skip";
-import { notFound } from "@http/response/not-found";
-import { whenStatus } from "@http/interceptor/when-status";
-import { cascade } from "@http/route/cascade";
-import { byPattern } from "@http/route/by-pattern";
-import { forbidden } from "@http/response/forbidden";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using the {@linkcode interceptResponse},
  * {@linkcode skip}, and {@linkcode whenStatus} to to handle 40x responses.
@@ -37,6 +26,17 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { staticRoute } from "@http/route-deno/static-route";
+import { withFallback } from "@http/route/with-fallback";
+import { interceptResponse } from "@http/interceptor/intercept-response";
+import { skip } from "@http/interceptor/skip";
+import { notFound } from "@http/response/not-found";
+import { whenStatus } from "@http/interceptor/when-status";
+import { cascade } from "@http/route/cascade";
+import { byPattern } from "@http/route/by-pattern";
+import { forbidden } from "@http/response/forbidden";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

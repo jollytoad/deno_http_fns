@@ -1,5 +1,3 @@
-import type { Interceptors } from "./types.ts";
-
 /**
  * A set of interceptors to log Request and Response details to the console.
  *
@@ -35,6 +33,8 @@ import type { Interceptors } from "./types.ts";
  *
  * @module
  */
+
+import type { Interceptors } from "./types.ts";
 
 const requestTime = new WeakMap<Request, number>();
 

@@ -1,7 +1,3 @@
-import { handle } from "@http/route/handle";
-import { byPattern } from "@http/route/by-pattern";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode handle} to delegate
  * request handling attempts to a chain of handler functions.
@@ -27,6 +23,10 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { handle } from "@http/route/handle";
+import { byPattern } from "@http/route/by-pattern";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

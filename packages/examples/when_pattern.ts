@@ -1,13 +1,3 @@
-import { withFallback } from "@http/route/with-fallback";
-import { intercept } from "@http/interceptor/intercept";
-import { cascade } from "@http/route/cascade";
-import { byPattern } from "@http/route/by-pattern";
-import { ok } from "@http/response/ok";
-import { whenPattern } from "@http/interceptor/when-pattern";
-import { verifyHeader } from "@http/interceptor/verify-header";
-import { unauthorized } from "@http/response/unauthorized";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode whenPattern} to filter
  * the application of an intercept based on the URL of the request.
@@ -31,6 +21,16 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { withFallback } from "@http/route/with-fallback";
+import { intercept } from "@http/interceptor/intercept";
+import { cascade } from "@http/route/cascade";
+import { byPattern } from "@http/route/by-pattern";
+import { ok } from "@http/response/ok";
+import { whenPattern } from "@http/interceptor/when-pattern";
+import { verifyHeader } from "@http/interceptor/verify-header";
+import { unauthorized } from "@http/response/unauthorized";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

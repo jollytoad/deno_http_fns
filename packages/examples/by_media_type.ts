@@ -1,9 +1,3 @@
-import { handle } from "@http/route/handle";
-import { byPattern } from "@http/route/by-pattern";
-import { byMethod } from "@http/route/by-method";
-import { byMediaType } from "@http/route/by-media-type";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode byMediaType} to switch
  * between handler functions depending on the requested media type
@@ -32,6 +26,12 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { handle } from "@http/route/handle";
+import { byPattern } from "@http/route/by-pattern";
+import { byMethod } from "@http/route/by-method";
+import { byMediaType } from "@http/route/by-media-type";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

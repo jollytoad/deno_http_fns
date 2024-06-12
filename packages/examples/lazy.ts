@@ -1,10 +1,3 @@
-// deno-lint-ignore-file require-await
-import { handle } from "@http/route/handle";
-import { byPattern } from "@http/route/by-pattern";
-import { lazy } from "@http/route/lazy";
-import { ok } from "@http/response/ok";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode lazy} to dynamically
  * import request handlers only when they are first required.
@@ -24,6 +17,14 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+// deno-lint-ignore-file require-await
+
+import { handle } from "@http/route/handle";
+import { byPattern } from "@http/route/by-pattern";
+import { lazy } from "@http/route/lazy";
+import { ok } from "@http/response/ok";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

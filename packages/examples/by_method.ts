@@ -1,8 +1,3 @@
-import { handle } from "@http/route/handle";
-import { byPattern } from "@http/route/by-pattern";
-import { byMethod } from "@http/route/by-method";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode byMethod} to switch
  * between handler functions depending on the method of the request,
@@ -33,6 +28,11 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { handle } from "@http/route/handle";
+import { byPattern } from "@http/route/by-pattern";
+import { byMethod } from "@http/route/by-method";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

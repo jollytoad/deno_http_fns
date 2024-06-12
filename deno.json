@@ -25,11 +25,11 @@
   "imports": {
     "@http/assert": "jsr:@http/assert@0.15.0",
     "@http/discovery": "jsr:@http/discovery@0.15.0",
-    "@http/examples": "jsr:@http/examples@0.15.0",
+    "@http/examples": "jsr:@http/examples@0.15.1",
     "@http/generate": "jsr:@http/generate@0.15.0",
     "@http/host-deno-deploy": "jsr:@http/host-deno-deploy@0.15.0",
     "@http/host-deno-local": "jsr:@http/host-deno-local@0.15.0",
-    "@http/interceptor": "jsr:@http/interceptor@0.15.0",
+    "@http/interceptor": "jsr:@http/interceptor@0.15.1",
     "@http/request": "jsr:@http/request@0.15.0",
     "@http/response": "jsr:@http/response@0.15.0",
     "@http/route": "jsr:@http/route@0.15.0",

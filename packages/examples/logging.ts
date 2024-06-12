@@ -1,7 +1,3 @@
-import { intercept } from "@http/interceptor/intercept";
-import { logging } from "@http/interceptor/logger";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using the {@linkcode logging} interceptor
  * to log request and response information to the console.
@@ -21,6 +17,10 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { intercept } from "@http/interceptor/intercept";
+import { logging } from "@http/interceptor/logger";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

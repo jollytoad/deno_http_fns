@@ -1,8 +1,3 @@
-import { withFallback } from "@http/route/with-fallback";
-import { byPattern } from "@http/route/by-pattern";
-import { bySubPattern } from "@http/route/by-sub-pattern";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using {@linkcode bySubPattern} to narrow
  * down a URL match after already using {@linkcode byPattern}.
@@ -20,6 +15,11 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { withFallback } from "@http/route/with-fallback";
+import { byPattern } from "@http/route/by-pattern";
+import { bySubPattern } from "@http/route/by-sub-pattern";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

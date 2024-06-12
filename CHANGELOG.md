@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.15.1]
+
+### Documentation
+
+- Moved @module jsdocs to top of file
+
 ## [0.15.0]
 
 ### Fixed

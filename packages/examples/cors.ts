@@ -1,7 +1,3 @@
-import { intercept } from "@http/interceptor/intercept";
-import { cors } from "@http/interceptor/cors";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using the {@linkcode cors} interceptor.
  *
@@ -15,6 +11,10 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { intercept } from "@http/interceptor/intercept";
+import { cors } from "@http/interceptor/cors";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

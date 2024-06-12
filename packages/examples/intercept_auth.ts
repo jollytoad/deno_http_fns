@@ -1,9 +1,3 @@
-import { withFallback } from "@http/route/with-fallback";
-import { intercept } from "@http/interceptor/intercept";
-import { unauthorized } from "@http/response/unauthorized";
-import { byPattern } from "@http/route/by-pattern";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using the {@linkcode intercept} to
  * register a custom interceptor that checks that the
@@ -23,6 +17,12 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { withFallback } from "@http/route/with-fallback";
+import { intercept } from "@http/interceptor/intercept";
+import { unauthorized } from "@http/response/unauthorized";
+import { byPattern } from "@http/route/by-pattern";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

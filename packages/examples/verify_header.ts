@@ -1,10 +1,3 @@
-import { ok } from "@http/response/ok";
-import { intercept } from "@http/interceptor/intercept";
-import { withFallback } from "@http/route/with-fallback";
-import { verifyHeader } from "@http/interceptor/verify-header";
-import { forbidden } from "@http/response/forbidden";
-import { port } from "@http/host-deno-local/port";
-
 /**
  * This is an example of using the {@linkcode verifyHeader} interceptor
  * to check that the imagined "X-Access-Token" header matches a specific value.
@@ -25,6 +18,13 @@ import { port } from "@http/host-deno-local/port";
  *
  * @module
  */
+
+import { ok } from "@http/response/ok";
+import { intercept } from "@http/interceptor/intercept";
+import { withFallback } from "@http/route/with-fallback";
+import { verifyHeader } from "@http/interceptor/verify-header";
+import { forbidden } from "@http/response/forbidden";
+import { port } from "@http/host-deno-local/port";
 
 const server = Deno.serve(
   { port: port() },

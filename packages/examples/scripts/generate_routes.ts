@@ -1,7 +1,5 @@
 #!/usr/bin/env -S deno run --allow-ffi --allow-read=. --allow-write=. --allow-net=jsr.io
 
-import { generateRoutesModule } from "@http/generate/generate-routes-module";
-
 /**
  * This is an example script to generate a static routes module using
  * {@linkcode generateRoutesModule}.
@@ -25,6 +23,8 @@ import { generateRoutesModule } from "@http/generate/generate-routes-module";
  *
  * @module
  */
+
+import { generateRoutesModule } from "@http/generate/generate-routes-module";
 
 function generateRoutes(): Promise<boolean> {
   console.log("\n%cGenerating Routes...\n", "color: green; font-weight: bold;");
