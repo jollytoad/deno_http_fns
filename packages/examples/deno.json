@@ -1,6 +1,6 @@
 {
   "name": "@http/examples",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "exports": {
     "./by-media-type": "./by_media_type.ts",
     "./by-method": "./by_method.ts",
@@ -8,6 +8,7 @@
     "./by-sub-pattern": "./by_sub_pattern.ts",
     "./cascade": "./cascade.ts",
     "./cors": "./cors.ts",
+    "./discover-routes": "./discover_routes.ts",
     "./dynamic-route": "./dynamic_route.ts",
     "./generated-routes": "./generated_routes.ts",
     "./handle": "./handle.ts",
@@ -15,7 +16,6 @@
     "./intercept-response": "./intercept_response.ts",
     "./lazy": "./lazy.ts",
     "./logging": "./logging.ts",
-    "./scripts/discover-routes": "./scripts/discover_routes.ts",
     "./scripts/generate-routes": "./scripts/generate_routes.ts",
     "./static-route": "./static_route.ts",
     "./verify-header": "./verify_header.ts",

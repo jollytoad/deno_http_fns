@@ -5,6 +5,26 @@ import { lazy } from "@http/route/lazy";
 import { ok } from "@http/response/ok";
 import { port } from "@http/host-deno-local/port";
 
+/**
+ * This is an example of using {@linkcode lazy} to dynamically
+ * import request handlers only when they are first required.
+ *
+ * You can run the example directly from JSR with:
+ *
+ * ```sh
+ * deno run --allow-net jsr:@http/examples/lazy
+ * ```
+ *
+ * And try hitting the following URLs in your browser:
+ *
+ * - http://localhost:8000/test-import
+ * - http://localhost:8000/test-resolve
+ * - http://localhost:8000/test-async
+ * - http://localhost:8000/test-sync
+ *
+ * @module
+ */
+
 const server = Deno.serve(
   { port: port() },
   handle([

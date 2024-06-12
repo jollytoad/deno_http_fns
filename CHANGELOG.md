@@ -10,6 +10,19 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.15.0]
+
+### Fixed
+
+- [@http/discovery/fresh-path-mapper] replace all `[name]` and `[[name]]` groups
+  within a path segment rather than having just a single group match the whole
+  segment
+
+### Changed
+
+- [@http/interceptor/cors] `corsResponse()` renamed to `addCorsHeaders()`
+- Lots more documentation
+
 ## [0.14.0]
 
 ### Changed

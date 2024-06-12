@@ -23,6 +23,9 @@ Deno.test("freshPathMapper", async (t) => {
     ["/docs/:version?", "docs/[[version]]/index.ts"],
     ["/archive", "(info)/archive.tsx"],
     ["/contact", "(info)/contact.tsx"],
+    ["/hello-:name", "hello-[name].ts"],
+    ["/hello-:firstName-:lastName", "hello-[firstName]-[lastName].ts"],
+    ["/optional-:name?", "optional-[[name]].ts"],
 
     // extensions (not standard fresh mapping)
     ["/extensions/required{.:ext}", "extensions/required.ext.ts"],

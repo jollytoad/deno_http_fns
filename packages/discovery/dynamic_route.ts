@@ -16,6 +16,20 @@ export interface DynamicRouteOptions extends DiscoverRoutesOptions {
 /**
  * Create a handler that dynamically loads handler modules from the filesystem.
  *
+ * It makes the assumption that the handler modules either export a default
+ * function as the request handler, or a set of individual method handling functions,
+ * (eg. GET, POST, PUT).
+ *
+ * @example
+ * ```ts
+ * Deno.serve(withFallback(
+ *   dynamicRoute({
+ *     fileRootUrl: import.meta.resolve("./routes"),
+ *     verbose: true
+ *   })
+ * ));
+ * ```
+ *
  * @param pattern the root URL pattern, under which all found handlers are nested
  * @param fileRootUrl the root folder in the filesystem as a `file:` URL
  * @param eagerness whether route discovery will take place at `startup`,

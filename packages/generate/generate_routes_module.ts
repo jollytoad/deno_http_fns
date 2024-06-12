@@ -96,7 +96,7 @@ export async function generateRoutesModule(
     httpModulePrefix,
   });
 
-  return await writeIfDiff(moduleOutUrl, content);
+  return writeIfDiff(moduleOutUrl, content);
 }
 
 /**

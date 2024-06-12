@@ -12,6 +12,15 @@ export type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
 /**
  * Create a Request handler that serves static files under a matched URL pattern.
  *
+ * @example
+ * ```ts
+ * Deno.serve(
+ *   withFallback(
+ *      staticRoute("/", import.meta.resolve("./public")),
+ *   )
+ * );
+ * ```
+ *
  * @param pattern the URL pattern to match
  * @param fileRootUrl the root from where the files are served (this should be a file:// URL)
  * @returns a Request handler that always returns a Response

@@ -4,6 +4,26 @@ import { unauthorized } from "@http/response/unauthorized";
 import { byPattern } from "@http/route/by-pattern";
 import { port } from "@http/host-deno-local/port";
 
+/**
+ * This is an example of using the {@linkcode intercept} to
+ * register a custom interceptor that checks that the
+ * `Request` contains an `Authorization` header.
+ *
+ * You can run the example directly from JSR with:
+ *
+ * ```sh
+ * deno run --allow-net jsr:@http/examples/intercept-auth
+ * ```
+ *
+ * And try hitting the following URLs in your browser:
+ *
+ * - http://localhost:8000
+ *
+ * You can supply any username and password when prompted.
+ *
+ * @module
+ */
+
 const server = Deno.serve(
   { port: port() },
   withFallback(

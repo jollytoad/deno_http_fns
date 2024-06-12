@@ -3,6 +3,37 @@ import { byPattern } from "@http/route/by-pattern";
 import { byMethod } from "@http/route/by-method";
 import { port } from "@http/host-deno-local/port";
 
+/**
+ * This is an example of using {@linkcode byMethod} to switch
+ * between handler functions depending on the method of the request,
+ *
+ * You can run the example directly from JSR with:
+ *
+ * ```sh
+ * deno run --allow-net jsr:@http/examples/by-method
+ * ```
+ *
+ * And try hitting the following URLs in your browser:
+ *
+ * - http://localhost:8000/hello
+ * - http://localhost:8000/something
+ *
+ * also, from a non-browser client, setting the request method:
+ *
+ * ```sh
+ * curl -v http://localhost:8000/something
+ * curl -v -X PUT http://localhost:8000/something
+ * curl -v -X POST http://localhost:8000/something  # responds with Method Not Allowed
+ * curl -v --head http://localhost:8000/something
+ * curl -v -X OPTIONS http://localhost:8000/something
+ * ```
+ *
+ * The `HEAD` and `OPTIONS` handlers are implicitly provided by `byMethod`
+ * if you don't supply your own.
+ *
+ * @module
+ */
+
 const server = Deno.serve(
   { port: port() },
   handle([
