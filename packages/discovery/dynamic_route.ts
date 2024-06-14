@@ -2,10 +2,10 @@ import { byPattern } from "@http/route/by-pattern";
 import { lazy } from "@http/route/lazy";
 import { cascade } from "@http/route/cascade";
 import {
-  type DiscoveredRoute,
   discoverRoutes,
   type DiscoverRoutesOptions,
 } from "./discover_routes.ts";
+import type { DiscoveredRoute } from "./types.ts";
 
 export type Eagerness = "startup" | "request";
 

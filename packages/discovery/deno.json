@@ -5,7 +5,11 @@
     "./as-serializable-pattern": "./as_serializable_pattern.ts",
     "./discover-routes": "./discover_routes.ts",
     "./dynamic-route": "./dynamic_route.ts",
-    "./fresh-path-mapper": "./fresh_path_mapper.ts"
+    "./fresh-path-mapper": "./fresh_path_mapper.ts",
+    "./index-path-mapper": "./index_path_mapper.ts",
+    "./pathname-lexical-route-comparator": "./pathname_lexical_route_comparator.ts",
+    "./ts-route-mapper": "./ts_route_mapper.ts",
+    "./types": "./types.ts"
   },
   "publish": {
     "exclude": [

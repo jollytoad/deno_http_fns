@@ -10,6 +10,11 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+- [@http/discovery] moved default path/route mapper and comparators into own
+  modules, which are now dynamically imported only when required
+- [@http/discovery/discover-routes] allow custom `readDir` function, support
+  both `Deno.readDir` and Node's `opendir` by default
+
 ## [0.15.1]
 
 ### Documentation

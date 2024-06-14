@@ -1,4 +1,4 @@
-import type { DiscoveredPath } from "./discover_routes.ts";
+import type { DiscoveredPath } from "./types.ts";
 
 /**
  * A Fresh-like path mapping function.
@@ -14,6 +14,13 @@ import type { DiscoveredPath } from "./discover_routes.ts";
  * `.ext` (for a required extension) or `[.ext]` (for an optional extension).
  *
  * Example path: `blog/[...path][.ext].tsx`
+ *
+ * @example
+ * ```ts
+ * const routes = await discoverRoutes({
+ *   pathMapper: freshPathMapper
+ * });
+ * ```
  */
 export function freshPathMapper(entry: DiscoveredPath): DiscoveredPath {
   return {
