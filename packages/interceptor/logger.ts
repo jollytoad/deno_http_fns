@@ -119,7 +119,7 @@ export function logError(_req: unknown, _res: unknown, error: unknown) {
 export function logging(): Interceptors<unknown[], Response> {
   return {
     request: [logRequestGroup],
-    response: [logGroupEnd, logStatusAndContentType],
     error: [logGroupEnd, logError],
+    finally: [logGroupEnd, logStatusAndContentType],
   };
 }

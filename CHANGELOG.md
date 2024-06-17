@@ -14,6 +14,8 @@ This changelog will need to be split between individual packages
   modules, which are now dynamically imported only when required
 - [@http/discovery/discover-routes] allow custom `readDir` function, support
   both `Deno.readDir` and Node's `opendir` by default
+- [@http/interceptor/logger] move response logging into `finally` interceptor so
+  that it groups and accounts for timing of streamed responses
 
 ## [0.15.1]
 
