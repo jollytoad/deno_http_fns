@@ -10,6 +10,8 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.16.0]
+
 ### Changed
 
 - [@http/interceptor/logger] move response logging into `finally` interceptor so
