@@ -7,6 +7,7 @@ import type {
   DynamicRouteOptions,
   Eagerness,
 } from "@http/discovery/dynamic-route";
+import { combinedRouteMapper } from "@http/discovery/combined-route-mapper";
 import { dirname } from "@std/path/posix/dirname";
 import { relative } from "@std/path/posix/relative";
 import { fromFileUrl } from "@std/path/posix/from-file-url";
@@ -59,9 +60,9 @@ export interface GenerateOptions extends
   pathMapper?: string | URL;
 
   /**
-   * Module that supplies a RouteMapper as the default function.
+   * Module(s) that supply a RouteMapper as the default function.
    */
-  routeMapper?: string | URL;
+  routeMapper?: string | URL | Array<string | URL>;
 
   /**
    * Module that supplies a RouteComparator as the default function.
@@ -187,7 +188,9 @@ function generateDynamicRouteHandler(opts: GenerateDynamicRouteOptions): Code {
       ? { pathMapper: importDefault(opts.pathMapper, "pathMapper") }
       : null),
     ...(opts.routeMapper
-      ? { routeMapper: importDefault(opts.routeMapper, "routeMapper") }
+      ? Array.isArray(opts.routeMapper)
+        ? { routeMapper: combineRouteMappers(opts, opts.routeMapper) }
+        : { routeMapper: importDefault(opts.routeMapper, "routeMapper") }
       : null),
     ...(opts.compare
       ? { compare: importDefault(opts.compare, "compare") }
@@ -197,6 +200,25 @@ function generateDynamicRouteHandler(opts: GenerateDynamicRouteOptions): Code {
   };
 
   return code`${dynamicRoute}(${optsCode})`;
+}
+
+function combineRouteMappers(
+  opts: GenerateDynamicRouteOptions,
+  routeMappers: Array<string | URL>,
+) {
+  const combinedRouteMapper = importNamed(
+    `${opts.httpModulePrefix}discovery/combined-route-mapper`,
+    "combinedRouteMapper",
+  );
+
+  return code`${combinedRouteMapper}(${
+    joinCode(
+      routeMappers.map((mapper, i) =>
+        code`${importDefault(mapper, `routeMapper_${i + 1}`)}`
+      ),
+      { on: "," },
+    )
+  })`;
 }
 
 async function generateStaticRoutesHandler(
@@ -236,7 +258,13 @@ async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
       ? (await import(opts.pathMapper.toString())).default
       : undefined,
     routeMapper: opts.routeMapper
-      ? (await import(opts.routeMapper.toString())).default
+      ? Array.isArray(opts.routeMapper)
+        ? combinedRouteMapper(
+          ...await Promise.all(opts.routeMapper.map(async (routeMapper) =>
+            (await import(routeMapper.toString())).default
+          )),
+        )
+        : (await import(opts.routeMapper.toString())).default
       : undefined,
     compare: opts.compare
       ? (await import(opts.compare.toString())).default

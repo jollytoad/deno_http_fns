@@ -43,7 +43,8 @@
     "@std/path": "jsr:@std/path@^0.225.2",
     "@std/testing": "jsr:@std/testing@^0.225.0",
     "@std/url": "jsr:@std/url@^0.224.0",
-    "ts-poet": "npm:ts-poet@^6.9.0"
+    "ts-poet": "npm:ts-poet@^6.9.0",
+    "$test/generate/": "./packages/generate/_test/"
   },
   "workspaces": [
     "./packages/assert",

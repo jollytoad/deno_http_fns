@@ -7,6 +7,7 @@ import { lazy } from "@http/route/lazy";
 
 export default cascade(
   byPattern("/user/:name{/}?", lazy(async () => byMethod(await import("./routes/user/:name/index.ts")))),
+  byPattern("/raw", lazy(async () => byMethod(await import("./handle_txt.ts")))),
   byPattern("/about", lazy(async () => byMethod(await import("./routes/about.ts")))),
   byPattern("/", lazy(() => import("./routes/index.ts"))),
 );

@@ -69,6 +69,10 @@ async function testGenerateRoutesModule(
     await generateRoutesModule({
       ...opts,
       fileRootUrl,
+      routeMapper: [
+        "@http/discovery/ts-route-mapper",
+        "$test/generate/txt_route_mapper.ts",
+      ],
     });
 
     await assertSnapshot(
@@ -104,6 +108,7 @@ async function testRoutes(t: Deno.TestContext, routesModule: string) {
       `${baseUrl}/user/bob`,
       STATUS_CODE.MethodNotAllowed,
     );
+    await testRoute(t, "GET", `${baseUrl}/raw`, STATUS_CODE.OK);
   });
 }
 

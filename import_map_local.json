@@ -5,6 +5,7 @@
     "@http/assert/assert-ok": "./packages/assert/assert_ok.ts",
     "@http/assert/assert-status": "./packages/assert/assert_status.ts",
     "@http/discovery/as-serializable-pattern": "./packages/discovery/as_serializable_pattern.ts",
+    "@http/discovery/combined-route-mapper": "./packages/discovery/combined_route_mapper.ts",
     "@http/discovery/discover-routes": "./packages/discovery/discover_routes.ts",
     "@http/discovery/dynamic-route": "./packages/discovery/dynamic_route.ts",
     "@http/discovery/fresh-path-mapper": "./packages/discovery/fresh_path_mapper.ts",
@@ -107,6 +108,7 @@
     "@std/testing/": "jsr:/@std/testing@^0.225.0/",
     "@std/url": "jsr:@std/url@^0.224.0",
     "@std/url/": "jsr:/@std/url@^0.224.0/",
+    "$test/generate/": "./packages/generate/_test/",
     "ts-poet": "npm:ts-poet@^6.9.0",
     "ts-poet/": "npm:/ts-poet@^6.9.0/"
   }

@@ -10,12 +10,29 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
-- [@http/discovery] moved default path/route mapper and comparators into own
-  modules, which are now dynamically imported only when required
-- [@http/discovery/discover-routes] allow custom `readDir` function, support
-  both `Deno.readDir` and Node's `opendir` by default
+### Changed
+
 - [@http/interceptor/logger] move response logging into `finally` interceptor so
   that it groups and accounts for timing of streamed responses
+- [@http/discovery] default options functions are now dynamically imported when
+  required
+
+### Removed
+
+- [@http/discovery] `defaultPathMapper()`, `defaultRouteMapper()`,
+  `defaultPathCompare()` removed from module (moved into separate modules and
+  renamed)
+
+### Added
+
+- [@http/discovery] `indexPathMapper()`, `tsRouteMapper()`,
+  `pathnameLexicalRouteComparator()` added into own modules (replace the old
+  default functions)
+- [@http/discovery] `combinedRouteMapper()` added to create a single combined
+  `RouteMapper` from several
+- [@http/discovery/discover-routes] allow custom `readDir` function, support
+  both `Deno.readDir` and Node's `opendir` by default
+- [@http/generate] supports multiple `RouteMapper`s in `routeMapper` option
 
 ## [0.15.1]
 
