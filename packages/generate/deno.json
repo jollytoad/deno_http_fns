@@ -2,7 +2,10 @@
   "name": "@http/generate",
   "version": "0.16.0",
   "exports": {
-    "./generate-routes-module": "./generate_routes_module.ts"
+    "./deno/write-module": "./deno/write_module.ts",
+    "./generate-routes-module": "./generate_routes_module.ts",
+    "./node/write-module": "./node/write_module.ts",
+    "./write-module": "./write_module.ts"
   },
   "publish": {
     "exclude": [

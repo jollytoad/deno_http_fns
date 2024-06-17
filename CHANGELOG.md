@@ -10,6 +10,11 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+### Added
+
+- [@http/generate] support writing of module using Node.js API or into custom
+  storage via `writeModule` option
+
 ## [0.16.0]
 
 ### Changed

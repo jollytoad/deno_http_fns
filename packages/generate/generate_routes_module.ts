@@ -68,6 +68,18 @@ export interface GenerateOptions extends
    * Module that supplies a RouteComparator as the default function.
    */
   compare?: string | URL;
+
+  /**
+   * Function to write the new module.
+   *
+   * Will default to use appropriate Deno or Node APIs, but you can
+   * supply your own implementation if you want to store the module
+   * elsewhere on another platform.
+   *
+   * It should only write the module if it differs from the existing
+   * module, and return true if the different module was saved.
+   */
+  writeModule?: (url: string | URL, content: string) => Promise<boolean>;
 }
 
 /**
@@ -84,20 +96,18 @@ export async function generateRoutesModule(
     httpModulePrefix = "@http/",
   } = opts;
 
+  const writeModule = opts.writeModule ??
+    (await import("./write_module.ts")).default;
+
   assertIsFileUrl(fileRootUrl, "fileRootUrl");
   assertIsFileUrl(moduleOutUrl, "moduleOutUrl");
-
-  if (!await can("write", moduleOutUrl)) {
-    // No permission to generate new module
-    return false;
-  }
 
   const content = await generateRoutesModuleContent({
     ...opts,
     httpModulePrefix,
   });
 
-  return writeIfDiff(moduleOutUrl, content);
+  return writeModule(moduleOutUrl, content);
 }
 
 /**
@@ -117,28 +127,6 @@ export async function generateRoutesModuleContent(
     prefix:
       "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n",
   });
-}
-
-async function writeIfDiff(url: string | URL, content: string) {
-  const path = fromFileUrl(url);
-
-  let existingContent = undefined;
-
-  if (await can("read", path)) {
-    try {
-      existingContent = await Deno.readTextFile(path);
-    } catch {
-      // Ignore error
-    }
-  }
-
-  if (content !== existingContent) {
-    console.debug("Writing new routes module:", path);
-    await Deno.writeTextFile(path, content);
-    return true;
-  }
-
-  return false;
 }
 
 function relativeModulePath(from: string, to: string): string {
@@ -329,13 +317,6 @@ function asCodePattern(pattern: RoutePattern) {
   } else {
     return serializablePattern;
   }
-}
-
-async function can(
-  name: "read" | "write",
-  path: string | URL,
-): Promise<boolean> {
-  return (await Deno.permissions.query({ name, path })).state === "granted";
 }
 
 function assertIsFileUrl(
