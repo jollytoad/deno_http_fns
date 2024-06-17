@@ -1,6 +1,6 @@
 {
   "name": "@http/request",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "exports": {
     "./body-as-object": "./body_as_object.ts",
     "./memoize": "./memoize.ts",
