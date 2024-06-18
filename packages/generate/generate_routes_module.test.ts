@@ -70,6 +70,7 @@ async function testGenerateRoutesModule(
       ...opts,
       fileRootUrl,
       routeMapper: [
+        "$test/generate/ignored_route_mapper.ts",
         "@http/discovery/ts-route-mapper",
         "$test/generate/txt_route_mapper.ts",
       ],

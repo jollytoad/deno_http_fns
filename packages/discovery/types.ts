@@ -7,11 +7,16 @@ export type { PathPattern, RoutePattern } from "@http/route/types";
 export type Awaitable<T> = T | Promise<T>;
 
 /**
+ * A result of multiple values, as sync or async iterable.
+ */
+export type Many<T> = Iterable<T> | AsyncIterable<T>;
+
+/**
  * Function that maps a discovered path entry to zero, one or many routes.
  */
 export type RouteMapper = (
   entry: DiscoveredPath,
-) => Iterable<DiscoveredRoute> | AsyncIterable<DiscoveredRoute>;
+) => Many<DiscoveredRoute | StopRouteMapping>;
 
 /**
  * Function that transforms a discovered path entry.
@@ -42,6 +47,13 @@ export type RouteComparator = (
 export interface DiscoveredRoute {
   pattern: RoutePattern;
   module: string | URL;
+}
+
+/**
+ * Indicate that route mapping should stop here when combining RouteMappers.
+ */
+export interface StopRouteMapping {
+  stop: true;
 }
 
 /**

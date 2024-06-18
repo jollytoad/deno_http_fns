@@ -96,12 +96,17 @@ export async function discoverRoutes(
 
   for await (const entry of iter) {
     for await (
-      const { pattern, module: module_ } of routeMapper(pathMapper(entry))
+      const discovered of routeMapper(pathMapper(entry))
     ) {
-      const patterns = asURLPatterns(pattern);
-      const module = asModule(module_);
-      for (const pattern of patterns) {
-        routes.push({ pattern, module });
+      if ("stop" in discovered && discovered.stop === true) {
+        break;
+      }
+      if ("pattern" in discovered && "module" in discovered) {
+        const patterns = asURLPatterns(discovered.pattern);
+        const module = asModule(discovered.module);
+        for (const pattern of patterns) {
+          routes.push({ pattern, module });
+        }
       }
     }
   }

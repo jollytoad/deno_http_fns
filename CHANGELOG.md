@@ -10,10 +10,14 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.17.0]
+
 ### Added
 
 - [@http/generate] support writing of module using Node.js API or into custom
   storage via `writeModule` option
+- [@http/discovery] & [@http/generate] allow a `RouteMapper` to stop any further
+  route mapping
 
 ## [0.16.0]
 
