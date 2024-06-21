@@ -12,6 +12,8 @@ This changelog will need to be split between individual packages
 
 ## [0.18.0]
 
+### Added
+
 - [@http/discovery/dynamic-route] support for custom route module -> request
   handler mapping (ie. allow more than just default handler & method handlers)
 - [@http/generate] support for custom code generation of route module -> request
