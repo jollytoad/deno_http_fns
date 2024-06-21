@@ -10,14 +10,8 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
-## [0.17.0]
+## [0.18.0]
 
-### Added
-
-- [@http/generate] support writing of module using Node.js API or into custom
-  storage via `writeModule` option
-- [@http/discovery] & [@http/generate] allow a `RouteMapper` to stop any further
-  route mapping
 - [@http/discovery/dynamic-route] support for custom route module -> request
   handler mapping (ie. allow more than just default handler & method handlers)
 - [@http/generate] support for custom code generation of route module -> request
@@ -29,6 +23,15 @@ This changelog will need to be split between individual packages
   it would previous default to `Deno.cwd()` if not provided, but this was
   undocumented and complicates cross-runtime support, this also means the
   `discoverRoutes` requires the options arg too, which was previously optional
+
+## [0.17.0]
+
+### Added
+
+- [@http/generate] support writing of module using Node.js API or into custom
+  storage via `writeModule` option
+- [@http/discovery] & [@http/generate] allow a `RouteMapper` to stop any further
+  route mapping
 
 ## [0.16.0]
 

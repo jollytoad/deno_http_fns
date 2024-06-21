@@ -1,6 +1,6 @@
 {
   "name": "@http/host-deno-local",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "exports": {
     "./init": "./init.ts",
     "./load-key-and-cert": "./load_key_and_cert.ts",

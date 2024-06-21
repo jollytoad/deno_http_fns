@@ -1,6 +1,6 @@
 {
   "name": "@http/generate",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "exports": {
     "./code-builder": "./code_builder.ts",
     "./default-handler-generator": "./default_handler_generator.ts",
