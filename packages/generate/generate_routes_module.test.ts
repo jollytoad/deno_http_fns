@@ -10,6 +10,7 @@ import {
   STATUS_CODE,
   type StatusCode,
 } from "@http/assert/assert-status";
+import { assertStringIncludes } from "@std/assert";
 
 const fileRootUrl = import.meta.resolve("./_test/routes");
 
@@ -63,7 +64,10 @@ Deno.test("Generate with dynamic imports", async (t) => {
 
 async function testGenerateRoutesModule(
   t: Deno.TestContext,
-  opts: GenerateOptions,
+  opts: Pick<
+    GenerateOptions,
+    "moduleOutUrl" | "moduleImports" | "routeDiscovery"
+  >,
 ) {
   await t.step("generate module", async (t) => {
     await generateRoutesModule({
@@ -73,6 +77,11 @@ async function testGenerateRoutesModule(
         "$test/generate/ignored_route_mapper.ts",
         "@http/discovery/ts-route-mapper",
         "$test/generate/txt_route_mapper.ts",
+      ],
+      handlerGenerator: [
+        import("$test/generate/page_handler_generator.ts"),
+        import("@http/generate/default-handler-generator"),
+        import("@http/generate/methods-handler-generator"),
       ],
     });
 
@@ -109,7 +118,27 @@ async function testRoutes(t: Deno.TestContext, routesModule: string) {
       `${baseUrl}/user/bob`,
       STATUS_CODE.MethodNotAllowed,
     );
-    await testRoute(t, "GET", `${baseUrl}/raw`, STATUS_CODE.OK);
+    await testRoute(
+      t,
+      "GET",
+      `${baseUrl}/raw`,
+      STATUS_CODE.OK,
+      async (response) => {
+        const content = await response.text();
+        assertStringIncludes(content, "Hello");
+      },
+    );
+    await testRoute(
+      t,
+      "GET",
+      `${baseUrl}/page`,
+      STATUS_CODE.OK,
+      async (response) => {
+        const content = await response.text();
+        assertStringIncludes(content, "<h1>Hello</h1>");
+        assertStringIncludes(content, "<!DOCTYPE html>");
+      },
+    );
   });
 }
 
@@ -118,10 +147,16 @@ async function testRoute(
   method: string,
   url: string,
   expectedStatus: StatusCode,
+  checkResponse?: (response: Response) => Promise<void>,
 ) {
   await t.step(`${method} ${url} -> ${expectedStatus}`, async () => {
     const response = await fetch(url, { method });
     assertStatus(response, expectedStatus);
-    response.body?.cancel();
+    if (checkResponse) {
+      await checkResponse(response);
+    }
+    if (response.body && !response.bodyUsed) {
+      response.body.cancel();
+    }
   });
 }

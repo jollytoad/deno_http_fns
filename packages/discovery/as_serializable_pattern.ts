@@ -1,5 +1,7 @@
 import type { RoutePattern, SerializableRoutePattern } from "@http/route/types";
 
+export type { SerializableRoutePattern };
+
 /**
  * Return the most concise serialisable representation of the given RoutePattern.
  */

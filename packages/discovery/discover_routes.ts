@@ -27,7 +27,7 @@ export interface DiscoverRoutesOptions {
   /**
    * The root folder to walk in the filesystem as a `file:` URL.
    */
-  fileRootUrl?: string | URL;
+  fileRootUrl: string | URL;
   /**
    * Function to transform a discovered path entry.
    */
@@ -72,25 +72,25 @@ export interface DiscoverRoutesOptions {
  * @returns an array of discovered route tuples of the URLPattern to handler module URL.
  */
 export async function discoverRoutes(
-  opts?: DiscoverRoutesOptions,
+  opts: DiscoverRoutesOptions,
 ): Promise<DiscoveredRoute[]> {
-  const pathMapper: PathMapper = opts?.pathMapper ??
+  const pathMapper: PathMapper = opts.pathMapper ??
     (await import("./index_path_mapper.ts")).default;
 
-  const routeMapper: RouteMapper = opts?.routeMapper ??
+  const routeMapper: RouteMapper = opts.routeMapper ??
     (await import("./ts_route_mapper.ts")).default;
 
-  const compare: RouteComparator = opts?.compare ??
+  const compare: RouteComparator = opts.compare ??
     (await import("./pathname_lexical_route_comparator.ts")).default;
 
-  const readDir: DirectoryReader = opts?.readDir ??
+  const readDir: DirectoryReader = opts.readDir ??
     (await import("./_read_dir.ts")).default;
 
   const routes: ComparableRoute[] = [];
 
   const iter = walk(
-    !opts?.pattern || opts?.pattern === "/" ? "" : opts?.pattern ?? "",
-    opts?.fileRootUrl ? fromFileUrl(opts.fileRootUrl) : ".",
+    !opts.pattern || opts.pattern === "/" ? "" : opts.pattern ?? "",
+    fromFileUrl(opts.fileRootUrl),
     readDir,
   );
 
@@ -113,7 +113,7 @@ export async function discoverRoutes(
 
   routes.sort(compare);
 
-  if (opts?.verbose) {
+  if (opts.verbose) {
     const { asSerializablePattern } = await import(
       "./as_serializable_pattern.ts"
     );
@@ -127,7 +127,7 @@ export async function discoverRoutes(
     }
   }
 
-  return opts?.consolidate ? consolidateRoutes(routes) : routes;
+  return opts.consolidate ? consolidateRoutes(routes) : routes;
 }
 
 async function* walk(

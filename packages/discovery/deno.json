@@ -3,11 +3,14 @@
   "version": "0.17.0",
   "exports": {
     "./as-serializable-pattern": "./as_serializable_pattern.ts",
+    "./cascading-handler-mapper": "./cascading_handler_mapper.ts",
     "./combined-route-mapper": "./combined_route_mapper.ts",
+    "./default-handler-mapper": "./default_handler_mapper.ts",
     "./discover-routes": "./discover_routes.ts",
     "./dynamic-route": "./dynamic_route.ts",
     "./fresh-path-mapper": "./fresh_path_mapper.ts",
     "./index-path-mapper": "./index_path_mapper.ts",
+    "./methods-handler-mapper": "./methods_handler_mapper.ts",
     "./pathname-lexical-route-comparator": "./pathname_lexical_route_comparator.ts",
     "./ts-route-mapper": "./ts_route_mapper.ts",
     "./types": "./types.ts"

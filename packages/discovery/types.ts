@@ -1,5 +1,10 @@
-import type { PathPattern, RoutePattern } from "@http/route/types";
-export type { PathPattern, RoutePattern } from "@http/route/types";
+import type {
+  PathPattern,
+  RequestHandler,
+  RoutePattern,
+} from "@http/route/types";
+
+export type { PathPattern, RequestHandler, RoutePattern };
 
 /**
  * A result that may be `await`ed.
@@ -29,6 +34,15 @@ export type PathMapper = (
 ) => DiscoveredPath;
 
 /**
+ * Function that transforms a module into a Request handler.
+ *
+ * May return `undefined` if unable to produce a handler.
+ */
+export type HandlerMapper = (
+  entry: RouteModule,
+) => Awaitable<RequestHandler | undefined>;
+
+/**
  * Compare two routes to determine ordering of the discovered routes.
  *
  * If `a` is a higher priority route than `b`, then this should return a negative number,
@@ -54,6 +68,13 @@ export interface DiscoveredRoute {
  */
 export interface StopRouteMapping {
   stop: true;
+}
+
+/**
+ * A resolved route module.
+ */
+export interface RouteModule extends DiscoveredRoute {
+  loaded: Record<string, unknown>;
 }
 
 /**

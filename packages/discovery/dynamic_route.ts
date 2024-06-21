@@ -5,12 +5,26 @@ import {
   discoverRoutes,
   type DiscoverRoutesOptions,
 } from "./discover_routes.ts";
-import type { DiscoveredRoute } from "./types.ts";
+import type { DiscoveredRoute, HandlerMapper } from "./types.ts";
+import { cascadingHandlerMapper } from "./cascading_handler_mapper.ts";
 
 export type Eagerness = "startup" | "request";
 
 export interface DynamicRouteOptions extends DiscoverRoutesOptions {
+  /**
+   * Should the handler be built at app startup or when we get the
+   * first request. Defaults to `startup`.
+   */
   eagerness?: Eagerness;
+
+  /**
+   * Function to map a loaded module to an actual Request handler.
+   *
+   * The default behaviour is to assume a default exported function is the
+   * handler, otherwise any named function exports are assumed to be individual
+   * method handling functions.
+   */
+  handlerMapper?: HandlerMapper;
 }
 
 /**
@@ -18,7 +32,7 @@ export interface DynamicRouteOptions extends DiscoverRoutesOptions {
  *
  * It makes the assumption that the handler modules either export a default
  * function as the request handler, or a set of individual method handling functions,
- * (eg. GET, POST, PUT).
+ * (eg. GET, POST, PUT). Unless a custom `handlerMapper` is provided.
  *
  * @example
  * ```ts
@@ -34,6 +48,7 @@ export interface DynamicRouteOptions extends DiscoverRoutesOptions {
  * @param fileRootUrl the root folder in the filesystem as a `file:` URL
  * @param eagerness whether route discovery will take place at `startup`,
  *   or will wait until the first `request` is made.
+ * @param handlerMapper a custom module -> request handler mapping function.
  * @returns a Request handler
  */
 export function dynamicRoute(
@@ -54,18 +69,26 @@ export function dynamicRoute(
 }
 
 async function buildHandler(opts: DynamicRouteOptions) {
+  const handlerMapper = opts.handlerMapper ?? cascadingHandlerMapper(
+    (await import("./default_handler_mapper.ts")).default,
+    (await import("./methods_handler_mapper.ts")).default,
+  );
+
   return cascade(...(await discoverRoutes(opts)).map(asLazyRoute));
-}
 
-function asLazyRoute({ pattern, module }: DiscoveredRoute) {
-  return byPattern(pattern, lazy(module, transformMethodExports));
-}
+  function asLazyRoute({ pattern, module }: DiscoveredRoute) {
+    return byPattern(pattern, lazy(module, transformModule));
 
-async function transformMethodExports(loaded: unknown): Promise<unknown> {
-  if (loaded && typeof loaded === "object" && !("default" in loaded)) {
-    // assume module of individually exported http method functions
-    const { byMethod } = await import("@http/route/by-method");
-    return byMethod(loaded);
+    function transformModule(loaded: unknown) {
+      if (isModule(loaded)) {
+        return handlerMapper({ pattern, module, loaded });
+      } else {
+        return () => null;
+      }
+    }
   }
-  return loaded;
+}
+
+function isModule(loaded: unknown): loaded is Record<string, unknown> {
+  return !!loaded && typeof loaded === "object";
 }

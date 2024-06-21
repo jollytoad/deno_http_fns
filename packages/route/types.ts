@@ -32,11 +32,19 @@ export type SerializableRoutePattern =
   | Array<PathPattern | URLPatternInit>;
 
 /**
+ * A Request handler function.
+ */
+export type RequestHandler<
+  A extends unknown[] = unknown[],
+  R = Response | null,
+> = (request: Request, ...args: A) => Awaitable<R>;
+
+/**
  * A record of method handlers for use with byMethod.
  * This type is designed to aid auto-completion of method names.
  */
-export type MethodHandlers<A extends unknown[]> = Partial<
-  MethodRecord<(request: Request, ...args: A) => Awaitable<Response | null>>
+export type MethodHandlers<A extends unknown[] = unknown[]> = Partial<
+  MethodRecord<RequestHandler<A>>
 >;
 
 /**

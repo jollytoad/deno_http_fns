@@ -2,9 +2,13 @@
   "name": "@http/generate",
   "version": "0.17.0",
   "exports": {
+    "./code-builder": "./code_builder.ts",
+    "./default-handler-generator": "./default_handler_generator.ts",
     "./deno/write-module": "./deno/write_module.ts",
     "./generate-routes-module": "./generate_routes_module.ts",
+    "./methods-handler-generator": "./methods_handler_generator.ts",
     "./node/write-module": "./node/write_module.ts",
+    "./types": "./types.ts",
     "./write-module": "./write_module.ts"
   },
   "publish": {

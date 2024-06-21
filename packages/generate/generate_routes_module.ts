@@ -1,86 +1,7 @@
-import {
-  discoverRoutes,
-  type DiscoverRoutesOptions,
-} from "@http/discovery/discover-routes";
-import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
-import type {
-  DynamicRouteOptions,
-  Eagerness,
-} from "@http/discovery/dynamic-route";
-import { combinedRouteMapper } from "@http/discovery/combined-route-mapper";
-import { dirname } from "@std/path/posix/dirname";
-import { relative } from "@std/path/posix/relative";
-import { fromFileUrl } from "@std/path/posix/from-file-url";
-import type { RoutePattern } from "@http/route/types";
-import {
-  type Code,
-  code,
-  importAll,
-  importDefault,
-  importNamed,
-  joinCode,
-  literalOf,
-} from "./_code_builder.ts";
+import { type Code, code } from "./code_builder.ts";
+import type { GenerateDynamicRouteOptions, GenerateOptions } from "./types.ts";
 
-export interface GenerateOptions extends
-  Omit<
-    DiscoverRoutesOptions,
-    "pathMapper" | "routeMapper" | "compare" | "consolidate"
-  > {
-  /**
-   * The absolute path of the module to be generated, as a `file:` URL.
-   */
-  moduleOutUrl: string | URL;
-
-  /**
-   * Whether to discover routes at build time and generate a static list or,
-   * discover them dynamically at startup, or when the first request is made.
-   * Defaults to `static`.
-   */
-  routeDiscovery?: "static" | "startup" | "request";
-
-  /**
-   * Whether to generate static imports or dynamic imports,
-   * this only applies to 'static' route discovery.
-   * Defaults to `dynamic`.
-   */
-  moduleImports?: "static" | "dynamic";
-
-  /**
-   * The prefix for http function modules.
-   * Defaults to `@http/`, but you may want to change this to import
-   * custom modules, or use `jsr:@http/` if you don't want to add it
-   * to your import map.
-   */
-  httpModulePrefix?: string;
-
-  /**
-   * Module that supplies a PathMapper as the default function.
-   */
-  pathMapper?: string | URL;
-
-  /**
-   * Module(s) that supply a RouteMapper as the default function.
-   */
-  routeMapper?: string | URL | Array<string | URL>;
-
-  /**
-   * Module that supplies a RouteComparator as the default function.
-   */
-  compare?: string | URL;
-
-  /**
-   * Function to write the new module.
-   *
-   * Will default to use appropriate Deno or Node APIs, but you can
-   * supply your own implementation if you want to store the module
-   * elsewhere on another platform.
-   *
-   * It should only write the module if it differs from the existing
-   * module, and return true if the different module was saved.
-   */
-  writeModule?: (url: string | URL, content: string) => Promise<boolean>;
-}
+export type { GenerateOptions };
 
 /**
  * Generate a TypeScript module that exports a routing handler as the default function.
@@ -96,11 +17,11 @@ export async function generateRoutesModule(
     httpModulePrefix = "@http/",
   } = opts;
 
-  const writeModule = opts.writeModule ??
-    (await import("./write_module.ts")).default;
-
   assertIsFileUrl(fileRootUrl, "fileRootUrl");
   assertIsFileUrl(moduleOutUrl, "moduleOutUrl");
+
+  const writeModule = opts.writeModule ??
+    (await import("./write_module.ts")).default;
 
   const content = await generateRoutesModuleContent({
     ...opts,
@@ -129,193 +50,23 @@ export async function generateRoutesModuleContent(
   });
 }
 
-function relativeModulePath(from: string, to: string): string {
-  let modulePath = relative(from, to);
-  if (modulePath[0] !== ".") {
-    modulePath = "./" + modulePath;
-  }
-  return modulePath;
-}
-
-function generateHandler(opts: GenerateOptions): Code | Promise<Code> {
+async function generateHandler(opts: GenerateOptions): Promise<Code> {
   switch (opts.routeDiscovery) {
     case "startup":
-    case "request":
+    case "request": {
+      const { generateDynamicRouteHandler } = await import(
+        "./_generate_dynamic_route_handler.ts"
+      );
       return generateDynamicRouteHandler(opts as GenerateDynamicRouteOptions);
+    }
 
     case "static":
-    default:
+    default: {
+      const { generateStaticRoutesHandler } = await import(
+        "./_generate_static_routes_handler.ts"
+      );
       return generateStaticRoutesHandler(opts);
-  }
-}
-
-type GenerateDynamicRouteOptions = GenerateOptions & {
-  routeDiscovery: Eagerness;
-};
-
-function generateDynamicRouteHandler(opts: GenerateDynamicRouteOptions): Code {
-  const outPath = dirname(fromFileUrl(opts.moduleOutUrl));
-
-  const dynamicRoute = importNamed(
-    `${opts.httpModulePrefix}discovery/dynamic-route`,
-    "dynamicRoute",
-  );
-
-  const modulePath = relativeModulePath(
-    outPath,
-    opts.fileRootUrl ? fromFileUrl(opts.fileRootUrl) : Deno.cwd(),
-  );
-
-  const optsCode: Partial<Record<keyof DynamicRouteOptions, unknown>> = {
-    ...(opts.pattern !== undefined
-      ? { pattern: literalOf(opts.pattern) }
-      : null),
-    fileRootUrl: code`import.meta.resolve(${literalOf(modulePath)})`,
-    eagerness: opts.routeDiscovery,
-    ...(opts.pathMapper
-      ? { pathMapper: importDefault(opts.pathMapper, "pathMapper") }
-      : null),
-    ...(opts.routeMapper
-      ? Array.isArray(opts.routeMapper)
-        ? { routeMapper: combineRouteMappers(opts, opts.routeMapper) }
-        : { routeMapper: importDefault(opts.routeMapper, "routeMapper") }
-      : null),
-    ...(opts.compare
-      ? { compare: importDefault(opts.compare, "compare") }
-      : null),
-    consolidate: true,
-    ...(opts.verbose ? { verbose: opts.verbose } : null),
-  };
-
-  return code`${dynamicRoute}(${optsCode})`;
-}
-
-function combineRouteMappers(
-  opts: GenerateDynamicRouteOptions,
-  routeMappers: Array<string | URL>,
-) {
-  const combinedRouteMapper = importNamed(
-    `${opts.httpModulePrefix}discovery/combined-route-mapper`,
-    "combinedRouteMapper",
-  );
-
-  return code`${combinedRouteMapper}(${
-    joinCode(
-      routeMappers.map((mapper, i) =>
-        code`${importDefault(mapper, `routeMapper_${i + 1}`)}`
-      ),
-      { on: "," },
-    )
-  })`;
-}
-
-async function generateStaticRoutesHandler(
-  opts: GenerateOptions,
-): Promise<Code> {
-  const cascade = importNamed(
-    `${opts.httpModulePrefix}route/cascade`,
-    "cascade",
-  );
-
-  return code`${cascade}(${
-    joinCode(await generateStaticRoutes(opts), { on: "," })
-  })`;
-}
-
-async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
-  const outPath = dirname(fromFileUrl(opts.moduleOutUrl));
-
-  const isLazy = opts.moduleImports !== "static";
-
-  const byPattern = importNamed(
-    `${opts.httpModulePrefix}route/by-pattern`,
-    "byPattern",
-  );
-  const byMethod = importNamed(
-    `${opts.httpModulePrefix}route/by-method`,
-    "byMethod",
-  );
-  const lazy = importNamed(`${opts.httpModulePrefix}route/lazy`, "lazy");
-
-  const routesCode: Code[] = [];
-
-  const routes = await discoverRoutes({
-    pattern: opts.pattern,
-    fileRootUrl: opts.fileRootUrl,
-    pathMapper: opts.pathMapper
-      ? (await import(opts.pathMapper.toString())).default
-      : undefined,
-    routeMapper: opts.routeMapper
-      ? Array.isArray(opts.routeMapper)
-        ? combinedRouteMapper(
-          ...await Promise.all(opts.routeMapper.map(async (routeMapper) =>
-            (await import(routeMapper.toString())).default
-          )),
-        )
-        : (await import(opts.routeMapper.toString())).default
-      : undefined,
-    compare: opts.compare
-      ? (await import(opts.compare.toString())).default
-      : undefined,
-    consolidate: true,
-    verbose: opts.verbose,
-  });
-
-  let i = 1;
-
-  for (const { pattern, module } of routes) {
-    let modulePath = relative(outPath, fromFileUrl(module));
-    if (modulePath[0] !== ".") {
-      modulePath = "./" + modulePath;
     }
-
-    const m = await import(String(module));
-
-    const hasDefault = !!m.default;
-
-    const patternCode = asCodePattern(pattern);
-
-    if (isLazy) {
-      if (hasDefault) {
-        routesCode.push(
-          code`${byPattern}(${patternCode}, ${lazy}(() => import(${
-            literalOf(modulePath)
-          })))`,
-        );
-      } else {
-        routesCode.push(
-          code`${byPattern}(${patternCode}, ${lazy}(async () => ${byMethod}(await import(${
-            literalOf(modulePath)
-          }))))`,
-        );
-      }
-    } else {
-      if (hasDefault) {
-        const routeModule = importDefault(modulePath, `route_${i}`);
-        routesCode.push(code`${byPattern}(${patternCode}, ${routeModule})`);
-      } else {
-        const routeModule = importAll(modulePath, `route_${i}`);
-        routesCode.push(
-          code`${byPattern}(${patternCode}, ${byMethod}(${routeModule}))`,
-        );
-      }
-    }
-
-    i++;
-  }
-
-  return routesCode;
-}
-
-function asCodePattern(pattern: RoutePattern) {
-  const serializablePattern = asSerializablePattern(pattern);
-  if (
-    typeof serializablePattern === "string" ||
-    Array.isArray(serializablePattern)
-  ) {
-    return literalOf(serializablePattern);
-  } else {
-    return serializablePattern;
   }
 }
 

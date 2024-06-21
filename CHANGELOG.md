@@ -18,6 +18,17 @@ This changelog will need to be split between individual packages
   storage via `writeModule` option
 - [@http/discovery] & [@http/generate] allow a `RouteMapper` to stop any further
   route mapping
+- [@http/discovery/dynamic-route] support for custom route module -> request
+  handler mapping (ie. allow more than just default handler & method handlers)
+- [@http/generate] support for custom code generation of route module -> request
+  handler mapping, compliments the feature in `dynamicRoute`
+
+### Changed
+
+- [@http/discovery] & [@http/generate] the `fileRootUrl` option is now required,
+  it would previous default to `Deno.cwd()` if not provided, but this was
+  undocumented and complicates cross-runtime support, this also means the
+  `discoverRoutes` requires the options arg too, which was previously optional
 
 ## [0.16.0]
 
