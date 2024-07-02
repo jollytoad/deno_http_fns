@@ -30,12 +30,12 @@ export async function generateStaticRoutesHandler(
 
 async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
   const {
-    pattern,
+    pattern = "/",
     fileRootUrl,
     moduleOutUrl,
-    verbose,
-    httpModulePrefix,
-    moduleImports,
+    verbose = false,
+    httpModulePrefix = "@http/",
+    moduleImports = "dynamic",
   } = opts;
 
   const outPath = dirname(fromFileUrl(moduleOutUrl));

@@ -62,6 +62,17 @@ Deno.test("Generate with dynamic imports", async (t) => {
   await testRoutes(t, moduleOutUrl);
 });
 
+Deno.test("Generate with default opts", async (t) => {
+  const moduleOutUrl = import.meta.resolve("./_test/routes_default_opts.ts");
+
+  await generateRoutesModule({
+    fileRootUrl,
+    moduleOutUrl,
+  });
+
+  await assertSnapshot(t, await Deno.readTextFile(new URL(moduleOutUrl)));
+});
+
 async function testGenerateRoutesModule(
   t: Deno.TestContext,
   opts: Pick<

@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.18.1]
+
+### Fixed
+
+- [@http/generate] `moduleImports` defaults to `dynamic`
+
 ## [0.18.0]
 
 ### Added
