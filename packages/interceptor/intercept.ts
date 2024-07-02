@@ -99,9 +99,13 @@ export function intercept<A extends unknown[], R extends Response | null>(
     async function applyErrorInterceptors(e: unknown) {
       for (const interceptor of flatten("error")) {
         const result = await interceptor(req, res, e);
-        if (result) {
+        if (result !== undefined) {
           res = result as R;
         }
+      }
+      if (res === undefined) {
+        console.error("Error not handled by interceptor", e);
+        throw e;
       }
     }
 

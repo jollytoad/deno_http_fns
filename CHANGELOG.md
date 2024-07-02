@@ -10,6 +10,11 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+### Changed
+
+- [@http/interceptor] rethrow an error if a valid Response is not available to
+  return after all error interceptors have been called
+
 ## [0.18.1]
 
 ### Fixed

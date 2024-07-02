@@ -1,6 +1,10 @@
 import { assertSpyCall, assertSpyCalls, spy } from "@std/testing/mock";
 import { intercept } from "./intercept.ts";
-import { assertInstanceOf, assertStrictEquals } from "@std/assert";
+import {
+  assertInstanceOf,
+  assertRejects,
+  assertStrictEquals,
+} from "@std/assert";
 
 Deno.test("a single request interceptor is called", async () => {
   const interceptorSpy = spy(doNothing);
@@ -126,7 +130,8 @@ Deno.test("response interceptors are still called when a request interceptor ret
 
 Deno.test("error interceptors handle request interceptor errors", async () => {
   const interceptorSpy = spy(throwError);
-  const errorSpy = spy(doNothing);
+  const errorResponse = new Response();
+  const errorSpy = spy(() => errorResponse);
 
   const handler = intercept(ok, {
     request: interceptorSpy,
@@ -138,11 +143,12 @@ Deno.test("error interceptors handle request interceptor errors", async () => {
   assertSpyCalls(interceptorSpy, 1);
   assertSpyCalls(errorSpy, 1);
 
-  assertInstanceOf(res, Response);
+  assertStrictEquals(res, errorResponse);
 });
 
 Deno.test("error interceptors handle handler errors", async () => {
-  const errorSpy = spy(doNothing);
+  const errorResponse = new Response();
+  const errorSpy = spy(() => errorResponse);
 
   const handler = intercept(throwError as () => null, {
     error: errorSpy,
@@ -152,12 +158,13 @@ Deno.test("error interceptors handle handler errors", async () => {
 
   assertSpyCalls(errorSpy, 1);
 
-  assertStrictEquals(res, undefined);
+  assertStrictEquals(res, errorResponse);
 });
 
 Deno.test("error interceptors handle response interceptor errors", async () => {
   const interceptorSpy = spy(throwError);
-  const errorSpy = spy(doNothing);
+  const errorResponse = new Response();
+  const errorSpy = spy(() => errorResponse);
 
   const handler = intercept(ok, {
     response: interceptorSpy,
@@ -169,7 +176,7 @@ Deno.test("error interceptors handle response interceptor errors", async () => {
   assertSpyCalls(interceptorSpy, 1);
   assertSpyCalls(errorSpy, 1);
 
-  assertInstanceOf(res, Response);
+  assertStrictEquals(res, errorResponse);
 });
 
 Deno.test("error interceptor response is passed to response interceptors", async () => {
@@ -191,6 +198,41 @@ Deno.test("error interceptor response is passed to response interceptors", async
   assertSpyCall(interceptorSpy, 0, { args: [initialRequest, errorResponse] });
 
   assertSpyCalls(interceptorSpy, 1);
+  assertSpyCalls(errorSpy, 1);
+
+  assertStrictEquals(res, errorResponse);
+});
+
+Deno.test("error is thrown if not handled by an error interceptor", async () => {
+  const errorSpy = spy(doNothing);
+
+  const handler = intercept(ok, {
+    request: throwError,
+    error: errorSpy,
+  });
+
+  const initialRequest = request();
+
+  await assertRejects(async () => {
+    await handler(initialRequest);
+  });
+
+  assertSpyCalls(errorSpy, 1);
+});
+
+Deno.test("error is not thrown if handled by an error interceptor", async () => {
+  const errorResponse = new Response();
+  const errorSpy = spy(() => errorResponse);
+
+  const handler = intercept(ok, {
+    request: throwError,
+    error: errorSpy,
+  });
+
+  const initialRequest = request();
+
+  const res = await handler(initialRequest);
+
   assertSpyCalls(errorSpy, 1);
 
   assertStrictEquals(res, errorResponse);
