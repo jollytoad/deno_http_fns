@@ -1,5 +1,5 @@
-import { assertOk } from "./assert_ok.ts";
-import { assertThrows } from "@std/assert/assert-throws";
+import { assertOk } from "./ok.ts";
+import { assertThrows } from "@std/assert/throws";
 import { AssertionError } from "@std/assert/assertion-error";
 
 Deno.test("assertOk() matches when response.ok is true", () => {

@@ -10,10 +10,14 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.19.0]
+
 ### Changed
 
 - [@http/interceptor] rethrow an error if a valid Response is not available to
   return after all error interceptors have been called
+- [@http/assert] strip `assert-` from sub-modules (to align with `@std/assert`)
+- Update deps to latest v1.* pre-releases of `@std` lib
 
 ## [0.18.1]
 

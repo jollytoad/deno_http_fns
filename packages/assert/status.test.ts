@@ -1,5 +1,5 @@
-import { assertStatus, STATUS_CODE } from "./assert_status.ts";
-import { assertThrows } from "@std/assert/assert-throws";
+import { assertStatus, STATUS_CODE } from "./status.ts";
+import { assertThrows } from "@std/assert/throws";
 import { AssertionError } from "@std/assert/assertion-error";
 
 Deno.test("assertStatus() matches status code and text", () => {

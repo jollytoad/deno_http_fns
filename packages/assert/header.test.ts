@@ -1,6 +1,6 @@
-import { assertHeader } from "./assert_header.ts";
+import { assertHeader } from "./header.ts";
 import { AssertionError } from "@std/assert/assertion-error";
-import { assertThrows } from "@std/assert/assert-throws";
+import { assertThrows } from "@std/assert/throws";
 
 Deno.test("assertHeader() matches header with value in Headers object", () => {
   const headers = new Headers({ "Stuff": "Nonsense" });

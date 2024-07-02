@@ -46,7 +46,7 @@ export async function updatePackages(version?: string) {
       }
 
       const importAlias = `@http/${entry.name}`;
-      const importTarget = `jsr:@http/${entry.name}@${pkgDenoJson.version}`;
+      const importTarget = `jsr:@http/${entry.name}@^${pkgDenoJson.version}`;
 
       if (rootDenoJson.imports?.[importAlias] !== importTarget) {
         rootDenoJson.imports = sortByKey({

@@ -1,10 +1,10 @@
 {
   "name": "@http/assert",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "exports": {
-    "./assert-header": "./assert_header.ts",
-    "./assert-ok": "./assert_ok.ts",
-    "./assert-status": "./assert_status.ts",
-    ".": "./mod.ts"
+    "./header": "./header.ts",
+    ".": "./mod.ts",
+    "./ok": "./ok.ts",
+    "./status": "./status.ts"
   }
 }

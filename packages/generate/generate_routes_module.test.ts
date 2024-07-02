@@ -9,7 +9,7 @@ import {
   assertStatus,
   STATUS_CODE,
   type StatusCode,
-} from "@http/assert/assert-status";
+} from "@http/assert/status";
 import { assertStringIncludes } from "@std/assert";
 
 const fileRootUrl = import.meta.resolve("./_test/routes");
