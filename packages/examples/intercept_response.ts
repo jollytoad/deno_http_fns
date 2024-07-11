@@ -45,7 +45,7 @@ const server = Deno.serve(
       // This is the main set of handlers...
       cascade(
         byPattern("/private", () => forbidden()),
-        staticRoute("/", import.meta.resolve("./public"), { quiet: false }),
+        staticRoute("/", import.meta.resolve("./public")),
       ),
       // These are the Response Interceptors...
       skip(404),

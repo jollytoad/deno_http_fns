@@ -10,6 +10,16 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+### Changed
+
+- [@http/route-deno] use own `serveDir()`/`serveFile()` rather than
+  `@std/http/file-server`, preparing for cross-runtime support in a later
+  release
+
+### Added
+
+- [@http/response] add responses required by `serveDir`/`serveFile`
+
 ## [0.19.0]
 
 ### Changed

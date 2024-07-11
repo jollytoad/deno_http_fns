@@ -25,7 +25,7 @@ import { port } from "@http/host-deno-local/port";
 const server = Deno.serve(
   { port: port() },
   withFallback(
-    staticRoute("/", import.meta.resolve("./public"), { quiet: false }),
+    staticRoute("/", import.meta.resolve("./public")),
   ),
 ) as Deno.HttpServer;
 

@@ -1,13 +1,10 @@
 import { byPattern } from "@http/route/by-pattern";
 import { byMethod } from "@http/route/by-method";
-import { serveDir, type ServeDirOptions } from "@std/http/file-server";
+import { serveDir } from "./_serve_dir.ts";
 import { fromFileUrl } from "@std/path/from-file-url";
-import type { Awaitable } from "./types.ts";
+import type { Awaitable, StaticRouteOptions } from "./types.ts";
 
-/**
- * Options for creating a static route handler.
- */
-export type StaticRouteOptions = Omit<ServeDirOptions, "fsRoot" | "urlRoot">;
+export type { StaticRouteOptions };
 
 /**
  * Create a Request handler that serves static files under a matched URL pattern.
@@ -42,7 +39,7 @@ export function staticRoute(
           1,
           -(info.pathname.groups.path?.length ?? 0),
         );
-        return serveDir(req, { quiet: true, ...options, fsRoot, urlRoot });
+        return serveDir(req, { ...options, fsRoot, urlRoot });
       },
     }),
   );
