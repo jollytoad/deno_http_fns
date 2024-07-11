@@ -1,4 +1,4 @@
-/// <reference types="npm:bun-types@^1.1.6" />
+/// <reference types="npm:bun-types@^1.1.18" />
 
 import type { FileBodyOptions } from "./types.ts";
 
