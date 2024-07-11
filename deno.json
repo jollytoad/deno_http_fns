@@ -34,7 +34,7 @@
     "@http/interceptor": "jsr:@http/interceptor@^0.20.0",
     "@http/request": "jsr:@http/request@^0.20.0",
     "@http/response": "jsr:@http/response@^0.20.0",
-    "@http/route": "jsr:@http/route@^0.20.0",
+    "@http/route": "jsr:@http/route@^0.20.1",
     "@http/route-deno": "jsr:@http/route-deno@^0.20.0",
     "@std/assert": "jsr:@std/assert@^1.0.0",
     "@std/bytes": "jsr:@std/bytes@^1.0.2",
