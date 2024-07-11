@@ -10,6 +10,7 @@
     "./cascade": "./cascade.ts",
     "./handle": "./handle.ts",
     "./lazy": "./lazy.ts",
+    "./static-route": "./static_route.ts",
     "./types": "./types.ts",
     "./with-fallback": "./with_fallback.ts"
   },

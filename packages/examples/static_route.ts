@@ -18,7 +18,7 @@
  * @module
  */
 
-import { staticRoute } from "@http/route-deno/static-route";
+import { staticRoute } from "@http/route/static-route";
 import { withFallback } from "@http/route/with-fallback";
 import { port } from "@http/host-deno-local/port";
 

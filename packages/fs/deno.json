@@ -1,0 +1,22 @@
+{
+  "name": "@http/fs",
+  "version": "0.19.0",
+  "exports": {
+    "./file-body": "./file_body.ts",
+    "./file-body-bun": "./file_body_bun.ts",
+    "./file-body-deno": "./file_body_deno.ts",
+    "./file-desc": "./file_desc.ts",
+    "./file-not-found": "./file_not_found.ts",
+    "./serve-dir": "./serve_dir.ts",
+    "./serve-file": "./serve_file.ts",
+    "./stat": "./stat.ts",
+    "./types": "./types.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "_testdata/**",
+      "*.test.ts"
+    ]
+  }
+}

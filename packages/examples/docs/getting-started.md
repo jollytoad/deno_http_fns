@@ -170,17 +170,14 @@ And in this example, we'll add the ability to serve up static files.
 
 ```sh
 mkdir app/static
-deno add @http/route-deno
 ```
-
-(`@http/route-deno` contains the Deno specific router function `staticRoute`)
 
 Create `app/handler.ts`:
 
 ```ts
 import routes from "./routes.ts";
 import { handle } from "@http/route/handle";
-import { staticRoute } from "@http/route-deno/static-route";
+import { staticRoute } from "@http/route/static-route";
 
 export default handle([
   routes,

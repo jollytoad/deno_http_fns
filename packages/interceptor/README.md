@@ -205,8 +205,8 @@ Use of just Response Interceptors is the most common pattern, and so there is a
 shortcut to `intercept()` for just those.
 
 This example looks for static files first using the
-[staticRoute](https://jsr.io/@http/route-deno/doc/static-route/~/staticRoute),
-which results in a 404 response if the file is not found. So we use the
+[staticRoute](https://jsr.io/@http/route/doc/static-route/~/staticRoute), which
+results in a 404 response if the file is not found. So we use the
 [skip](https://jsr.io/@http/interceptor/doc/skip/~/skip) interceptor to convert
 any 404 response to a `null` (unhandled) response, the request can then be
 delegated to later handlers supplied to the

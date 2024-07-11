@@ -10,9 +10,8 @@ standard [Request] => [Response] handler function, aka
 These functions should be usable on any platform that supports the web
 standards: Deno, Bun, Cloudflare Workers, browsers, ServiceWorker.
 
-There is also a platform specific
-[@http/route-deno](https://jsr.io/@http/route-deno) package that provides static
-routing functions.
+NOTE: A cross-runtime `staticRoute()` is now part of this package, so the
+`@http/route-deno` package is now obsolete.
 
 ## An Example
 

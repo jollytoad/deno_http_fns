@@ -2,14 +2,11 @@
   "name": "@http/route-deno",
   "version": "0.19.0",
   "exports": {
-    "./deno-deploy-etag": "./deno_deploy_etag.ts",
-    "./static-route": "./static_route.ts",
-    "./types": "./types.ts"
+    "./static-route": "./static_route.ts"
   },
   "publish": {
     "exclude": [
       "_test/**",
-      "_testdata/**",
       "*.test.ts"
     ]
   }

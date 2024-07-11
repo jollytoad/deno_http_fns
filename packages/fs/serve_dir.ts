@@ -7,9 +7,11 @@ import { join } from "@std/path/join";
 import { notFound } from "@http/response/not-found";
 import { badRequest } from "@http/response/bad-request";
 import { movedPermanently } from "@http/response/moved-permanently";
-import { serveFile } from "./_serve_file.ts";
-import { stat } from "./_fs.ts";
-import type { ServeDirOptions } from "./types.ts";
+import { serveFile } from "./serve_file.ts";
+import { stat } from "./stat.ts";
+import type { FileStats, ServeDirOptions } from "./types.ts";
+import { isDirectory, isFile } from "./file_desc.ts";
+import { fileNotFound } from "./file_not_found.ts";
 
 export type { ServeDirOptions };
 
@@ -18,7 +20,7 @@ export type { ServeDirOptions };
  *
  * @example Usage
  * ```ts no-eval
- * import { serveDir } from "@http/route-deno/serve-dir";
+ * import { serveDir } from "@http/fs/serve-dir";
  *
  * Deno.serve((req) => {
  *   const pathname = new URL(req.url).pathname;
@@ -37,7 +39,7 @@ export type { ServeDirOptions };
  * Requests to `/static/path/to/file` will be served from `./public/path/to/file`.
  *
  * ```ts no-eval
- * import { serveDir } from "@http/route-deno/serve-dir";
+ * import { serveDir } from "@http/fs/serve-dir";
  *
  * Deno.serve((req) => serveDir(req, {
  *   fsRoot: "public",
@@ -87,19 +89,24 @@ export async function serveDir(
   }
 
   const fsPath = join(target, normalizedPath);
-  const fileInfo = await stat(fsPath);
 
-  if (!fileInfo) {
-    return notFound();
+  let fileInfo: FileStats;
+  try {
+    fileInfo = await stat(fsPath);
+  } catch (error) {
+    if (fileNotFound(error)) {
+      return notFound();
+    }
+    throw error;
   }
 
   // For files, remove the trailing slash from the path.
-  if (fileInfo.isFile && url.pathname.endsWith("/")) {
+  if (isFile(fileInfo) && url.pathname.endsWith("/")) {
     url.pathname = url.pathname.slice(0, -1);
     return movedPermanently(url);
   }
   // For directories, the path must have a trailing slash.
-  if (fileInfo.isDirectory && !url.pathname.endsWith("/")) {
+  if (isDirectory(fileInfo) && !url.pathname.endsWith("/")) {
     // On directory listing pages,
     // if the current URL's pathname doesn't end with a slash, any
     // relative URLs in the index file will resolve against the parent
@@ -110,7 +117,7 @@ export async function serveDir(
   }
 
   // if target is file, serve file.
-  if (!fileInfo.isDirectory) {
+  if (!isDirectory(fileInfo)) {
     return serveFile(req, fsPath, {
       etagAlgorithm,
       fileInfo,
@@ -122,13 +129,19 @@ export async function serveDir(
   if (showIndex) { // serve index.html
     const indexPath = join(fsPath, "index.html");
 
-    const indexFileInfo = await stat(indexPath);
-    if (indexFileInfo?.isFile) {
-      return serveFile(req, indexPath, {
-        etagAlgorithm,
-        fileInfo: indexFileInfo,
-        etagDefault,
-      });
+    try {
+      const indexFileInfo = await stat(indexPath);
+      if (isFile(indexFileInfo)) {
+        return serveFile(req, indexPath, {
+          etagAlgorithm,
+          fileInfo: indexFileInfo,
+          etagDefault,
+        });
+      }
+    } catch (error) {
+      if (!fileNotFound(error)) {
+        throw error;
+      }
     }
   }
 

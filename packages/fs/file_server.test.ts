@@ -8,8 +8,8 @@ import {
   assertEquals,
   assertStringIncludes,
 } from "@std/assert";
-import { serveDir, type ServeDirOptions } from "./_serve_dir.ts";
-import { serveFile } from "./_serve_file.ts";
+import { serveDir, type ServeDirOptions } from "./serve_dir.ts";
+import { serveFile } from "./serve_file.ts";
 import { calculate as eTag } from "@std/http/etag";
 import { dirname, fromFileUrl, join, resolve } from "@std/path";
 import { MINUTE } from "@std/datetime/constants";
@@ -473,7 +473,7 @@ Deno.test("serveFile() only uses if-none-match header if if-non-match and if-mod
 
 Deno.test("serveDir() without options serves files in current directory", async () => {
   const req = new Request(
-    "http://localhost/packages/route-deno/_testdata/hello.html",
+    "http://localhost/packages/fs/_testdata/hello.html",
   );
   const res = await serveDir(req);
 
@@ -486,7 +486,7 @@ Deno.test("serveDir() with fsRoot and urlRoot option serves files in given direc
     "http://localhost/my-static-root/_testdata/hello.html",
   );
   const res = await serveDir(req, {
-    fsRoot: "packages/route-deno",
+    fsRoot: "packages/fs",
     urlRoot: "my-static-root",
   });
 
@@ -495,8 +495,7 @@ Deno.test("serveDir() with fsRoot and urlRoot option serves files in given direc
 });
 
 Deno.test("serveDir() serves index.html when showIndex is true", async () => {
-  const url =
-    "http://localhost/packages/route-deno/_testdata/subdir-with-index/";
+  const url = "http://localhost/packages/fs/_testdata/subdir-with-index/";
   const expectedText = "This is subdir-with-index/index.html";
   {
     const res = await serveDir(new Request(url), { showIndex: true });
@@ -514,7 +513,7 @@ Deno.test("serveDir() serves index.html when showIndex is true", async () => {
 
 Deno.test("serveDir() doesn't serve index.html when showIndex is false", async () => {
   const req = new Request(
-    "http://localhost/packages/route-deno/_testdata/subdir-with-index/",
+    "http://localhost/packages/fs/_testdata/subdir-with-index/",
   );
   const res = await serveDir(req, { showIndex: false });
 
@@ -524,39 +523,36 @@ Deno.test("serveDir() doesn't serve index.html when showIndex is false", async (
 Deno.test(
   "serveDir() redirects a directory URL not ending with a slash if it has an index",
   async () => {
-    const url =
-      "http://localhost/packages/route-deno/_testdata/subdir-with-index";
+    const url = "http://localhost/packages/fs/_testdata/subdir-with-index";
     const res = await serveDir(new Request(url), { showIndex: true });
 
     assertEquals(res.status, 301);
     assertEquals(
       res.headers.get("Location"),
-      "http://localhost/packages/route-deno/_testdata/subdir-with-index/",
+      "http://localhost/packages/fs/_testdata/subdir-with-index/",
     );
   },
 );
 
 Deno.test("serveDir() redirects a directory URL not ending with a slash correctly even with a query string", async () => {
-  const url =
-    "http://localhost/packages/route-deno/_testdata/subdir-with-index?test";
+  const url = "http://localhost/packages/fs/_testdata/subdir-with-index?test";
   const res = await serveDir(new Request(url), { showIndex: true });
 
   assertEquals(res.status, 301);
   assertEquals(
     res.headers.get("Location"),
-    "http://localhost/packages/route-deno/_testdata/subdir-with-index/?test",
+    "http://localhost/packages/fs/_testdata/subdir-with-index/?test",
   );
 });
 
 Deno.test("serveDir() redirects a file URL ending with a slash correctly even with a query string", async () => {
-  const url =
-    "http://localhost/packages/route-deno/_testdata/test_file.txt/?test";
+  const url = "http://localhost/packages/fs/_testdata/test_file.txt/?test";
   const res = await serveDir(new Request(url), { showIndex: true });
 
   assertEquals(res.status, 301);
   assertEquals(
     res.headers.get("Location"),
-    "http://localhost/packages/route-deno/_testdata/test_file.txt?test",
+    "http://localhost/packages/fs/_testdata/test_file.txt?test",
   );
 });
 

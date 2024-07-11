@@ -12,12 +12,16 @@ This changelog will need to be split between individual packages
 
 ### Changed
 
-- [@http/route-deno] use own `serveDir()`/`serveFile()` rather than
-  `@std/http/file-server`, preparing for cross-runtime support in a later
-  release
+- [@http/route] introduced a cross-runtime `staticRoute()`
+- [@http/route-deno] is now deprecated
 
 ### Added
 
+- [@http/fs] new package for filesystem based functions
+- [@http/fs] added `fileBody()` as a cross-runtime way to turn a file into a
+  Response body
+- [@http/fs] added `serveDir()`/`serveFile()`, adapted from
+  `@std/http/file-server`
 - [@http/response] add responses required by `serveDir`/`serveFile`
 
 ## [0.19.0]

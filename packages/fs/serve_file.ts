@@ -6,13 +6,16 @@
 import { extname } from "@std/path/extname";
 import { contentType } from "@std/media-types/content-type";
 import { calculate as eTag, ifNoneMatch } from "@std/http/etag";
-import { ByteSliceStream } from "@std/streams/byte-slice-stream";
 import { notFound } from "@http/response/not-found";
 import { ok } from "@http/response/ok";
 import { notModified } from "@http/response/not-modified";
 import { rangeNotSatisfiable } from "@http/response/range-not-satisfiable";
 import { partialContent } from "@http/response/partial-content";
-import { openFileStream, stat } from "./_fs.ts";
+import { fileBody } from "./file_body.ts";
+import { stat } from "./stat.ts";
+import type { FileStats } from "./types.ts";
+import { isDirectory } from "./file_desc.ts";
+import { fileNotFound } from "./file_not_found.ts";
 
 /**
  * parse range header.
@@ -65,8 +68,11 @@ export interface ServeFileOptions {
   /** A default ETag value to fallback on if the file has no mtime */
   etagDefault?: string | Promise<string | undefined>;
 
-  /** An optional FileInfo object returned by Deno.stat. It is used for optimization purposes. */
-  fileInfo?: Deno.FileInfo;
+  /**
+   * An optional file stats object returned by `Deno.stat` or Node's `stat`.
+   * It is used for optimization purposes.
+   */
+  fileInfo?: FileStats;
 }
 
 /**
@@ -74,7 +80,7 @@ export interface ServeFileOptions {
  *
  * @example Usage
  * ```ts no-eval
- * import { serveFile } from "@http/route-deno/serve-file";
+ * import { serveFile } from "@http/fs/serve-file";
  *
  * Deno.serve((req) => {
  *   return serveFile(req, "README.md");
@@ -90,13 +96,19 @@ export async function serveFile(
   filePath: string,
   { etagAlgorithm: algorithm, fileInfo, etagDefault }: ServeFileOptions = {},
 ): Promise<Response> {
-  fileInfo ??= await stat(filePath);
+  try {
+    fileInfo ??= await stat(filePath);
+  } catch (error: unknown) {
+    if (!fileNotFound(error)) {
+      throw error;
+    }
+  }
 
   if (!fileInfo) {
     return notFound();
   }
 
-  if (fileInfo.isDirectory) {
+  if (isDirectory(fileInfo)) {
     return notFound();
   }
 
@@ -157,45 +169,41 @@ export async function serveFile(
   if (rangeValue && 0 < fileSize) {
     const parsed = parseRangeHeader(rangeValue, fileSize);
 
-    // Returns 200 OK if parsing the range header fails
-    if (!parsed) {
-      // Set content length
-      headers.set("content-length", `${fileSize}`);
+    if (parsed) {
+      // Return 416 Range Not Satisfiable if invalid range header value
+      if (
+        parsed.end < 0 ||
+        parsed.end < parsed.start ||
+        fileSize <= parsed.start
+      ) {
+        // Set the "Content-range" header
+        headers.set("content-range", `bytes */${fileSize}`);
 
-      return ok(await openFileStream(filePath), headers);
-    }
+        return rangeNotSatisfiable(headers);
+      }
 
-    // Return 416 Range Not Satisfiable if invalid range header value
-    if (
-      parsed.end < 0 ||
-      parsed.end < parsed.start ||
-      fileSize <= parsed.start
-    ) {
+      // clamps the range header value
+      const start = Math.max(0, parsed.start);
+      const end = Math.min(parsed.end, fileSize - 1);
+
       // Set the "Content-range" header
-      headers.set("content-range", `bytes */${fileSize}`);
+      headers.set("content-range", `bytes ${start}-${end}/${fileSize}`);
 
-      return rangeNotSatisfiable(headers);
+      // Set content length
+      const contentLength = end - start + 1;
+      headers.set("content-length", `${contentLength}`);
+
+      const body = await fileBody(filePath, { start, end });
+
+      // Return 206 Partial Content
+      return body ? partialContent(body, headers) : notFound();
     }
-
-    // clamps the range header value
-    const start = Math.max(0, parsed.start);
-    const end = Math.min(parsed.end, fileSize - 1);
-
-    // Set the "Content-range" header
-    headers.set("content-range", `bytes ${start}-${end}/${fileSize}`);
-
-    // Set content length
-    const contentLength = end - start + 1;
-    headers.set("content-length", `${contentLength}`);
-
-    // Return 206 Partial Content
-    const sliced = (await openFileStream(filePath, start))
-      .pipeThrough(new ByteSliceStream(0, contentLength - 1));
-    return partialContent(sliced, headers);
   }
 
   // Set content length
   headers.set("content-length", `${fileSize}`);
 
-  return ok(await openFileStream(filePath), headers);
+  const body = await fileBody(filePath);
+
+  return body ? ok(body, headers) : notFound();
 }

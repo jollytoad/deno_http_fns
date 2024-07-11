@@ -24,10 +24,10 @@
     ]
   },
   "imports": {
-    "$test/generate/": "./packages/generate/_test/",
     "@http/assert": "jsr:@http/assert@^0.19.0",
     "@http/discovery": "jsr:@http/discovery@^0.19.0",
     "@http/examples": "jsr:@http/examples@^0.19.0",
+    "@http/fs": "jsr:@http/fs@^0.19.0",
     "@http/generate": "jsr:@http/generate@^0.19.0",
     "@http/host-deno-deploy": "jsr:@http/host-deno-deploy@^0.19.0",
     "@http/host-deno-local": "jsr:@http/host-deno-local@^0.19.0",
@@ -48,12 +48,17 @@
     "@std/streams": "jsr:@std/streams@^1.0.0-rc.2",
     "@std/testing": "jsr:@std/testing@^1.0.0-rc.3",
     "@std/url": "jsr:@std/url@^1.0.0-rc.2",
+    "@types/bun": "npm:@types/bun@^1.1.6",
+    "@types/node": "npm:@types/node@^20.14.10",
+    "$test/generate/": "./packages/generate/_test/",
+    "bun-types": "npm:bun-types@^1.1.18",
     "ts-poet": "npm:ts-poet@^6.9.0"
   },
   "workspaces": [
     "./packages/assert",
     "./packages/discovery",
     "./packages/examples",
+    "./packages/fs",
     "./packages/generate",
     "./packages/host-deno-deploy",
     "./packages/host-deno-local",
