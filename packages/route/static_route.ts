@@ -1,5 +1,5 @@
-import { byPattern } from "@http/route/by-pattern";
-import { byMethod } from "@http/route/by-method";
+import { byPattern } from "./by_pattern.ts";
+import { byMethod } from "./by_method.ts";
 import { serveDir, type ServeDirOptions } from "@http/fs/serve-dir";
 import { fromFileUrl } from "@std/path/from-file-url";
 import type { Awaitable } from "./types.ts";
