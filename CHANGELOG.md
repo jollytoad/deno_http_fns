@@ -10,6 +10,13 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.21.0]
+
+### Changed
+
+- Update to Deno 1.45 `workspace`
+- Update to latest `@std` deps
+
 ## [0.20.0]
 
 ### Changed

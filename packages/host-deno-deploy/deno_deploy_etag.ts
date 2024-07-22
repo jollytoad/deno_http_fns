@@ -1,4 +1,4 @@
-import { calculate as eTag } from "@std/http/etag";
+import { eTag } from "@std/http/etag";
 
 /**
  * Get a default ETag for use in Deno deploy with `serveFile`/`serveDir`/`staticRoute`.

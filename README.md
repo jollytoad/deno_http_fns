@@ -1,6 +1,7 @@
-# HTTP Functions for Deno
+# HTTP Functions for Deno (and other runtimes)
 
-This is a collection of functions to aid building of a HTTP service in Deno.
+This is a collection of functions to aid building of a HTTP service in Deno, or
+other JS runtimes.
 
 They can be used instead of a monolithic router framework, or in tandem with
 one.

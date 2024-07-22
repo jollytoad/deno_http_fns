@@ -35,7 +35,7 @@ export interface DenoConfig {
   version?: string;
   imports?: Record<string, string>;
   exports?: Record<string, string>;
-  workspaces?: string[];
+  workspace?: string[];
 }
 
 export async function readDenoConfig(

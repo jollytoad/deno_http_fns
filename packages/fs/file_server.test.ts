@@ -10,7 +10,7 @@ import {
 } from "@std/assert";
 import { serveDir, type ServeDirOptions } from "./serve_dir.ts";
 import { serveFile } from "./serve_file.ts";
-import { calculate as eTag } from "@std/http/etag";
+import { eTag } from "@std/http/etag";
 import { dirname, fromFileUrl, join, resolve } from "@std/path";
 import { MINUTE } from "@std/datetime/constants";
 

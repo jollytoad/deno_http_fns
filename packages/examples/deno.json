@@ -1,6 +1,6 @@
 {
   "name": "@http/examples",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "exports": {
     "./by-media-type": "./by_media_type.ts",
     "./by-method": "./by_method.ts",

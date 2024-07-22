@@ -21,7 +21,7 @@ export async function updatePackages(version?: string) {
       throw new Error(`deno.json not found!`);
     }
 
-    rootDenoJson.workspaces ??= [];
+    rootDenoJson.workspace ??= [];
 
     for await (const entry of Deno.readDir(packagesPath)) {
       const pkgPath = resolve(packagesPath, entry.name);
@@ -40,9 +40,9 @@ export async function updatePackages(version?: string) {
 
       const workspacePath = `./packages/${entry.name}`;
 
-      if (!rootDenoJson.workspaces.includes(workspacePath)) {
-        rootDenoJson.workspaces.push(workspacePath);
-        rootDenoJson.workspaces.sort();
+      if (!rootDenoJson.workspace.includes(workspacePath)) {
+        rootDenoJson.workspace.push(workspacePath);
+        rootDenoJson.workspace.sort();
       }
 
       const importAlias = `@http/${entry.name}`;

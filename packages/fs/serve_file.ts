@@ -5,7 +5,7 @@
 
 import { extname } from "@std/path/extname";
 import { contentType } from "@std/media-types/content-type";
-import { calculate as eTag, ifNoneMatch } from "@std/http/etag";
+import { eTag, ifNoneMatch } from "@std/http/etag";
 import { notFound } from "@http/response/not-found";
 import { ok } from "@http/response/ok";
 import { notModified } from "@http/response/not-modified";
