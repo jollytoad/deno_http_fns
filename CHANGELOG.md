@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.21.1]
+
+### Changed
+
+- [@http/fs] remove dependency on `npm:bun-types`
+
 ## [0.21.0]
 
 ### Changed

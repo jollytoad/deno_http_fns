@@ -1,6 +1,6 @@
 {
   "name": "@http/fs",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "exports": {
     "./file-body": "./file_body.ts",
     "./file-body-bun": "./file_body_bun.ts",
