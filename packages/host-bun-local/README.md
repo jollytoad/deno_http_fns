@@ -7,7 +7,7 @@ for development.
 import init from "@http/host-bun-local/init";
 import handler from "./handler.ts";
 
-const server = Bun.serve(init(handler));
+const server = Bun.serve(await init(handler));
 
 console.log(`Listening on ${server.url}`);
 ```
@@ -22,6 +22,12 @@ It's a pretty simple function that provides some out of the box conveniences:
 - Provides a fallback response (404 Not Found), if the handler 'skips' (ie.
   returns `null`), as is the convention in `@http` routing functions (eg.
   `cascade`).
+
+## Polyfills
+
+Bun doesn't yet support [URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern),
+so you may need to include the [polyfill](https://www.npmjs.com/package/urlpattern-polyfill) if
+you make use of any `@http` functions that use it, `byPattern()` for example.
 
 ## Secure development server
 
