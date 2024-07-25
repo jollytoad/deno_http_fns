@@ -1,0 +1,15 @@
+{
+  "name": "@http/host-bun-local",
+  "version": "0.22.0",
+  "exports": {
+    "./init": "./init.ts",
+    "./load-key-and-cert": "./load_key_and_cert.ts",
+    "./types": "./types.ts"
+  },
+  "publish": {
+    "exclude": [
+      "_test/**",
+      "*.test.ts"
+    ]
+  }
+}

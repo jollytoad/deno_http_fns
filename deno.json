@@ -25,11 +25,14 @@
     ]
   },
   "imports": {
+    "$test/generate/": "./packages/generate/_test/",
     "@http/assert": "jsr:@http/assert@^0.21.0",
     "@http/discovery": "jsr:@http/discovery@^0.21.0",
     "@http/examples": "jsr:@http/examples@^0.21.0",
     "@http/fs": "jsr:@http/fs@^0.21.1",
     "@http/generate": "jsr:@http/generate@^0.21.0",
+    "@http/host-bun-local": "jsr:@http/host-bun-local@^0.22.0",
+    "@http/host-cloudflare-worker": "jsr:@http/host-cloudflare-worker@^0.22.0",
     "@http/host-deno-deploy": "jsr:@http/host-deno-deploy@^0.21.0",
     "@http/host-deno-local": "jsr:@http/host-deno-local@^0.21.0",
     "@http/interceptor": "jsr:@http/interceptor@^0.21.0",
@@ -49,7 +52,6 @@
     "@std/streams": "jsr:@std/streams@^1.0.0-rc.4",
     "@std/testing": "jsr:@std/testing@^1.0.0-rc.4",
     "@std/url": "jsr:@std/url@^1.0.0-rc.2",
-    "$test/generate/": "./packages/generate/_test/",
     "ts-poet": "npm:ts-poet@^6.9.0"
   },
   "workspace": [
@@ -58,6 +60,8 @@
     "./packages/examples",
     "./packages/fs",
     "./packages/generate",
+    "./packages/host-bun-local",
+    "./packages/host-cloudflare-worker",
     "./packages/host-deno-deploy",
     "./packages/host-deno-local",
     "./packages/interceptor",

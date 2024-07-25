@@ -10,6 +10,13 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.22.0]
+
+### Added
+
+- [@http/host-bun-local] new package for Bun localhost dev
+- [@http/host-cloudflare-worker] new package to support Cloudflare Workers/Pages
+
 ## [0.21.1]
 
 ### Changed
