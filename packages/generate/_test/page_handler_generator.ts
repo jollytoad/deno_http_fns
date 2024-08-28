@@ -1,10 +1,10 @@
 import type { Code, GeneratorOptions, RouteModule } from "@http/generate/types";
 import {
   asCodePattern,
-  code,
+  asFn,
+  awaitImportNamed,
   importNamed,
-  literalOf,
-  relativeModulePath,
+  returnFromFn,
 } from "@http/generate/code-builder";
 import { hasBodyFunction } from "$test/generate/page_handler_mapper.ts";
 
@@ -17,39 +17,38 @@ export const handlerMapper = "$test/generate/page_handler_mapper.ts";
  */
 export function generate(
   { pattern, module, loaded }: RouteModule,
-  { moduleOutUrl, httpModulePrefix, moduleImports }: GeneratorOptions,
+  { httpModulePrefix, moduleImports }: GeneratorOptions,
   i: number,
 ): Code | undefined {
   if (hasBodyFunction(loaded)) {
-    const byPattern = importNamed(
+    const byPattern = asFn(importNamed(
       `${httpModulePrefix}route/by-pattern`,
       "byPattern",
-    );
+    ));
 
-    const pageHandler = importNamed(
+    const pageHandler = asFn(importNamed(
       `$test/generate/page_handler.ts`,
       "pageHandler",
-    );
+    ));
+
+    const codePattern = asCodePattern(pattern);
 
     switch (moduleImports) {
       case "dynamic": {
-        const lazy = importNamed(`${httpModulePrefix}route/lazy`, "lazy");
+        const lazy = asFn(importNamed(`${httpModulePrefix}route/lazy`, "lazy"));
+        const body = awaitImportNamed(module, "body");
 
-        return code`${byPattern}(${
-          asCodePattern(pattern)
-        }, ${lazy}(async () => ${pageHandler}((await import(${
-          literalOf(relativeModulePath(module, moduleOutUrl))
-        })).body)))`;
+        return byPattern(codePattern, lazy(returnFromFn(pageHandler(body))));
       }
 
       case "static": {
         const routeModule = importNamed(
-          relativeModulePath(module, moduleOutUrl),
+          module,
+          "body",
           `page_body_${i}`,
-          "body"
         );
 
-        return code`${byPattern}(${asCodePattern(pattern)}, ${pageHandler}(${routeModule}))`;
+        return byPattern(codePattern, pageHandler(routeModule));
       }
     }
   }

@@ -1,17 +1,16 @@
 import type { DynamicRouteOptions } from "@http/discovery/dynamic-route";
 import {
+  asFn,
   type Code,
-  code,
   importDefault,
   importNamed,
-  joinCode,
-  literalOf,
-  relativeModulePath,
-} from "./code_builder.ts";
+} from "./code-builder/mod.ts";
 import type {
   GenerateDynamicRouteOptions,
   HandlerGeneratorModule,
 } from "./types.ts";
+import { literal } from "./code-builder/_literal.ts";
+import { importResolve } from "./code-builder/_inline_import.ts";
 
 /**
  * Generate a route handler that uses `dynamicRoute` to discovered and
@@ -20,18 +19,14 @@ import type {
 export async function generateDynamicRouteHandler(
   opts: GenerateDynamicRouteOptions,
 ): Promise<Code> {
-  const dynamicRoute = importNamed(
+  const dynamicRoute = asFn(importNamed(
     `${opts.httpModulePrefix}discovery/dynamic-route`,
     "dynamicRoute",
-  );
+  ));
 
-  const fileRootUrl = code`import.meta.resolve(${
-    literalOf(relativeModulePath(opts.fileRootUrl, opts.moduleOutUrl))
-  })`;
+  const fileRootUrl = importResolve(opts.fileRootUrl);
 
-  const pattern = opts.pattern !== undefined
-    ? literalOf(opts.pattern)
-    : undefined;
+  const pattern = opts.pattern !== undefined ? opts.pattern : undefined;
 
   const pathMapper = opts.pathMapper
     ? importDefault(opts.pathMapper, "pathMapper")
@@ -70,43 +65,37 @@ export async function generateDynamicRouteHandler(
     ...(verbose ? { verbose } : null),
   };
 
-  return code`${dynamicRoute}(${optsCode})`;
+  return dynamicRoute(literal(optsCode));
 }
 
 function cascadeHandlerMappers(
   opts: GenerateDynamicRouteOptions,
   handlerGenerators: Array<HandlerGeneratorModule>,
 ) {
-  const cascadingHandlerMapper = importNamed(
+  const cascadingHandlerMapper = asFn(importNamed(
     `${opts.httpModulePrefix}discovery/cascading-handler-mapper`,
     "cascadingHandlerMapper",
-  );
+  ));
 
-  return code`${cascadingHandlerMapper}(${
-    joinCode(
-      handlerGenerators.map(({ handlerMapper }, i) =>
-        code`${importDefault(handlerMapper, `handlerMapper_${i + 1}`)}`
-      ),
-      { on: "," },
-    )
-  })`;
+  return cascadingHandlerMapper(
+    ...handlerGenerators.map(({ handlerMapper }, i) =>
+      importDefault(handlerMapper, `handlerMapper_${i + 1}`)
+    ),
+  );
 }
 
 function combineRouteMappers(
   opts: GenerateDynamicRouteOptions,
   routeMappers: Array<string | URL>,
 ) {
-  const combinedRouteMapper = importNamed(
+  const combinedRouteMapper = asFn(importNamed(
     `${opts.httpModulePrefix}discovery/combined-route-mapper`,
     "combinedRouteMapper",
-  );
+  ));
 
-  return code`${combinedRouteMapper}(${
-    joinCode(
-      routeMappers.map((mapper, i) =>
-        code`${importDefault(mapper, `routeMapper_${i + 1}`)}`
-      ),
-      { on: "," },
-    )
-  })`;
+  return combinedRouteMapper(
+    ...routeMappers.map((mapper, i) =>
+      importDefault(mapper, `routeMapper_${i + 1}`)
+    ),
+  );
 }

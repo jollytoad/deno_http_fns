@@ -13,7 +13,15 @@ import routeMapper_2 from "@http/discovery/ts-route-mapper";
 export default dynamicRoute({
   "fileRootUrl": import.meta.resolve("./routes"),
   "eagerness": "startup",
-  "routeMapper": combinedRouteMapper(routeMapper_1, routeMapper_2, routeMapper_3),
-  "handlerMapper": cascadingHandlerMapper(handlerMapper_1, handlerMapper_2, handlerMapper_3),
+  "routeMapper": combinedRouteMapper(
+    routeMapper_1,
+    routeMapper_2,
+    routeMapper_3,
+  ),
+  "handlerMapper": cascadingHandlerMapper(
+    handlerMapper_1,
+    handlerMapper_2,
+    handlerMapper_3,
+  ),
   "consolidate": true,
 });

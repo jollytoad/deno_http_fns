@@ -1,5 +1,8 @@
-import { type Code, code } from "./code_builder.ts";
+import type { Code } from "./code-builder/types.ts";
+import { generateModule, resolveImports } from "./code-builder/generate.ts";
+import { relativeModuleResolver } from "./code-builder/resolver.ts";
 import type { GenerateDynamicRouteOptions, GenerateOptions } from "./types.ts";
+import { exportDefault } from "./code-builder/_export.ts";
 
 export type { GenerateOptions };
 
@@ -12,13 +15,9 @@ export async function generateRoutesModule(
   opts: GenerateOptions,
 ): Promise<boolean> {
   const {
-    fileRootUrl,
     moduleOutUrl,
     httpModulePrefix = "@http/",
   } = opts;
-
-  assertIsFileUrl(fileRootUrl, "fileRootUrl");
-  assertIsFileUrl(moduleOutUrl, "moduleOutUrl");
 
   const writeModule = opts.writeModule ??
     (await import("./write_module.ts")).default;
@@ -38,16 +37,28 @@ export async function generateRoutesModuleContent(
   opts: GenerateOptions,
 ): Promise<string> {
   const {
+    formatModule,
+    fileRootUrl,
+    moduleOutUrl,
     httpModulePrefix = "@http/",
   } = opts;
 
-  const handlerCode = await generateHandler({ ...opts, httpModulePrefix });
-  const moduleCode = code`export default ${handlerCode}`;
+  assertIsFileUrl(fileRootUrl, "fileRootUrl");
+  assertIsFileUrl(moduleOutUrl, "moduleOutUrl");
 
-  return moduleCode.toString({
-    prefix:
-      "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n",
-  });
+  const handlerCode = await generateHandler({ ...opts, httpModulePrefix });
+  const moduleCode = exportDefault(handlerCode);
+  resolveImports(moduleCode, relativeModuleResolver(opts.moduleOutUrl));
+
+  let content =
+    "// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.\n\n" +
+    generateModule(moduleCode);
+
+  if (formatModule) {
+    content = await formatModule(moduleOutUrl, content);
+  }
+
+  return content;
 }
 
 async function generateHandler(opts: GenerateOptions): Promise<Code> {

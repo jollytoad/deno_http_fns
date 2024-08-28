@@ -26,6 +26,7 @@
   },
   "imports": {
     "$test/generate/": "./packages/generate/_test/",
+    "@dprint/formatter": "jsr:@dprint/formatter@^0.4.1",
     "@http/assert": "jsr:@http/assert@^0.21.0",
     "@http/discovery": "jsr:@http/discovery@^0.21.0",
     "@http/examples": "jsr:@http/examples@^0.21.0",
@@ -51,8 +52,7 @@
     "@std/path": "jsr:@std/path@^1.0.1",
     "@std/streams": "jsr:@std/streams@^1.0.0-rc.4",
     "@std/testing": "jsr:@std/testing@^1.0.0-rc.4",
-    "@std/url": "jsr:@std/url@^1.0.0-rc.2",
-    "ts-poet": "npm:ts-poet@^6.9.0"
+    "@std/url": "jsr:@std/url@^1.0.0-rc.2"
   },
   "workspace": [
     "./packages/assert",

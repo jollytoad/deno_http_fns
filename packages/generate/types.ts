@@ -1,5 +1,5 @@
 import type { RequestHandler, RouteModule } from "@http/discovery/types";
-import type { Code } from "./code_builder.ts";
+import type { Code } from "./code-builder/types.ts";
 import type { DiscoverRoutesOptions } from "@http/discovery/discover-routes";
 import type { Eagerness } from "@http/discovery/dynamic-route";
 
@@ -101,6 +101,13 @@ export interface GenerateOptions extends
    * Module that supplies a RouteComparator as the default function.
    */
   compare?: string | URL;
+
+  /**
+   * Function to format the new module.
+   *
+   * Will not format the module if not supplied.
+   */
+  formatModule?: (url: string | URL, content: string) => Promise<string>;
 
   /**
    * Function to write the new module.

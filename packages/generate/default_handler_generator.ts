@@ -2,12 +2,12 @@ import { hasDefaultHandler } from "@http/discovery/default-handler-mapper";
 import type { Code, GeneratorOptions, RouteModule } from "./types.ts";
 import {
   asCodePattern,
-  code,
+  asFn,
+  dynamicImportAll,
   importDefault,
   importNamed,
-  literalOf,
-  relativeModulePath,
-} from "./code_builder.ts";
+  returnFromFn,
+} from "./code-builder/mod.ts";
 
 export const handlerMapper = "@http/discovery/default-handler-mapper";
 
@@ -17,33 +17,35 @@ export const handlerMapper = "@http/discovery/default-handler-mapper";
  */
 export function generate(
   { pattern, module, loaded }: RouteModule,
-  { moduleOutUrl, httpModulePrefix, moduleImports }: GeneratorOptions,
+  { httpModulePrefix, moduleImports }: GeneratorOptions,
   i: number,
 ): Code | undefined {
   if (hasDefaultHandler(loaded)) {
-    const byPattern = importNamed(
+    const byPattern = asFn(importNamed(
       `${httpModulePrefix}route/by-pattern`,
       "byPattern",
-    );
+    ));
+
+    const codePattern = asCodePattern(pattern);
 
     switch (moduleImports) {
       case "dynamic": {
-        const lazy = importNamed(`${httpModulePrefix}route/lazy`, "lazy");
+        const lazy = asFn(importNamed(`${httpModulePrefix}route/lazy`, "lazy"));
+        const routeModule = dynamicImportAll(module);
 
-        return code`${byPattern}(${
-          asCodePattern(pattern)
-        }, ${lazy}(() => import(${
-          literalOf(relativeModulePath(module, moduleOutUrl))
-        })))`;
+        return byPattern(
+          codePattern,
+          lazy(returnFromFn(routeModule)),
+        );
       }
 
       case "static": {
         const routeModule = importDefault(
-          relativeModulePath(module, moduleOutUrl),
+          module,
           `route_${i}`,
         );
 
-        return code`${byPattern}(${asCodePattern(pattern)}, ${routeModule})`;
+        return byPattern(codePattern, routeModule);
       }
     }
   }

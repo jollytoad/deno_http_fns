@@ -15,7 +15,7 @@ export function pageHandlerMapper(
 }
 
 /**
- * Check whether there is a `body()` function 
+ * Check whether there is a `body()` function
  */
 export function hasBodyFunction(
   loaded: Record<string, unknown>,

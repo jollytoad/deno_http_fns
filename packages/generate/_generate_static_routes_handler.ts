@@ -3,7 +3,7 @@ import { combinedRouteMapper } from "@http/discovery/combined-route-mapper";
 import { dirname } from "@std/path/posix/dirname";
 import { relative } from "@std/path/posix/relative";
 import { fromFileUrl } from "@std/path/posix/from-file-url";
-import { type Code, code, importNamed, joinCode } from "./code_builder.ts";
+import { asFn, type Code, importNamed } from "./code-builder/mod.ts";
 import type {
   GenerateOptions,
   GeneratorOptions,
@@ -18,14 +18,12 @@ import type {
 export async function generateStaticRoutesHandler(
   opts: GenerateOptions,
 ): Promise<Code> {
-  const cascade = importNamed(
+  const cascade = asFn(importNamed(
     `${opts.httpModulePrefix}route/cascade`,
     "cascade",
-  );
+  ));
 
-  return code`${cascade}(${
-    joinCode(await generateStaticRoutes(opts), { on: "," })
-  })`;
+  return cascade(...await generateStaticRoutes(opts));
 }
 
 async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {

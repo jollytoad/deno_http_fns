@@ -14,21 +14,9 @@ export function prependDocType(bodyInit: BodyInit): BodyInit {
   if (isData(bodyInit)) {
     return bodyInit;
   } else if (isStream(bodyInit)) {
-    const reader = bodyInit.getReader();
-
-    return new ReadableStream<Uint8Array>({
-      start(controller) {
-        controller.enqueue(ENCODED_DOCTYPE);
-      },
-      async pull(controller) {
-        const { value, done } = await reader.read();
-        if (done) {
-          controller.close();
-        } else {
-          controller.enqueue(value);
-        }
-      },
-    });
+    return stream(bodyInit.values());
+  } else if (isAsyncIterable(bodyInit)) {
+    return stream(bodyInit[Symbol.asyncIterator]());
   } else {
     return new Blob([
       DOCTYPE,
@@ -42,6 +30,30 @@ function isStream(bodyInit: BodyInit): bodyInit is ReadableStream<Uint8Array> {
     "getReader" in bodyInit && typeof bodyInit.getReader === "function";
 }
 
+function isAsyncIterable(
+  bodyInit: BodyInit,
+): bodyInit is AsyncIterable<Uint8Array> {
+  return !!bodyInit && typeof bodyInit === "object" &&
+    Symbol.asyncIterator in bodyInit &&
+    typeof bodyInit[Symbol.asyncIterator] === "function";
+}
+
 function isData(bodyInit: BodyInit): bodyInit is FormData | URLSearchParams {
   return bodyInit instanceof FormData || bodyInit instanceof URLSearchParams;
+}
+
+function stream(iterator: AsyncIterator<Uint8Array>) {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(ENCODED_DOCTYPE);
+    },
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(value);
+      }
+    },
+  });
 }

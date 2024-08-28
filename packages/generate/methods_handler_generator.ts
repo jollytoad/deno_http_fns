@@ -2,12 +2,12 @@ import { hasMethodHandlers } from "@http/discovery/methods-handler-mapper";
 import type { Code, GeneratorOptions, RouteModule } from "./types.ts";
 import {
   asCodePattern,
-  code,
+  asFn,
+  awaitImportAll,
   importAll,
   importNamed,
-  literalOf,
-  relativeModulePath,
-} from "./code_builder.ts";
+  returnFromFn,
+} from "./code-builder/mod.ts";
 
 export const handlerMapper = "@http/discovery/methods-handler-mapper";
 
@@ -17,40 +17,40 @@ export const handlerMapper = "@http/discovery/methods-handler-mapper";
  */
 export function generate(
   { pattern, module, loaded }: RouteModule,
-  { moduleOutUrl, httpModulePrefix, moduleImports }: GeneratorOptions,
+  { httpModulePrefix, moduleImports }: GeneratorOptions,
   i: number,
 ): Code | undefined {
   if (hasMethodHandlers(loaded)) {
-    const byPattern = importNamed(
+    const byPattern = asFn(importNamed(
       `${httpModulePrefix}route/by-pattern`,
       "byPattern",
-    );
+    ));
 
-    const byMethod = importNamed(
+    const byMethod = asFn(importNamed(
       `${httpModulePrefix}route/by-method`,
       "byMethod",
-    );
+    ));
+
+    const codePattern = asCodePattern(pattern);
 
     switch (moduleImports) {
       case "dynamic": {
-        const lazy = importNamed(`${httpModulePrefix}route/lazy`, "lazy");
+        const lazy = asFn(importNamed(`${httpModulePrefix}route/lazy`, "lazy"));
+        const routeModule = awaitImportAll(module);
 
-        return code`${byPattern}(${
-          asCodePattern(pattern)
-        }, ${lazy}(async () => ${byMethod}(await import(${
-          literalOf(relativeModulePath(module, moduleOutUrl))
-        }))))`;
+        return byPattern(
+          codePattern,
+          lazy(returnFromFn(byMethod(routeModule))),
+        );
       }
 
       case "static": {
         const routeModule = importAll(
-          relativeModulePath(module, moduleOutUrl),
+          module,
           `route_methods_${i}`,
         );
 
-        return code`${byPattern}(${
-          asCodePattern(pattern)
-        }, ${byMethod}(${routeModule}))`;
+        return byPattern(codePattern, byMethod(routeModule));
       }
     }
   }
