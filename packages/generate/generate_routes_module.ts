@@ -1,6 +1,6 @@
 import type { Code } from "./code-builder/types.ts";
 import { generateModule, resolveImports } from "./code-builder/generate.ts";
-import { relativeModuleResolver } from "./code-builder/resolver.ts";
+import { relativeModuleResolver } from "./resolver.ts";
 import type { GenerateDynamicRouteOptions, GenerateOptions } from "./types.ts";
 import { exportDefault } from "./code-builder/_export.ts";
 

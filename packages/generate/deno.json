@@ -4,7 +4,6 @@
   "exports": {
     "./code-builder/generate": "./code-builder/generate.ts",
     "./code-builder": "./code-builder/mod.ts",
-    "./code-builder/resolver": "./code-builder/resolver.ts",
     "./code-builder/types": "./code-builder/types.ts",
     "./default-handler-generator": "./default_handler_generator.ts",
     "./deno/write-module": "./deno/write_module.ts",
@@ -12,6 +11,7 @@
     "./generate-routes-module": "./generate_routes_module.ts",
     "./methods-handler-generator": "./methods_handler_generator.ts",
     "./node/write-module": "./node/write_module.ts",
+    "./resolver": "./resolver.ts",
     "./types": "./types.ts",
     "./write-module": "./write_module.ts"
   },
