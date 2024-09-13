@@ -31,7 +31,7 @@ function isStream(bodyInit: BodyInit): bodyInit is ReadableStream<Uint8Array> {
 }
 
 function isAsyncIterable(
-  bodyInit: BodyInit,
+  bodyInit: BodyInit | AsyncIterable<Uint8Array>,
 ): bodyInit is AsyncIterable<Uint8Array> {
   return !!bodyInit && typeof bodyInit === "object" &&
     Symbol.asyncIterator in bodyInit &&
