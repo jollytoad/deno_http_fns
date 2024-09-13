@@ -11,6 +11,7 @@ import {
   type StatusCode,
 } from "@http/assert/status";
 import { assertStringIncludes } from "@std/assert";
+import { dprintFormatModule } from "./dprint_format_module.ts";
 
 const fileRootUrl = import.meta.resolve("./_test/routes");
 
@@ -84,6 +85,7 @@ async function testGenerateRoutesModule(
     await generateRoutesModule({
       ...opts,
       fileRootUrl,
+      formatModule: dprintFormatModule(),
       routeMapper: [
         "$test/generate/ignored_route_mapper.ts",
         "@http/discovery/ts-route-mapper",

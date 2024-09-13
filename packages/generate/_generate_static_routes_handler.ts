@@ -3,13 +3,20 @@ import { combinedRouteMapper } from "@http/discovery/combined-route-mapper";
 import { dirname } from "@std/path/posix/dirname";
 import { relative } from "@std/path/posix/relative";
 import { fromFileUrl } from "@std/path/posix/from-file-url";
-import { type Code, code, importNamed, joinCode } from "./code_builder.ts";
+import {
+  asFn,
+  type Code,
+  dynamicImport,
+  importNamed,
+  literal,
+} from "./code-builder/mod.ts";
 import type {
   GenerateOptions,
   GeneratorOptions,
   HandlerGeneratorModule,
   RouteModule,
 } from "./types.ts";
+import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
 
 /**
  * Generate a route handler of static pre-built routes using
@@ -18,14 +25,12 @@ import type {
 export async function generateStaticRoutesHandler(
   opts: GenerateOptions,
 ): Promise<Code> {
-  const cascade = importNamed(
+  const cascade = asFn(importNamed(
     `${opts.httpModulePrefix}route/cascade`,
     "cascade",
-  );
+  ));
 
-  return code`${cascade}(${
-    joinCode(await generateStaticRoutes(opts), { on: "," })
-  })`;
+  return cascade(...await generateStaticRoutes(opts));
 }
 
 async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
@@ -98,11 +103,31 @@ async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
       moduleImports,
     };
 
+    const byPattern = asFn(importNamed(
+      `${httpModulePrefix}route/by-pattern`,
+      "byPattern",
+    ));
+
+    const codePattern = literal(asSerializablePattern(pattern));
+
+    const lazy = asFn(importNamed(`${httpModulePrefix}route/lazy`, "lazy"));
+
     for (const { generate } of handlerGenerators) {
-      const code = generate?.(routeModule, generatorOpts, i);
+      let code = generate?.(routeModule, generatorOpts, i);
 
       if (code) {
+        if (moduleImports === "dynamic") {
+          code.imports?.forEach(dynamicImport);
+        }
+
+        if (code.returnsPromise?.()) {
+          code = lazy(returnFromFn(code));
+        }
+
+        code = byPattern(codePattern, code);
+
         routesCode.push(code);
+
         i++;
         continue;
       }
@@ -110,4 +135,13 @@ async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
   }
 
   return routesCode;
+}
+
+function returnFromFn(code: Code): Code {
+  return {
+    imports: code.imports,
+    toString() {
+      return (code.hasAwaits?.() ? "async " : "") + `() => ${code}`;
+    },
+  };
 }

@@ -11,12 +11,14 @@ turn the discovered routes into a static TypeScript module.
 
 ```ts
 import { generateRoutesModule } from "@http/generate/generate-routes-module";
+import { dprintFormatModule } from "@http/generate/dprint-format-module";
 
 await generateRoutesModule({
   pattern: "/",
   fileRootUrl: import.meta.resolve("./routes"),
   moduleOutUrl: import.meta.resolve("./routes.ts"),
   pathMapper: "@http/discovery/fresh-path-mapper",
+  formatModule: dprintFormatModule(),
   verbose: true,
 });
 ```

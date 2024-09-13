@@ -10,6 +10,13 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.23.0]
+
+### Changed
+
+- [@http/generate] BREAKING: remove dependency on ts-poet, new code-builder api,
+  simplified handler generators, they must use new code-builder api
+
 ## [0.22.0]
 
 ### Added

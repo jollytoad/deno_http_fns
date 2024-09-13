@@ -25,9 +25,11 @@ It's a pretty simple function that provides some out of the box conveniences:
 
 ## Polyfills
 
-Bun doesn't yet support [URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern),
-so you may need to include the [polyfill](https://www.npmjs.com/package/urlpattern-polyfill) if
-you make use of any `@http` functions that use it, `byPattern()` for example.
+Bun doesn't yet support
+[URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern), so
+you may need to include the
+[polyfill](https://www.npmjs.com/package/urlpattern-polyfill) if you make use of
+any `@http` functions that use it, `byPattern()` for example.
 
 ## Secure development server
 
