@@ -23,5 +23,5 @@ export default cascade(
     "/about",
     lazy(async () => byMethod(await import("./routes/about.ts"))),
   ),
-  byPattern("/", lazy(() => import("./routes/index.ts"))),
+  byPattern("/", lazy(async () => (await import("./routes/index.ts")).default)),
 );

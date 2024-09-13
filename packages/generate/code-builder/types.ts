@@ -1,15 +1,18 @@
 export interface Code {
-  imports?: Import[];
-  async?: boolean;
+  /** Imports required by the code */
+  imports: Import[];
+  /** Code includes an await */
+  hasAwaits?(): boolean;
+  /** Code returns a promise */
+  returnsPromise?(): boolean;
   toString(): string;
 }
 
-export interface Import {
+export interface Import extends Code {
   moduleSpecifier: string;
   moduleExportName?: string | "*" | "default";
   inline?: boolean;
   importedBinding?: string;
-  toString(): string;
 }
 
 export type Resolver = (moduleSpecifier: string) => string;

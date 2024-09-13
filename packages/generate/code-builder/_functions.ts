@@ -1,21 +1,30 @@
-import { getImports, isAsync } from "./_internal.ts";
+import { getImports } from "./_internal.ts";
 import type { Code, Import } from "./types.ts";
 
 export const asFn =
-  <P extends unknown[]>(name: Import | string) => (...params: P): Code => ({
-    imports: [...getImports(name), ...params.flatMap(getImports)],
-    async: isAsync(...params),
+  <P extends unknown[]>(imp: Import) => (...params: P): Code => ({
+    imports: [...imp.imports, ...params.flatMap(getImports)],
+    hasAwaits() {
+      return hasAwaits(...this.imports, ...params);
+    },
+    returnsPromise() {
+      return returnsPromise(...this.imports, ...params);
+    },
     toString() {
-      return `${name}(${params.map((v) => v?.toString()).join(", ")})`;
+      return `${imp}(${params.map((v) => v?.toString()).join(", ")})`;
     },
   });
 
-export function returnFromFn(returnValue: unknown): Code {
-  const async = isAsync(returnValue);
-  return {
-    imports: [...getImports(returnValue)],
-    toString() {
-      return (async ? "async " : "") + `() => ${returnValue}`;
-    },
-  };
+function hasAwaits(...values: unknown[]): boolean {
+  return values.some((value) => (
+    !!value && typeof value === "object" && "hasAwaits" in value &&
+    typeof value.hasAwaits === "function" && value.hasAwaits()
+  ));
+}
+
+function returnsPromise(...values: unknown[]): boolean {
+  return values.some((value) => (
+    !!value && typeof value === "object" && "returnsPromise" in value &&
+    typeof value.returnsPromise === "function" && value.returnsPromise()
+  ));
 }

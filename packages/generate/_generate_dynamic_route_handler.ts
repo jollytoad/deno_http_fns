@@ -4,13 +4,13 @@ import {
   type Code,
   importDefault,
   importNamed,
+  importResolve,
+  literal,
 } from "./code-builder/mod.ts";
 import type {
   GenerateDynamicRouteOptions,
   HandlerGeneratorModule,
 } from "./types.ts";
-import { literal } from "./code-builder/_literal.ts";
-import { importResolve } from "./code-builder/_inline_import.ts";
 
 /**
  * Generate a route handler that uses `dynamicRoute` to discovered and

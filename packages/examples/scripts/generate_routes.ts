@@ -25,6 +25,7 @@
  */
 
 import { generateRoutesModule } from "@http/generate/generate-routes-module";
+import { dprintFormatModule } from "@http/generate/dprint-format-module";
 
 function generateRoutes(): Promise<boolean> {
   console.log("\n%cGenerating Routes...\n", "color: green; font-weight: bold;");
@@ -36,6 +37,7 @@ function generateRoutes(): Promise<boolean> {
     httpModulePrefix: "@http/",
     routeDiscovery: "static",
     moduleImports: "dynamic",
+    formatModule: dprintFormatModule(),
     verbose: true,
   });
 }
