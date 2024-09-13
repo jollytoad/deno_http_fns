@@ -1,6 +1,9 @@
 import { getImports } from "./_internal.ts";
 import type { Code, Import } from "./types.ts";
 
+/**
+ * Represent a literal code value.
+ */
 export function literal(value: unknown): Code {
   const imports: Import[] = [];
   const tokens: unknown[] = [];
