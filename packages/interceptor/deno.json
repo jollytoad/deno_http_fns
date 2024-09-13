@@ -1,6 +1,6 @@
 {
   "name": "@http/interceptor",
-  "version": "0.21.0",
+  "version": "0.23.0",
   "exports": {
     "./catch-response": "./catch_response.ts",
     "./cors": "./cors.ts",
