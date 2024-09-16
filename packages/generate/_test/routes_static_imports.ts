@@ -13,7 +13,10 @@ import * as route_methods_1 from "./routes/user/:name/index.ts";
 export default cascade(
   byPattern("/user/:name{/}?", byMethod(route_methods_1)),
   byPattern("/raw", byMethod(route_methods_2)),
-  byPattern("/page", pageHandler(page_body_3)),
+  byPattern(
+    "/page",
+    pageHandler(page_body_3, import.meta.resolve("./routes/page.ts")),
+  ),
   byPattern("/about", byMethod(route_methods_4)),
   byPattern("/", route_5),
 );

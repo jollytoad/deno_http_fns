@@ -17,7 +17,12 @@ export default cascade(
   ),
   byPattern(
     "/page",
-    lazy(async () => pageHandler((await import("./routes/page.ts")).body)),
+    lazy(async () =>
+      pageHandler(
+        (await import("./routes/page.ts")).body,
+        import.meta.resolve("./routes/page.ts"),
+      )
+    ),
   ),
   byPattern(
     "/about",

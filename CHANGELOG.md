@@ -10,6 +10,13 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.23.1]
+
+### Fixed
+
+- [@http/generate] prevent `import.meta.resolve()` from being converted to an
+  `await import()`
+
 ## [0.23.0]
 
 ### Changed

@@ -10,12 +10,13 @@ import { html } from "@http/response/html";
  */
 export function pageHandler(
   body: (req: Request) => string,
+  modulePath?: string
 ): (req: Request) => Response {
   return (req) =>
     html(`
 <!DOCTYPE html>
 <html>
-  <body>
+  <body data-module="${modulePath}">
     ${body(req)}
   </body>
 </html>

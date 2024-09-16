@@ -73,7 +73,7 @@ export function importResolve(
  * Convert an import to an inline dynamic import
  */
 export function dynamicImport(imp: Import): Import {
-  if (imp.inline === false) return imp;
+  if (imp.inline !== undefined) return imp;
 
   return Object.assign<Import, Partial<Import>>(
     imp,

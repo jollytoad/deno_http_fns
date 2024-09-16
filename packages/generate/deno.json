@@ -1,6 +1,6 @@
 {
   "name": "@http/generate",
-  "version": "0.23.0",
+  "version": "0.23.1",
   "exports": {
     "./code-builder/generate": "./code-builder/generate.ts",
     "./code-builder": "./code-builder/mod.ts",

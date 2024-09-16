@@ -2,6 +2,7 @@ import type { Code, GeneratorOptions, RouteModule } from "@http/generate/types";
 import {
   asFn,
   importNamed,
+  importResolve,
   staticImport,
 } from "@http/generate/code-builder";
 import { hasBodyFunction } from "$test/generate/page_handler_mapper.ts";
@@ -25,10 +26,12 @@ export function generate(
       "pageHandler",
     )));
 
+    const modulePath = importResolve(module);
+
     return pageHandler(importNamed(
       module,
       "body",
       `page_body_${i}`,
-    ));
+    ), modulePath);
   }
 }
