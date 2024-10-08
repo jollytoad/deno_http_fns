@@ -10,6 +10,11 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+### Added
+
+- [@http/interceptor] new RequestInterceptor `applyForwardedHeaders` to apply
+  `x-forwarded-*` to the Request URL
+
 ## [0.23.1]
 
 ### Fixed
