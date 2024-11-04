@@ -10,6 +10,8 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.24.0]
+
 ### Added
 
 - [@http/interceptor] new RequestInterceptor `applyForwardedHeaders` to apply

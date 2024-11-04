@@ -1,6 +1,6 @@
 {
   "name": "@http/host-bun-local",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "exports": {
     "./init": "./init.ts",
     "./load-key-and-cert": "./load_key_and_cert.ts",

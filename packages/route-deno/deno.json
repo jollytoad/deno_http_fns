@@ -1,6 +1,6 @@
 {
   "name": "@http/route-deno",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "exports": {
     "./static-route": "./static_route.ts"
   },

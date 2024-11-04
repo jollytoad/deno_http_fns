@@ -1,6 +1,6 @@
 {
   "name": "@http/interceptor",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "exports": {
     "./apply-forwarded-headers": "./apply_forwarded_headers.ts",
     "./catch-response": "./catch_response.ts",
