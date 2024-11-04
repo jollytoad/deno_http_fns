@@ -10,18 +10,16 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
-## [0.24.1]
-
-### Removed
-
-- [@http/route-deno] package removed
-
 ## [0.24.0]
 
 ### Added
 
 - [@http/interceptor] new RequestInterceptor `applyForwardedHeaders` to apply
   `x-forwarded-*` to the Request URL
+
+### Removed
+
+- [@http/route-deno] package removed
 
 ## [0.23.1]
 
