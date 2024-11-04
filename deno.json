@@ -39,7 +39,6 @@
     "@http/request": "jsr:@http/request@^0.24.0",
     "@http/response": "jsr:@http/response@^0.24.0",
     "@http/route": "jsr:@http/route@^0.24.0",
-    "@http/route-deno": "jsr:@http/route-deno@^0.24.0",
     "@std/assert": "jsr:@std/assert@^1.0.5",
     "@std/bytes": "jsr:@std/bytes@^1.0.2",
     "@std/collections": "jsr:@std/collections@^1.0.5",
@@ -67,7 +66,6 @@
     "./packages/interceptor",
     "./packages/request",
     "./packages/response",
-    "./packages/route",
-    "./packages/route-deno"
+    "./packages/route"
   ]
 }
