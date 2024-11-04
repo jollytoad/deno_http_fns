@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.24.1]
+
+### Removed
+
+- [@http/route-deno] package removed
+
 ## [0.24.0]
 
 ### Added
