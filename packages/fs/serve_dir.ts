@@ -93,7 +93,7 @@ export async function serveDir(
   let fileInfo: FileStats;
   try {
     fileInfo = await stat(fsPath);
-  } catch (error) {
+  } catch (error: unknown) {
     if (fileNotFound(error)) {
       return notFound();
     }
@@ -138,7 +138,7 @@ export async function serveDir(
           etagDefault,
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (!fileNotFound(error)) {
         throw error;
       }

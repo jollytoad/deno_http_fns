@@ -17,6 +17,8 @@ export function prependDocType(bodyInit: BodyInit): BodyInit {
     return stream(bodyInit.values());
   } else if (isAsyncIterable(bodyInit)) {
     return stream(bodyInit[Symbol.asyncIterator]());
+  } else if (isIterable(bodyInit)) {
+    return stream(bodyInit[Symbol.iterator]());
   } else {
     return new Blob([
       DOCTYPE,
@@ -38,11 +40,20 @@ function isAsyncIterable(
     typeof bodyInit[Symbol.asyncIterator] === "function";
 }
 
+function isIterable(
+  bodyInit: BodyInit | Iterable<Uint8Array>,
+): bodyInit is Iterable<Uint8Array> {
+  return !!bodyInit && typeof bodyInit === "object" &&
+    !(bodyInit instanceof String) &&
+    Symbol.iterator in bodyInit &&
+    typeof bodyInit[Symbol.iterator] === "function";
+}
+
 function isData(bodyInit: BodyInit): bodyInit is FormData | URLSearchParams {
   return bodyInit instanceof FormData || bodyInit instanceof URLSearchParams;
 }
 
-function stream(iterator: AsyncIterator<Uint8Array>) {
+function stream(iterator: AsyncIterator<Uint8Array> | Iterator<Uint8Array>) {
   return new ReadableStream<Uint8Array>({
     start(controller) {
       controller.enqueue(ENCODED_DOCTYPE);

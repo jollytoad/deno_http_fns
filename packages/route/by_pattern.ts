@@ -8,6 +8,7 @@ import type { Awaitable, RoutePattern } from "./types.ts";
  * @param handler handler to call if the pattern matches, it should
  *  take the Request and the URLPatternResult as arguments
  * @template A the additional arguments passed to the handler
+ * @template R the Response or an alternative response type
  * @returns a Request handler that returns a Response or null
  *
  * @example
@@ -23,14 +24,14 @@ import type { Awaitable, RoutePattern } from "./types.ts";
  * ]));
  * ```
  */
-export function byPattern<A extends unknown[]>(
+export function byPattern<A extends unknown[], R = Response>(
   pattern: RoutePattern,
   handler: (
     request: Request,
     match: URLPatternResult,
     ...args: A
-  ) => Awaitable<Response | null>,
-): (req: Request, ...args: A) => Awaitable<Response | null> {
+  ) => Awaitable<R | null>,
+): (req: Request, ...args: A) => Awaitable<R | null> {
   const patterns = asURLPatterns(pattern);
 
   return async (req: Request, ...args: A) => {

@@ -7,10 +7,18 @@ export function asURLPattern(
   pattern: SingleRoutePattern,
 ): URLPattern {
   return typeof pattern === "string"
-    ? new URLPattern({ pathname: pattern })
+    ? stringAsURLPattern(pattern)
     : pattern instanceof URLPattern
     ? pattern
     : new URLPattern(pattern);
+}
+
+function stringAsURLPattern(pattern: string) {
+  try {
+    return new URLPattern(pattern);
+  } catch {
+    return new URLPattern({ pathname: pattern });
+  }
 }
 
 /**

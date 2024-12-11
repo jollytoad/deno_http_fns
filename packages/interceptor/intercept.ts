@@ -113,8 +113,8 @@ export function intercept<A extends unknown[], R extends Response | null>(
       for (const interceptor of flatten("finally", true)) {
         try {
           interceptor(req, res, reason);
-        } catch (e: unknown) {
-          console.error("Error during finally interceptor", e);
+        } catch (error: unknown) {
+          console.error("Error during finally interceptor", error);
         }
       }
     }
@@ -127,22 +127,22 @@ export function intercept<A extends unknown[], R extends Response | null>(
 
     try {
       await applyRequestInterceptors();
-    } catch (e: unknown) {
-      await applyErrorInterceptors(e);
+    } catch (error: unknown) {
+      await applyErrorInterceptors(error);
     }
 
     if (!res) {
       try {
         res = await handler(req, ...args);
-      } catch (e: unknown) {
-        await applyErrorInterceptors(e);
+      } catch (error: unknown) {
+        await applyErrorInterceptors(error);
       }
     }
 
     try {
       await applyResponseInterceptors();
-    } catch (e: unknown) {
-      await applyErrorInterceptors(e);
+    } catch (error: unknown) {
+      await applyErrorInterceptors(error);
     }
 
     return res;

@@ -1,10 +1,10 @@
 const KEY_FILE = "localhost-key.pem";
 const CERT_FILE = "localhost-cert.pem";
 
-export interface KeyAndCert {
-  key: string;
-  cert: string;
-}
+/**
+ * @deprecated use Deno.TlsCertifiedKeyPem instead
+ */
+export type KeyAndCert = Deno.TlsCertifiedKeyPem;
 
 /**
  * Allow serving over HTTPS on localhost, by load the TLS key and certificate for localhost from the files
@@ -21,7 +21,9 @@ export interface KeyAndCert {
  *
  * @returns options that can be added to the `Deno.serve` options
  */
-export async function loadKeyAndCert(): Promise<KeyAndCert | undefined> {
+export async function loadKeyAndCert(): Promise<
+  Deno.TlsCertifiedKeyPem | undefined
+> {
   if (Deno.args.includes("--http")) {
     return;
   }
@@ -31,7 +33,7 @@ export async function loadKeyAndCert(): Promise<KeyAndCert | undefined> {
       key: await Deno.readTextFile(KEY_FILE),
       cert: await Deno.readTextFile(CERT_FILE),
     };
-  } catch (error) {
+  } catch (error: unknown) {
     if (!(error instanceof Deno.errors.NotFound)) {
       throw error;
     }

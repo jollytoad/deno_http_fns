@@ -5,7 +5,7 @@ import {
   assertEquals,
   assertInstanceOf,
   assertStrictEquals,
-} from "./_test_deps.ts";
+} from "@std/assert";
 
 Deno.test("byPattern with '/' pattern matches URL with no path or trailing slash", async () => {
   await assertByPatternMatches("/", "http://example.com");

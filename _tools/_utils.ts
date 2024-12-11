@@ -8,11 +8,11 @@ export const rootPath = import.meta.dirname
 export async function readJson(path: string) {
   try {
     return JSON.parse(await Deno.readTextFile(path));
-  } catch (e) {
-    if (e instanceof Deno.errors.NotFound) {
+  } catch (error: unknown) {
+    if (error instanceof Deno.errors.NotFound) {
       return undefined;
     } else {
-      throw e;
+      throw error;
     }
   }
 }

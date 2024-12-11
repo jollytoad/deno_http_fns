@@ -19,8 +19,8 @@ export function getUrlHeader(
       url.pathname += trailing;
     }
     return url;
-  } catch (e) {
-    console.warn(`Invalid ${header} header, expected an absolute URL`, e);
+  } catch (error: unknown) {
+    console.warn(`Invalid ${header} header, expected an absolute URL`, error);
   }
 
   return undefined;

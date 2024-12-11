@@ -10,6 +10,27 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.25.0]
+
+### Changed
+
+- Update to Deno 2.1.3
+- Update to latest `@std` deps
+- [@http/route] allow `asURLPattern` to accept a full URL pattern string, by
+  attempting to parse the pattern directly with `new URLPattern` before falling
+  back to treating it as `pathname` of a `URLPatternInit`
+- [@http/route] allow `byPattern`, `bySubPattern`, `cascade` and `lazy` handlers
+  to return something other than a `Response` if desired
+
+### Fixed
+
+- [@http/discovery] remove use of `@std/url` in tests
+- [@http/host-deno-local], [@http/host-deno-deploy] fix `Deno.serve` related
+  types
+- [@http/response] allow `prependDocType` to accept `Iterable<Uint8Array>` which
+  is now a valid type of `BodyInit`
+- fix caught error types to be explicitly `unknown`
+
 ## [0.24.0]
 
 ### Added

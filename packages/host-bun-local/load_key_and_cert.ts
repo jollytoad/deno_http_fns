@@ -38,8 +38,9 @@ export async function loadKeyAndCert(): Promise<KeyAndCert | undefined> {
       key: await Bun.file(KEY_FILE).text(),
       cert: await Bun.file(CERT_FILE).text(),
     };
-  } catch (error) {
-    if (error.code !== "ENOENT") {
+  } catch (error: unknown) {
+    // deno-lint-ignore no-explicit-any
+    if ((error as any)?.code !== "ENOENT") {
       throw error;
     }
   }

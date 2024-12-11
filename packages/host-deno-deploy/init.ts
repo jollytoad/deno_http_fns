@@ -9,10 +9,12 @@ import type { Awaitable, Interceptors } from "@http/interceptor/types";
 export default function initDeploy(
   handler: (
     req: Request,
-    info: Deno.ServeHandlerInfo,
+    info: Deno.ServeHandlerInfo<Deno.NetAddr>,
   ) => Awaitable<Response | null>,
   ...interceptors: Interceptors<unknown[], Response>[]
-): Deno.ServeInit & (Deno.ServeOptions | Deno.ServeTlsOptions) {
+):
+  & Deno.ServeInit<Deno.NetAddr>
+  & (Deno.ServeTcpOptions | Deno.TlsCertifiedKeyPem) {
   return {
     handler: intercept(withFallback(handler), logging(), ...interceptors),
   };

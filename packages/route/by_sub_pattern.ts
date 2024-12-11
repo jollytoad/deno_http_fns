@@ -11,6 +11,7 @@ import { deepMerge } from "@std/collections/deep-merge";
  * @param handler handler to call if the pattern matches, it should
  *  take the Request and the URLPatternResult as arguments
  * @template A the additional arguments passed to the handler
+ * @template R the Response or an alternative response type
  * @returns a Request handler that returns a Response or null
  *
  * @example
@@ -26,18 +27,18 @@ import { deepMerge } from "@std/collections/deep-merge";
  * ]));
  * ```
  */
-export function bySubPattern<A extends unknown[]>(
+export function bySubPattern<A extends unknown[], R = Response>(
   pattern: RoutePattern,
   handler: (
     request: Request,
     match: URLPatternResult,
     ...args: A
-  ) => Awaitable<Response | null>,
+  ) => Awaitable<R | null>,
 ): (
   req: Request,
   matchParent: URLPatternResult,
   ...args: A
-) => Awaitable<Response | null> {
+) => Awaitable<R | null> {
   return byPattern(pattern, mergePatternResult(handler));
 }
 
@@ -47,20 +48,21 @@ export function bySubPattern<A extends unknown[]>(
  *
  * @param handler handler to call with the merged URLPatternResult
  * @template A the additional arguments passed to the handler (after all URLPatternResult args)
+ * @template R the Response or an alternative response type
  * @returns a Request handler that accepts the Request followed by two URLPatternResult args
  */
-export function mergePatternResult<A extends unknown[]>(
+export function mergePatternResult<A extends unknown[], R = Response>(
   handler: (
     request: Request,
     match: URLPatternResult,
     ...args: A
-  ) => Awaitable<Response | null>,
+  ) => Awaitable<R | null>,
 ): (
   req: Request,
   matchChild: URLPatternResult,
   matchParent: URLPatternResult,
   ...args: A
-) => Awaitable<Response | null> {
+) => Awaitable<R | null> {
   return (
     req: Request,
     matchChild: URLPatternResult,

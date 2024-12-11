@@ -1,7 +1,7 @@
 import { assertEquals, fail } from "@std/assert";
 import { discoverRoutes } from "./discover_routes.ts";
 import freshPathMapper from "./fresh_path_mapper.ts";
-import { join } from "@std/url/join";
+import { join } from "@std/path/posix/join";
 import { asSerializablePattern } from "./as_serializable_pattern.ts";
 
 const fileRootUrl = import.meta.resolve("./_test/_fresh_routes");
@@ -39,7 +39,8 @@ Deno.test("freshPathMapper", async (t) => {
   }
 
   function assertRoute(expectedPattern: string, modulePath: string) {
-    const expectedModule = join(fileRootUrl, modulePath);
+    const expectedModule = new URL(fileRootUrl);
+    expectedModule.pathname = join(expectedModule.pathname, modulePath);
     for (const { pattern, module } of routes) {
       if (asSerializablePattern(pattern) === expectedPattern) {
         assertEquals(module, expectedModule);

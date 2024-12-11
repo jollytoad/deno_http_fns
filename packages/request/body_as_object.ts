@@ -26,8 +26,8 @@ export async function getBodyAsObject<T>(
     case "application/json":
       try {
         body = await req.json();
-      } catch (e) {
-        throw badRequest(`Invalid request body: ${e.message}`);
+      } catch (error: unknown) {
+        throw badRequest(`Invalid request body: ${(error as Error)?.message}`);
       }
       if (!body || typeof body !== "object") {
         throw badRequest(
@@ -44,8 +44,8 @@ export async function getBodyAsObject<T>(
         if (processForm) {
           body = processForm(body, form);
         }
-      } catch (e) {
-        throw badRequest(`Invalid request body: ${e.message}`);
+      } catch (error: unknown) {
+        throw badRequest(`Invalid request body: ${(error as Error)?.message}`);
       }
       break;
 

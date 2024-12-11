@@ -13,10 +13,13 @@ import type { Interceptors } from "@http/interceptor/types";
 export default async function initLocalhost(
   handler: (
     req: Request,
-    info: Deno.ServeHandlerInfo,
+    info: Deno.ServeHandlerInfo<Deno.NetAddr>,
   ) => Awaitable<Response | null>,
   ...interceptors: Interceptors<unknown[], Response>[]
-): Promise<Deno.ServeInit & (Deno.ServeOptions | Deno.ServeTlsOptions)> {
+): Promise<
+  & Deno.ServeInit<Deno.NetAddr>
+  & (Deno.ServeTcpOptions | Deno.TlsCertifiedKeyPem)
+> {
   const keyAndCert = await loadKeyAndCert();
   return {
     handler: intercept(withFallback(handler), logging(), ...interceptors),
@@ -26,3 +29,5 @@ export default async function initLocalhost(
     onListen: logServerUrl(keyAndCert),
   };
 }
+
+Deno.serve;
