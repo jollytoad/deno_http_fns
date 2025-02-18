@@ -73,10 +73,21 @@ async function generateHandler(opts: GenerateOptions): Promise<Code> {
 
     case "static":
     default: {
-      const { generateStaticRoutesHandler } = await import(
-        "./_generate_static_routes_handler.ts"
-      );
-      return generateStaticRoutesHandler(opts);
+      switch (opts.variant) {
+        case "tree": {
+          const { generateStaticTreeHandler } = await import(
+            "./_generate_static_tree_handler.ts"
+          );
+          return generateStaticTreeHandler(opts);
+        }
+        case "flat":
+        default: {
+          const { generateStaticRoutesHandler } = await import(
+            "./_generate_static_routes_handler.ts"
+          );
+          return generateStaticRoutesHandler(opts);
+        }
+      }
     }
   }
 }

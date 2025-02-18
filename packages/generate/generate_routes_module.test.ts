@@ -63,6 +63,17 @@ Deno.test("Generate with dynamic imports", async (t) => {
   await testRoutes(t, moduleOutUrl);
 });
 
+Deno.test("Generate with tree variant", async (t) => {
+  const moduleOutUrl = import.meta.resolve("./_test/routes_tree.ts");
+
+  await testGenerateRoutesModule(t, {
+    moduleOutUrl,
+    variant: "tree",
+  });
+
+  await testRoutes(t, moduleOutUrl);
+});
+
 Deno.test("Generate with default opts", async (t) => {
   const moduleOutUrl = import.meta.resolve("./_test/routes_default_opts.ts");
 
@@ -78,7 +89,7 @@ async function testGenerateRoutesModule(
   t: Deno.TestContext,
   opts: Pick<
     GenerateOptions,
-    "moduleOutUrl" | "moduleImports" | "routeDiscovery"
+    "moduleOutUrl" | "moduleImports" | "routeDiscovery" | "variant"
   >,
 ) {
   await t.step("generate module", async (t) => {

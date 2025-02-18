@@ -103,6 +103,13 @@ export interface GenerateOptions extends
   compare?: string | URL;
 
   /**
+   * Variant of the code generated.
+   * `flat` is the default, where a flat array of handlers are generated,
+   * or `tree` to make use of `byPathTree` to organise handler into a tree.
+   */
+  variant?: "flat" | "tree";
+
+  /**
    * Function to format the new module.
    *
    * Will not format the module if not supplied.
