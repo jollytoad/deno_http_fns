@@ -1,6 +1,6 @@
-import type { RoutePattern } from "@http/route/types";
-import type { Guard, Leaf, TreePath } from "@http/route/path-tree/types";
-import { GUARD, LEAF, WILD } from "@http/route/path-tree/symbols";
+import type { RoutePattern } from "../types.ts";
+import type { Guard, Leaf, TreePath } from "./types.ts";
+import { GUARD, LEAF, WILD } from "./symbols.ts";
 
 /**
  * Return all the paths for a PathTree that would match the given RoutePattern.
