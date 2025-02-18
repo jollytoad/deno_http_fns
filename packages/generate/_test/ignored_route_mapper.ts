@@ -6,7 +6,6 @@ import type { DiscoveredPath, StopRouteMapping } from "@http/discovery/types";
 export default function ignoredRouteMapper(
   { name, parentPath }: DiscoveredPath,
 ): StopRouteMapping[] {
-  console.log("TEST", name, parentPath);
   return (name.startsWith("_ignored_") || /(^|[/\\])_ignored_/.test(parentPath))
     ? [{ stop: true }]
     : [];

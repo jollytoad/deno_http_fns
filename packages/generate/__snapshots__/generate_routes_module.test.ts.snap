@@ -62,7 +62,7 @@ export default dynamicRoute({
 '
 `;
 
-snapshot[`Generate with static imports > generate module 1`] = `
+snapshot[`Generate flat router with static imports > generate module 1`] = `
 '// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
 
 import { pageHandler } from "\$test/generate/page_handler.ts";
@@ -88,7 +88,7 @@ export default cascade(
 '
 `;
 
-snapshot[`Generate with dynamic imports > generate module 1`] = `
+snapshot[`Generate flat router with dynamic imports > generate module 1`] = `
 '// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
 
 import { pageHandler } from "\$test/generate/page_handler.ts";
@@ -121,6 +121,78 @@ export default cascade(
   ),
   byPattern("/", lazy(async () => (await import("./routes/index.ts")).default)),
 );
+'
+`;
+
+snapshot[`Generate tree router with static imports > generate module 1`] = `
+'// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
+
+import { pageHandler } from "\$test/generate/page_handler.ts";
+import { byMethod } from "@http/route/by-method";
+import { byPathTree } from "@http/route/by-path-tree";
+import { byPattern } from "@http/route/by-pattern";
+import { GUARD, LEAF, WILD } from "@http/route/path-tree/symbols";
+import * as route_methods_2 from "./handle_txt.ts";
+import * as route_methods_4 from "./routes/about.ts";
+import route_5 from "./routes/index.ts";
+import { body as page_body_3 } from "./routes/page.ts";
+import * as route_methods_1 from "./routes/user/:name/index.ts";
+
+export default byPathTree({
+  "user": {
+    [WILD]: {
+      [GUARD]: [byPattern("/user/:name{/}?", byMethod(route_methods_1))],
+    },
+  },
+  "raw": { [LEAF]: [byMethod(route_methods_2)] },
+  "page": {
+    [LEAF]: [pageHandler(page_body_3, import.meta.resolve("./routes/page.ts"))],
+  },
+  "about": { [LEAF]: [byMethod(route_methods_4)] },
+  "": { [LEAF]: [route_5] },
+});
+'
+`;
+
+snapshot[`Generate tree router with dynamic imports > generate module 1`] = `
+'// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
+
+import { pageHandler } from "\$test/generate/page_handler.ts";
+import { byMethod } from "@http/route/by-method";
+import { byPathTree } from "@http/route/by-path-tree";
+import { byPattern } from "@http/route/by-pattern";
+import { lazy } from "@http/route/lazy";
+import { GUARD, LEAF, WILD } from "@http/route/path-tree/symbols";
+
+export default byPathTree({
+  "user": {
+    [WILD]: {
+      [GUARD]: [byPattern(
+        "/user/:name{/}?",
+        lazy(async () =>
+          byMethod(await import("./routes/user/:name/index.ts"))
+        ),
+      )],
+    },
+  },
+  "raw": {
+    [LEAF]: [lazy(async () => byMethod(await import("./handle_txt.ts")))],
+  },
+  "page": {
+    [LEAF]: [lazy(async () =>
+      pageHandler(
+        (await import("./routes/page.ts")).body,
+        import.meta.resolve("./routes/page.ts"),
+      )
+    )],
+  },
+  "about": {
+    [LEAF]: [lazy(async () => byMethod(await import("./routes/about.ts")))],
+  },
+  "": {
+    [LEAF]: [lazy(async () => (await import("./routes/index.ts")).default)],
+  },
+});
 '
 `;
 

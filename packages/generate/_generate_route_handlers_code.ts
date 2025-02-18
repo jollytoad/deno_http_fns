@@ -1,5 +1,3 @@
-import { discoverRoutes } from "@http/discovery/discover-routes";
-import { combinedRouteMapper } from "@http/discovery/combined-route-mapper";
 import { dirname } from "@std/path/posix/dirname";
 import { relative } from "@std/path/posix/relative";
 import { fromFileUrl } from "@std/path/posix/from-file-url";
@@ -8,7 +6,6 @@ import {
   type Code,
   dynamicImport,
   importNamed,
-  literal,
 } from "./code-builder/mod.ts";
 import type {
   GenerateOptions,
@@ -16,68 +13,39 @@ import type {
   HandlerGeneratorModule,
   RouteModule,
 } from "./types.ts";
-import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
+import { discoverRoutesForGen } from "./_discover_routes_for_gen.ts";
+import type { DiscoveredRoute } from "@http/discovery/types";
 
 /**
- * Generate a route handler of static pre-built routes using
- * code generators prior to runtime.
+ * Generate the handler(s) code for each discovered route.
+ *
+ * The code of each handler does not attempt to match the request URL for the route,
+ * that must be added by the consumer of this function, allowing alternative strategies
+ * for the actual routing (eg. a flat router using cascade/byPattern, or a tree router
+ * using byPathTree/byPattern, or some other most advance/performant strategy).
  */
-export async function generateStaticRoutesHandler(
+export async function generateRouteHandlersCode(
   opts: GenerateOptions,
-): Promise<Code> {
-  const cascade = asFn(importNamed(
-    `${opts.httpModulePrefix}route/cascade`,
-    "cascade",
-  ));
-
-  return cascade(...await generateStaticRoutes(opts));
-}
-
-async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
+): Promise<Map<DiscoveredRoute, Code[]>> {
   const {
-    pattern = "/",
-    fileRootUrl,
     moduleOutUrl,
-    verbose = false,
     httpModulePrefix = "@http/",
     moduleImports = "dynamic",
   } = opts;
 
   const outPath = dirname(fromFileUrl(moduleOutUrl));
 
-  const pathMapper = opts.pathMapper
-    ? (await import(opts.pathMapper.toString())).default
-    : undefined;
+  const routes = await discoverRoutesForGen(opts);
 
-  const routeMapper = opts.routeMapper
-    ? Array.isArray(opts.routeMapper)
-      ? combinedRouteMapper(
-        ...await Promise.all(opts.routeMapper.map(async (routeMapper) =>
-          (await import(routeMapper.toString())).default
-        )),
-      )
-      : (await import(opts.routeMapper.toString())).default
-    : undefined;
-
-  const compare = opts.compare
-    ? (await import(opts.compare.toString())).default
-    : undefined;
-
-  const routes = await discoverRoutes({
-    pattern,
-    fileRootUrl,
-    pathMapper,
-    routeMapper,
-    compare,
-    consolidate: true,
-    verbose,
-  });
-
-  const routesCode: Code[] = [];
+  const routesCode: Map<DiscoveredRoute, Code[]> = new Map();
 
   let i = 1;
 
-  for (const { pattern, module } of routes) {
+  for (const route of routes) {
+    const { pattern, module } = route;
+
+    const routeCode: Code[] = [];
+
     let modulePath = relative(outPath, fromFileUrl(module));
     if (modulePath[0] !== ".") {
       modulePath = "./" + modulePath;
@@ -103,13 +71,6 @@ async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
       moduleImports,
     };
 
-    const byPattern = asFn(importNamed(
-      `${httpModulePrefix}route/by-pattern`,
-      "byPattern",
-    ));
-
-    const codePattern = literal(asSerializablePattern(pattern));
-
     const lazy = asFn(importNamed(`${httpModulePrefix}route/lazy`, "lazy"));
 
     for (const { generate } of handlerGenerators) {
@@ -124,14 +85,14 @@ async function generateStaticRoutes(opts: GenerateOptions): Promise<Code[]> {
           code = lazy(returnFromFn(code));
         }
 
-        code = byPattern(codePattern, code);
-
-        routesCode.push(code);
+        routeCode.push(code);
 
         i++;
         continue;
       }
     }
+
+    routesCode.set(route, routeCode);
   }
 
   return routesCode;

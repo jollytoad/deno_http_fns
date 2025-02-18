@@ -64,20 +64,16 @@ export async function generateRoutesModuleContent(
 async function generateHandler(opts: GenerateOptions): Promise<Code> {
   switch (opts.routeDiscovery) {
     case "startup":
-    case "request": {
-      const { generateDynamicRouteHandler } = await import(
-        "./_generate_dynamic_route_handler.ts"
+    case "request":
+      return (await import("./_generate_dynamic_route_handler.ts")).default(
+        opts as GenerateDynamicRouteOptions,
       );
-      return generateDynamicRouteHandler(opts as GenerateDynamicRouteOptions);
-    }
 
     case "static":
-    default: {
-      const { generateStaticRoutesHandler } = await import(
-        "./_generate_static_routes_handler.ts"
+    default:
+      return (await import("./_generate_static_route_handler.ts")).default(
+        opts,
       );
-      return generateStaticRoutesHandler(opts);
-    }
   }
 }
 

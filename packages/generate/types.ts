@@ -1,4 +1,8 @@
-import type { RequestHandler, RouteModule } from "@http/discovery/types";
+import type {
+  DiscoveredRoute,
+  RequestHandler,
+  RouteModule,
+} from "@http/discovery/types";
 import type { Code } from "./code-builder/types.ts";
 import type { DiscoverRoutesOptions } from "@http/discovery/discover-routes";
 import type { Eagerness } from "@http/discovery/dynamic-route";
@@ -22,7 +26,7 @@ export type HandlerCodeGenerator = (
 ) => Code | undefined;
 
 /**
- * A module of that transforms a route module into a Request handler.
+ * A module that transforms a route module into a Request handler.
  *
  * May return `undefined` if unable to produce a handler.
  */
@@ -37,6 +41,26 @@ export interface HandlerGeneratorModule {
    * Code generator, used when `routeDiscovery` is `static`.
    */
   generate: HandlerCodeGenerator;
+}
+
+/**
+ * Function to generate the code of the combined handler for all
+ * discovered routes and their associated generated handlers.
+ */
+export type RouterCodeGenerator = (
+  routes: Map<DiscoveredRoute, Code[]>,
+  opts: GeneratorOptions,
+) => Awaitable<Code>;
+
+/**
+ * A module that contains a RouterCodeGenerator to combine multiple
+ * route handlers into a single 'Router' handler.
+ */
+export interface RouterGeneratorModule {
+  /**
+   * Code generator, used when `routeDiscovery` is `static`.
+   */
+  generate: RouterCodeGenerator;
 }
 
 /**
@@ -101,6 +125,14 @@ export interface GenerateOptions extends
    * Module that supplies a RouteComparator as the default function.
    */
   compare?: string | URL;
+
+  /**
+   * Module to generate the code of the combined handler for all
+   * discovered routes and their associated generated handlers.
+   *
+   * Only applicable when `routeDiscovery` is `static`.
+   */
+  routerGenerator?: Awaitable<RouterGeneratorModule>;
 
   /**
    * Function to format the new module.
