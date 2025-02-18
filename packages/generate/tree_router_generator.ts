@@ -6,19 +6,22 @@ import {
   importNamed,
   literal,
 } from "./code-builder/mod.ts";
-import type { GenerateOptions } from "./types.ts";
+import type { GeneratorOptions } from "./types.ts";
 import { asTreePaths } from "@http/route/path-tree/as-tree-paths";
 import { GUARD, LEAF, WILD } from "@http/route/path-tree/symbols";
-import { generateRouteHandlersCode } from "./_generate_route_handlers_code.ts";
 import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
+import type { DiscoveredRoute } from "@http/discovery/types";
 
 /**
- * Generate a route handler of static pre-built routes using
- * code generators prior to runtime.
+ * Generate a tree router that builds a rough tree of the path segments and uses
+ * `byPathTree` to narrow the down the number of handlers that need to be
+ * called. Routes that require any kind of wild card matching still use
+ * `byPattern` to perform the final match.
  */
-export default async function generateTreeHandlerCode(
-  opts: GenerateOptions,
-): Promise<Code> {
+export function generate(
+  routesCode: Map<DiscoveredRoute, Code[]>,
+  opts: GeneratorOptions,
+): Code {
   const {
     httpModulePrefix = "@http/",
   } = opts;
@@ -38,8 +41,6 @@ export default async function generateTreeHandlerCode(
     [LEAF]: importSymbol("LEAF"),
     [GUARD]: importSymbol("GUARD"),
   };
-
-  const routesCode = await generateRouteHandlersCode(opts);
 
   const treeCode: PathTreeCode = {};
 

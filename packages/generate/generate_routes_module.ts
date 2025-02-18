@@ -1,11 +1,7 @@
 import type { Code } from "./code-builder/types.ts";
 import { generateModule, resolveImports } from "./code-builder/generate.ts";
 import { relativeModuleResolver } from "./resolver.ts";
-import type {
-  GenerateDynamicRouteOptions,
-  GenerateOptions,
-  RoutingStrategy,
-} from "./types.ts";
+import type { GenerateDynamicRouteOptions, GenerateOptions } from "./types.ts";
 import { exportDefault } from "./code-builder/_export.ts";
 
 export type { GenerateOptions };
@@ -68,28 +64,16 @@ export async function generateRoutesModuleContent(
 async function generateHandler(opts: GenerateOptions): Promise<Code> {
   switch (opts.routeDiscovery) {
     case "startup":
-    case "request": {
-      const gen =
-        (await import("./_generate_dynamic_route_handler.ts")).default;
-      return gen(opts as GenerateDynamicRouteOptions);
-    }
+    case "request":
+      return (await import("./_generate_dynamic_route_handler.ts")).default(
+        opts as GenerateDynamicRouteOptions,
+      );
 
     case "static":
-    default: {
-      const gen = await importRoutingStrategy(opts.strategy);
-      return gen(opts);
-    }
-  }
-}
-
-async function importRoutingStrategy(strategy: RoutingStrategy = "flat") {
-  switch (strategy) {
-    case "tree":
-      return (await import("./_generate_tree_handler_code.ts")).default;
-    case "flat":
-      return (await import("./_generate_flat_handler_code.ts")).default;
     default:
-      throw new Error(`Unknown routing strategy: ${strategy}`);
+      return (await import("./_generate_static_route_handler.ts")).default(
+        opts,
+      );
   }
 }
 

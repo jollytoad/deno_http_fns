@@ -6,10 +6,10 @@ import { assertEquals } from "@std/assert/equals";
 
 benchRouter("routes_startup_discovery.ts");
 benchRouter("routes_request_discovery.ts");
-benchRouter("routes_dynamic_imports_flat.ts");
-benchRouter("routes_dynamic_imports_tree.ts");
-benchRouter("routes_static_imports_flat.ts");
-benchRouter("routes_static_imports_tree.ts");
+benchRouter("routes_flat_dynamic_imports.ts");
+benchRouter("routes_tree_dynamic_imports.ts");
+benchRouter("routes_flat_static_imports.ts");
+benchRouter("routes_tree_static_imports.ts");
 
 type Router = (request: Request) => Awaitable<Response | null>;
 type TestRoute = (

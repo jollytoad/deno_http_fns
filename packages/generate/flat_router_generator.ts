@@ -1,15 +1,16 @@
 import { asFn, type Code, importNamed, literal } from "./code-builder/mod.ts";
-import type { GenerateOptions } from "./types.ts";
-import { generateRouteHandlersCode } from "./_generate_route_handlers_code.ts";
+import type { GeneratorOptions } from "./types.ts";
 import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
+import type { DiscoveredRoute } from "@http/discovery/types";
 
 /**
- * Generate a route handler of static pre-built routes using
- * code generators prior to runtime.
+ * Generate a flat router, that attempts to match each route using `byPattern`,
+ * and `cascade` to work through these handlers one by one until a match is found.
  */
-export default async function generateFlatHandlerCode(
-  opts: GenerateOptions,
-): Promise<Code> {
+export function generate(
+  routesCode: Map<DiscoveredRoute, Code[]>,
+  opts: GeneratorOptions,
+): Code {
   const {
     httpModulePrefix = "@http/",
   } = opts;
@@ -23,8 +24,6 @@ export default async function generateFlatHandlerCode(
     `${httpModulePrefix}route/by-pattern`,
     "byPattern",
   ));
-
-  const routesCode = await generateRouteHandlersCode(opts);
 
   const byPatternsCode = routesCode.entries().flatMap(([route, codes]) => {
     const codePattern = literal(asSerializablePattern(route.pattern));

@@ -41,9 +41,9 @@ Deno.test("Generate with request time discovery", async (t) => {
   await testRoutes(t, moduleOutUrl);
 });
 
-Deno.test("Generate with static imports", async (t) => {
+Deno.test("Generate flat router with static imports", async (t) => {
   const moduleOutUrl = import.meta.resolve(
-    "./_test/routes_static_imports_flat.ts",
+    "./_test/routes_flat_static_imports.ts",
   );
 
   await testGenerateRoutesModule(t, {
@@ -54,9 +54,9 @@ Deno.test("Generate with static imports", async (t) => {
   await testRoutes(t, moduleOutUrl);
 });
 
-Deno.test("Generate with dynamic imports", async (t) => {
+Deno.test("Generate flat router with dynamic imports", async (t) => {
   const moduleOutUrl = import.meta.resolve(
-    "./_test/routes_dynamic_imports_flat.ts",
+    "./_test/routes_flat_dynamic_imports.ts",
   );
 
   await testGenerateRoutesModule(t, {
@@ -67,29 +67,29 @@ Deno.test("Generate with dynamic imports", async (t) => {
   await testRoutes(t, moduleOutUrl);
 });
 
-Deno.test("Generate with static imports and tree variant", async (t) => {
+Deno.test("Generate tree router with static imports", async (t) => {
   const moduleOutUrl = import.meta.resolve(
-    "./_test/routes_static_imports_tree.ts",
+    "./_test/routes_tree_static_imports.ts",
   );
 
   await testGenerateRoutesModule(t, {
     moduleOutUrl,
     moduleImports: "static",
-    strategy: "tree",
+    routerGenerator: import("@http/generate/tree-router-generator"),
   });
 
   await testRoutes(t, moduleOutUrl);
 });
 
-Deno.test("Generate with dynamic imports and tree variant", async (t) => {
+Deno.test("Generate tree router with dynamic imports", async (t) => {
   const moduleOutUrl = import.meta.resolve(
-    "./_test/routes_dynamic_imports_tree.ts",
+    "./_test/routes_tree_dynamic_imports.ts",
   );
 
   await testGenerateRoutesModule(t, {
     moduleOutUrl,
     moduleImports: "dynamic",
-    strategy: "tree",
+    routerGenerator: import("@http/generate/tree-router-generator"),
   });
 
   await testRoutes(t, moduleOutUrl);
@@ -110,11 +110,12 @@ async function testGenerateRoutesModule(
   t: Deno.TestContext,
   opts: Pick<
     GenerateOptions,
-    "moduleOutUrl" | "moduleImports" | "routeDiscovery" | "strategy"
+    "moduleOutUrl" | "moduleImports" | "routeDiscovery" | "routerGenerator"
   >,
 ) {
   await t.step("generate module", async (t) => {
     await generateRoutesModule({
+      routerGenerator: import("@http/generate/flat-router-generator"),
       ...opts,
       fileRootUrl,
       formatModule: dprintFormatModule(),

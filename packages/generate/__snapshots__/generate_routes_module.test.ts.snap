@@ -62,7 +62,7 @@ export default dynamicRoute({
 '
 `;
 
-snapshot[`Generate with static imports > generate module 1`] = `
+snapshot[`Generate flat router with static imports > generate module 1`] = `
 '// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
 
 import { pageHandler } from "\$test/generate/page_handler.ts";
@@ -88,7 +88,7 @@ export default cascade(
 '
 `;
 
-snapshot[`Generate with dynamic imports > generate module 1`] = `
+snapshot[`Generate flat router with dynamic imports > generate module 1`] = `
 '// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
 
 import { pageHandler } from "\$test/generate/page_handler.ts";
@@ -124,7 +124,7 @@ export default cascade(
 '
 `;
 
-snapshot[`Generate with static imports and tree variant > generate module 1`] = `
+snapshot[`Generate tree router with static imports > generate module 1`] = `
 '// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
 
 import { pageHandler } from "\$test/generate/page_handler.ts";
@@ -154,7 +154,7 @@ export default byPathTree({
 '
 `;
 
-snapshot[`Generate with dynamic imports and tree variant > generate module 1`] = `
+snapshot[`Generate tree router with dynamic imports > generate module 1`] = `
 '// IMPORTANT: This file has been automatically generated, DO NOT edit by hand.
 
 import { pageHandler } from "\$test/generate/page_handler.ts";

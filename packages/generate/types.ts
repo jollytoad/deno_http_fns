@@ -1,4 +1,8 @@
-import type { RequestHandler, RouteModule } from "@http/discovery/types";
+import type {
+  DiscoveredRoute,
+  RequestHandler,
+  RouteModule,
+} from "@http/discovery/types";
 import type { Code } from "./code-builder/types.ts";
 import type { DiscoverRoutesOptions } from "@http/discovery/discover-routes";
 import type { Eagerness } from "@http/discovery/dynamic-route";
@@ -22,7 +26,7 @@ export type HandlerCodeGenerator = (
 ) => Code | undefined;
 
 /**
- * A module of that transforms a route module into a Request handler.
+ * A module that transforms a route module into a Request handler.
  *
  * May return `undefined` if unable to produce a handler.
  */
@@ -37,6 +41,26 @@ export interface HandlerGeneratorModule {
    * Code generator, used when `routeDiscovery` is `static`.
    */
   generate: HandlerCodeGenerator;
+}
+
+/**
+ * Function to generate the code of the combined handler for all
+ * discovered routes and their associated generated handlers.
+ */
+export type RouterCodeGenerator = (
+  routes: Map<DiscoveredRoute, Code[]>,
+  opts: GeneratorOptions,
+) => Awaitable<Code>;
+
+/**
+ * A module that contains a RouterCodeGenerator to combine multiple
+ * route handlers into a single 'Router' handler.
+ */
+export interface RouterGeneratorModule {
+  /**
+   * Code generator, used when `routeDiscovery` is `static`.
+   */
+  generate: RouterCodeGenerator;
 }
 
 /**
@@ -63,16 +87,6 @@ export interface GeneratorOptions {
    */
   moduleImports?: "static" | "dynamic";
 }
-
-/**
- * The URL matching strategy of the generated router code.
- *
- * - `flat` is the default, where a flat array of handlers are generated
- *   using `cascade` and `byPattern`, or
- * - `tree` to make use of `byPathTree` to organise handler into a rough
- *   tree, and falling back on `byPattern` for more complex matches
- */
-export type RoutingStrategy = "flat" | "tree";
 
 /**
  * Options passed to `generateRoutesModule`.
@@ -113,10 +127,12 @@ export interface GenerateOptions extends
   compare?: string | URL;
 
   /**
-   * Routing strategy of the code generated.
-   * This is only relevant when `routeDiscovery` is `static`.
+   * Module to generate the code of the combined handler for all
+   * discovered routes and their associated generated handlers.
+   *
+   * Only applicable when `routeDiscovery` is `static`.
    */
-  strategy?: RoutingStrategy;
+  routerGenerator?: Awaitable<RouterGeneratorModule>;
 
   /**
    * Function to format the new module.
