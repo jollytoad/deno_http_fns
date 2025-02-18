@@ -16,7 +16,7 @@ import type {
  * Generate a route handler that uses `dynamicRoute` to discovered and
  * construct the filesystem router at runtime.
  */
-export async function generateDynamicRouteHandler(
+export default async function generateDynamicRouteHandler(
   opts: GenerateDynamicRouteOptions,
 ): Promise<Code> {
   const dynamicRoute = asFn(importNamed(

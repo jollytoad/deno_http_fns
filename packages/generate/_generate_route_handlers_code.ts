@@ -6,7 +6,6 @@ import {
   type Code,
   dynamicImport,
   importNamed,
-  literal,
 } from "./code-builder/mod.ts";
 import type {
   GenerateOptions,
@@ -14,11 +13,18 @@ import type {
   HandlerGeneratorModule,
   RouteModule,
 } from "./types.ts";
-import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
 import { discoverRoutesForGen } from "./_discover_routes_for_gen.ts";
-import type { DiscoveredRoute } from "../discovery/types.ts";
+import type { DiscoveredRoute } from "@http/discovery/types";
 
-export async function generateStaticRoutes(
+/**
+ * Generate the handler(s) code for each discovered route.
+ *
+ * The code of each handler does not attempt to match the request URL for the route,
+ * that must be added by the consumer of this function, allowing alternative strategies
+ * for the actual routing (eg. a flat router using cascade/byPattern, or a tree router
+ * using byPathTree/byPattern, or some other most advance/performant strategy).
+ */
+export async function generateRouteHandlersCode(
   opts: GenerateOptions,
 ): Promise<Map<DiscoveredRoute, Code[]>> {
   const {
@@ -65,13 +71,6 @@ export async function generateStaticRoutes(
       moduleImports,
     };
 
-    const byPattern = asFn(importNamed(
-      `${httpModulePrefix}route/by-pattern`,
-      "byPattern",
-    ));
-
-    const codePattern = literal(asSerializablePattern(pattern));
-
     const lazy = asFn(importNamed(`${httpModulePrefix}route/lazy`, "lazy"));
 
     for (const { generate } of handlerGenerators) {
@@ -85,8 +84,6 @@ export async function generateStaticRoutes(
         if (code.returnsPromise?.()) {
           code = lazy(returnFromFn(code));
         }
-
-        code = byPattern(codePattern, code);
 
         routeCode.push(code);
 

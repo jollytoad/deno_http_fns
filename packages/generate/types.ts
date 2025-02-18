@@ -65,6 +65,16 @@ export interface GeneratorOptions {
 }
 
 /**
+ * The URL matching strategy of the generated router code.
+ *
+ * - `flat` is the default, where a flat array of handlers are generated
+ *   using `cascade` and `byPattern`, or
+ * - `tree` to make use of `byPathTree` to organise handler into a rough
+ *   tree, and falling back on `byPattern` for more complex matches
+ */
+export type RoutingStrategy = "flat" | "tree";
+
+/**
  * Options passed to `generateRoutesModule`.
  */
 export interface GenerateOptions extends
@@ -103,11 +113,10 @@ export interface GenerateOptions extends
   compare?: string | URL;
 
   /**
-   * Variant of the code generated.
-   * `flat` is the default, where a flat array of handlers are generated,
-   * or `tree` to make use of `byPathTree` to organise handler into a tree.
+   * Routing strategy of the code generated.
+   * This is only relevant when `routeDiscovery` is `static`.
    */
-  variant?: "flat" | "tree";
+  strategy?: RoutingStrategy;
 
   /**
    * Function to format the new module.

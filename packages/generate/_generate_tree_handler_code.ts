@@ -4,17 +4,19 @@ import {
   getImports,
   type Import,
   importNamed,
+  literal,
 } from "./code-builder/mod.ts";
 import type { GenerateOptions } from "./types.ts";
 import { asTreePaths } from "@http/route/path-tree/as-tree-paths";
 import { GUARD, LEAF, WILD } from "@http/route/path-tree/symbols";
-import { generateStaticRoutes } from "./_generate_static_routes.ts";
+import { generateRouteHandlersCode } from "./_generate_route_handlers_code.ts";
+import { asSerializablePattern } from "@http/discovery/as-serializable-pattern";
 
 /**
  * Generate a route handler of static pre-built routes using
  * code generators prior to runtime.
  */
-export async function generateStaticTreeHandler(
+export default async function generateTreeHandlerCode(
   opts: GenerateOptions,
 ): Promise<Code> {
   const {
@@ -26,27 +28,42 @@ export async function generateStaticTreeHandler(
     "byPathTree",
   ));
 
+  const byPattern = asFn(importNamed(
+    `${httpModulePrefix}route/by-pattern`,
+    "byPattern",
+  ));
+
   const symbols = {
     [WILD]: importSymbol("WILD"),
     [LEAF]: importSymbol("LEAF"),
     [GUARD]: importSymbol("GUARD"),
   };
 
-  const routesCode = await generateStaticRoutes(opts);
+  const routesCode = await generateRouteHandlersCode(opts);
 
   const treeCode: PathTreeCode = {};
 
   for (const [route, codes] of routesCode) {
     const treePaths = asTreePaths(route.pattern);
+    const codePattern = literal(asSerializablePattern(route.pattern));
 
     for (const path of treePaths) {
+      let hasWild = false;
       let branch = treeCode;
       for (const segment of path) {
+        if (segment === WILD || segment === GUARD) {
+          hasWild = true;
+        }
         if (typeof segment === "string" || segment === WILD) {
           branch = branch[segment] ??= {};
         } else {
           const handlers = branch[segment] ??= [];
-          handlers.push(...codes);
+
+          if (hasWild) {
+            handlers.push(...codes.map((code) => byPattern(codePattern, code)));
+          } else {
+            handlers.push(...codes);
+          }
           break;
         }
       }

@@ -19,32 +19,20 @@ export default byPathTree({
     },
   },
   "raw": {
-    [LEAF]: [byPattern(
-      "/raw",
-      lazy(async () => byMethod(await import("./handle_txt.ts"))),
-    )],
+    [LEAF]: [lazy(async () => byMethod(await import("./handle_txt.ts")))],
   },
   "page": {
-    [LEAF]: [byPattern(
-      "/page",
-      lazy(async () =>
-        pageHandler(
-          (await import("./routes/page.ts")).body,
-          import.meta.resolve("./routes/page.ts"),
-        )
-      ),
+    [LEAF]: [lazy(async () =>
+      pageHandler(
+        (await import("./routes/page.ts")).body,
+        import.meta.resolve("./routes/page.ts"),
+      )
     )],
   },
   "about": {
-    [LEAF]: [byPattern(
-      "/about",
-      lazy(async () => byMethod(await import("./routes/about.ts"))),
-    )],
+    [LEAF]: [lazy(async () => byMethod(await import("./routes/about.ts")))],
   },
   "": {
-    [LEAF]: [byPattern(
-      "/",
-      lazy(async () => (await import("./routes/index.ts")).default),
-    )],
+    [LEAF]: [lazy(async () => (await import("./routes/index.ts")).default)],
   },
 });

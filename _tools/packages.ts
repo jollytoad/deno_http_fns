@@ -64,7 +64,10 @@ function generateExports(modules: string[]) {
   const exports: Record<string, string> = {};
 
   for (const modulePath of modules) {
-    if (!modulePath.endsWith(".ts") || modulePath.endsWith("test.ts")) continue;
+    if (
+      !modulePath.endsWith(".ts") || modulePath.endsWith("test.ts") ||
+      modulePath.endsWith("bench.ts")
+    ) continue;
 
     const parsed = posixParse(modulePath);
     const name = parsed.name.replaceAll("_", "-");
