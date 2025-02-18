@@ -1,6 +1,6 @@
 {
   "name": "@http/host-cloudflare-worker",
-  "version": "0.25.0",
+  "version": "0.26.0",
   "exports": {
     "./asset-handler": "./asset_handler.ts",
     "./init": "./init.ts",

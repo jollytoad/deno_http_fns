@@ -10,6 +10,21 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.26.0]
+
+### Added
+
+- [@http/route] new `byPathTree` function that perform preliminary routing by a
+  path segment tree
+- [@http/route/path-tree] modules to support `byPathTree`
+- [@http/generate] new `routerGenerator` option to allow customised routes
+  module generation,
+- [@http/generate] `flat-router-generator`, the default router generator, that
+  implements the existing router behaviour of `cascade`/`byPattern`
+- [@http/generate] `tree-router-generator`, a new router generator, that uses
+  the new `byPathTree` instead
+- [@http/generate] benchmarks for different styles of generated routers
+
 ## [0.25.0]
 
 ### Changed
