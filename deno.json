@@ -30,7 +30,7 @@
     "@http/discovery": "jsr:@http/discovery@^0.26.0",
     "@http/examples": "jsr:@http/examples@^0.26.0",
     "@http/fs": "jsr:@http/fs@^0.26.0",
-    "@http/generate": "jsr:@http/generate@^0.26.0",
+    "@http/generate": "jsr:@http/generate@^0.26.1",
     "@http/host-bun-local": "jsr:@http/host-bun-local@^0.26.0",
     "@http/host-cloudflare-worker": "jsr:@http/host-cloudflare-worker@^0.26.0",
     "@http/host-deno-deploy": "jsr:@http/host-deno-deploy@^0.26.0",

@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.26.1]
+
+### Fixed
+
+- [@http/generate] fixed missing comma in generated tree code
+
 ## [0.26.0]
 
 ### Added

@@ -93,6 +93,7 @@ export function generate(
         tokens.push(",");
       });
       tokens.push("]");
+      tokens.push(",");
     }
 
     function walk(branch: PathTreeCode) {
