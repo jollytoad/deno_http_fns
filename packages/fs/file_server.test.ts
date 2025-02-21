@@ -29,6 +29,10 @@ const TEST_FILE_LAST_MODIFIED = TEST_FILE_STAT.mtime instanceof Date
   : "";
 const TEST_FILE_TEXT = await Deno.readTextFile(TEST_FILE_PATH);
 
+function customContentType(ext: string): string | undefined {
+  return ext === ".txt" ? "text/x-custom" : undefined;
+}
+
 Deno.test("serveDir() sets last-modified header", async () => {
   const req = new Request("http://localhost/test_file.txt");
   const res = await serveDir(req, serveDirOptions);
@@ -595,4 +599,54 @@ Deno.test("serveDir() serves HTTP 304 for if-none-match requests with W/-prefixe
     etag === res2.headers.get("etag") ||
       etag === "W/" + res2.headers.get("etag"),
   );
+});
+
+Deno.test("serveFile() custom contentType can override a content-type", async () => {
+  const req = new Request("http://localhost/testdata/test_file.txt");
+  const res = await serveFile(req, TEST_FILE_PATH, {
+    contentType: customContentType,
+  });
+
+  assertEquals(res.status, 200);
+  assertEquals(res.headers.get("content-type"), "text/x-custom");
+
+  await res.body?.cancel();
+});
+
+Deno.test("serveFile() custom contentType can fallback to default contentType fn", async () => {
+  const req = new Request("http://localhost/testdata/hello.html");
+  const res = await serveFile(req, join(testdataDir, "hello.html"), {
+    contentType: customContentType,
+  });
+
+  assertEquals(res.status, 200);
+  assertEquals(res.headers.get("content-type"), "text/html; charset=UTF-8");
+
+  await res.body?.cancel();
+});
+
+Deno.test("serveDir() custom contentType can override a content-type", async () => {
+  const req = new Request("http://localhost/test_file.txt");
+  const res = await serveDir(req, {
+    ...serveDirOptions,
+    contentType: customContentType,
+  });
+
+  assertEquals(res.status, 200);
+  assertEquals(res.headers.get("content-type"), "text/x-custom");
+
+  await res.body?.cancel();
+});
+
+Deno.test("serveDir() custom contentType can fallback to default contentType fn", async () => {
+  const req = new Request("http://localhost/hello.html");
+  const res = await serveDir(req, {
+    ...serveDirOptions,
+    contentType: customContentType,
+  });
+
+  assertEquals(res.status, 200);
+  assertEquals(res.headers.get("content-type"), "text/html; charset=UTF-8");
+
+  await res.body?.cancel();
 });

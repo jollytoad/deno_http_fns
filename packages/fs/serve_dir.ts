@@ -58,7 +58,7 @@ export async function serveDir(
   const target = opts.fsRoot || ".";
   const urlRoot = opts.urlRoot;
   const showIndex = opts.showIndex ?? true;
-  const { etagAlgorithm, etagDefault } = opts;
+  const { etagAlgorithm, etagDefault, contentType } = opts;
 
   const url = URL.parse(req.url);
   if (!url) {
@@ -122,6 +122,7 @@ export async function serveDir(
       etagAlgorithm,
       fileInfo,
       etagDefault,
+      contentType,
     });
   }
 
@@ -136,6 +137,7 @@ export async function serveDir(
           etagAlgorithm,
           fileInfo: indexFileInfo,
           etagDefault,
+          contentType,
         });
       }
     } catch (error: unknown) {

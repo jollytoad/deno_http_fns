@@ -90,4 +90,19 @@ export interface ServeDirOptions {
 
   /** A default ETag value to fallback on if the file has no mtime */
   etagDefault?: string | Promise<string | undefined>;
+
+  /**
+   * Override the default file extension to content-type header function.
+   * Defaults to [`@std/media-types/contentType`](https://jsr.io/@std/media-types/doc/~/contentType).
+   *
+   * This function only needs to handle lowercase file-extensions with a `.` prefix
+   * (eg: `.html`, `.js`, `.ts`), and return a complete `Content-Type` header.
+   *
+   * NOTE: although it uses `contentType` from `@std/media-types`, it does not need to be
+   * compatible with it's behaviour of also accepting media type strings.
+   *
+   * It may also return `undefined`, in which case we'll fallback to using the
+   * default `@std/media-types/contentType` function.
+   */
+  contentType?: (ext: string) => string | undefined;
 }

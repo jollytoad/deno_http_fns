@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+### Changed
+
+- [@http/fs] `serveDir()` & `serveFile()` now accept a `contentType` function
+  option that can override the default mapping of file extensions to
+  `content-type` header.
+
 ## [0.26.1]
 
 ### Fixed

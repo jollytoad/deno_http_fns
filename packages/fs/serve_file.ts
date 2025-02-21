@@ -1,10 +1,9 @@
-// Copyright 2024 Mark Gibson. MIT license.
+// Copyright 2024-2025 Mark Gibson. MIT license.
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 
 // This has been adapted from jsr:@std/http/file-server (2024-07-10)
 
 import { extname } from "@std/path/extname";
-import { contentType } from "@std/media-types/content-type";
 import { eTag, ifNoneMatch } from "@std/http/etag";
 import { notFound } from "@http/response/not-found";
 import { ok } from "@http/response/ok";
@@ -73,6 +72,21 @@ export interface ServeFileOptions {
    * It is used for optimization purposes.
    */
   fileInfo?: FileStats;
+
+  /**
+   * Override the default file extension to content-type header function.
+   * Defaults to [`@std/media-types/contentType`](https://jsr.io/@std/media-types/doc/~/contentType).
+   *
+   * This function only needs to handle lowercase file-extensions with a `.` prefix
+   * (eg: `.html`, `.js`, `.ts`), and return a complete `Content-Type` header.
+   *
+   * NOTE: although it uses `contentType` from `@std/media-types`, it does not need to be
+   * compatible with it's behaviour of also accepting media type strings.
+   *
+   * It may also return `undefined`, in which case we'll fallback to using the
+   * default `@std/media-types/contentType` function.
+   */
+  contentType?: (ext: string) => string | undefined;
 }
 
 /**
@@ -94,7 +108,8 @@ export interface ServeFileOptions {
 export async function serveFile(
   req: Request,
   filePath: string,
-  { etagAlgorithm: algorithm, fileInfo, etagDefault }: ServeFileOptions = {},
+  { etagAlgorithm: algorithm, fileInfo, etagDefault, contentType }:
+    ServeFileOptions = {},
 ): Promise<Response> {
   try {
     fileInfo ??= await stat(filePath);
@@ -152,8 +167,11 @@ export async function serveFile(
     }
   }
 
+  const fileExt = extname(filePath).toLowerCase();
+
   // Set mime-type using the file extension in filePath
-  const contentTypeValue = contentType(extname(filePath));
+  const contentTypeValue = contentType?.(fileExt) ??
+    (await import("@std/media-types/content-type")).contentType(fileExt);
   if (contentTypeValue) {
     headers.set("content-type", contentTypeValue);
   }
