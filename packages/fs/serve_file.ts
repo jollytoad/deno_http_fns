@@ -12,7 +12,7 @@ import { rangeNotSatisfiable } from "@http/response/range-not-satisfiable";
 import { partialContent } from "@http/response/partial-content";
 import { fileBody } from "./file_body.ts";
 import { stat } from "./stat.ts";
-import type { FileStats } from "./types.ts";
+import type { Awaitable, FileStats } from "./types.ts";
 import { isDirectory } from "./file_desc.ts";
 import { fileNotFound } from "./file_not_found.ts";
 
@@ -65,7 +65,7 @@ export interface ServeFileOptions {
   etagAlgorithm?: AlgorithmIdentifier;
 
   /** A default ETag value to fallback on if the file has no mtime */
-  etagDefault?: string | Promise<string | undefined>;
+  etagDefault?: Awaitable<string | undefined>;
 
   /**
    * An optional file stats object returned by `Deno.stat` or Node's `stat`.
@@ -108,9 +108,12 @@ export interface ServeFileOptions {
 export async function serveFile(
   req: Request,
   filePath: string,
-  { etagAlgorithm: algorithm, fileInfo, etagDefault, contentType }:
-    ServeFileOptions = {},
+  opts: ServeFileOptions = {},
 ): Promise<Response> {
+  const { etagAlgorithm: algorithm = "SHA-256", etagDefault, contentType } =
+    opts;
+  let fileInfo = opts.fileInfo;
+
   try {
     fileInfo ??= await stat(filePath);
   } catch (error: unknown) {

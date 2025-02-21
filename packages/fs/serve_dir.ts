@@ -55,10 +55,10 @@ export async function serveDir(
   req: Request,
   opts: ServeDirOptions = {},
 ): Promise<Response> {
-  const target = opts.fsRoot || ".";
+  const target = opts.fsRoot ?? ".";
   const urlRoot = opts.urlRoot;
   const showIndex = opts.showIndex ?? true;
-  const { etagAlgorithm, etagDefault, contentType } = opts;
+  const { etagAlgorithm = "SHA-256", etagDefault, contentType } = opts;
 
   const url = URL.parse(req.url);
   if (!url) {

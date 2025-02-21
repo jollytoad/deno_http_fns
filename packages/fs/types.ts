@@ -86,10 +86,10 @@ export interface ServeDirOptions {
    *
    * @default {"SHA-256"}
    */
-  etagAlgorithm?: AlgorithmIdentifier;
+  etagAlgorithm?: AlgorithmIdentifier | undefined;
 
   /** A default ETag value to fallback on if the file has no mtime */
-  etagDefault?: string | Promise<string | undefined>;
+  etagDefault?: Awaitable<string | undefined>;
 
   /**
    * Override the default file extension to content-type header function.

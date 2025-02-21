@@ -15,8 +15,11 @@
     "lock": "rm -f deno.lock && deno check **/*.ts"
   },
   "compilerOptions": {
+    "strict": true,
     "noUncheckedIndexedAccess": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "useUnknownInCatchVariables": true,
+    "noImplicitOverride": true
   },
   "fmt": {
     "exclude": [
