@@ -1,6 +1,6 @@
 {
   "name": "@http/interceptor",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "exports": {
     "./apply-forwarded-headers": "./apply_forwarded_headers.ts",
     "./catch-response": "./catch_response.ts",
@@ -8,6 +8,7 @@
     "./intercept": "./intercept.ts",
     "./intercept-response": "./intercept_response.ts",
     "./logger": "./logger.ts",
+    "./request-context": "./request_context.ts",
     "./skip": "./skip.ts",
     "./types": "./types.ts",
     "./verify-header": "./verify_header.ts",

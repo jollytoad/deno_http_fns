@@ -34,6 +34,28 @@ export type ResponseInterceptor<in out R = Response | null> = (
 ) => Awaitable<R | void>;
 
 /**
+ * A function that is called 'around' the handler,
+ * takes a Request, a `next` fn.
+ *
+ * It should call the next() fn to pass to the next 'around' interceptor,
+ * or eventually to the handler.
+ *
+ * It's intended for performing side-effects before/after,
+ * or for wrapping the handler.
+ *
+ * See the `requestContext` interceptor for an example.
+ *
+ * @template A the additional arguments passed to the handler
+ */
+export type AroundInterceptor<
+  in A extends unknown[] = unknown[],
+> = (
+  req: Request,
+  next: () => Awaitable<void>,
+  ...args: A
+) => Awaitable<void>;
+
+/**
  * A function that may handle errors from other interceptors or the main request handler,
  * takes a Request, Response, and error and optionally returns a modified or
  * new Response, or null to indicate a skipped response (if R permits).
@@ -66,6 +88,7 @@ export type InterceptorKinds<
 > = {
   request: RequestInterceptor<A>;
   response: ResponseInterceptor<R>;
+  around: AroundInterceptor<A>;
   error: ErrorInterceptor<R>;
   finally: FinallyInterceptor;
 };

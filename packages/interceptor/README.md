@@ -83,11 +83,12 @@ used to distinguish these interceptor functions from the routing functions.
 ## Types of Interceptor
 
 The [`intercept()`](https://jsr.io/@http/interceptor/doc/intercept/~/intercept)
-function supports registration of four different
+function supports registration of five different
 [types of interceptor](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds):
 
 - [`request`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.request)
 - [`response`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.response)
+- [`around`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.around)
 - [`error`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.error)
 - [`finally`](https://jsr.io/@http/interceptor/doc/types/~/InterceptorKinds.finally)
 
@@ -95,11 +96,11 @@ These maybe supplied as the keys of an object, and you may supply a single
 function or and array of functions for each type. You may also supply either a
 single object or an array of these objects to the `intercept` function.
 
-`request` and `error` interceptors are invoked in the order in which they are
-supplied, whereas `response` and `finally` are applied in reverse order. This
-ensures that a top-level feature that provides multiple types of interceptor
-(such as a logger) would be the first to intercept the `Request`, and the last
-to intercept the `Response`.
+`request`, `around` and `error` interceptors are invoked in the order in which
+they are supplied, whereas `response` and `finally` are applied in reverse
+order. This ensures that a top-level feature that provides multiple types of
+interceptor (such as a logger) would be the first to intercept the `Request`,
+and the last to intercept the `Response`.
 
 ### [Request Interceptor](https://jsr.io/@http/interceptor/doc/types/~/RequestInterceptor)
 
@@ -157,6 +158,28 @@ It may return one of the following:
 The return value can optionally be wrapped in a `Promise`.
 
 It may also throw an error, to be handled by the Error Interceptors.
+
+### [Around Interceptor](https://jsr.io/@http/interceptor/doc/types/~/AroundInterceptor)
+
+This is very similar to the traditional middleware, these are called immediately
+surrounding the handler, and so after the request interceptors and before the
+response interceptors.
+
+Unlike traditional middleware though, this isn't a catch-all replacement for
+those other interceptors above. It's really to allow side-effects and wrapping
+of the handler.
+
+The interceptor function accepts the `Request` and a `next` function which it
+MUST call and await.
+
+A primary use-case for this is the
+[requestContext](https://jsr.io/@http/interceptor/doc/request-context/~/requestContext)
+interceptor, which stores the `Request` in an async context for later retrieval
+(via `getRequest`) without having to explicitly passed it through every
+function.
+
+Use sparingly, request/response interceptors are generally more appropriate for
+most cases.
 
 ### [Error Interceptor](https://jsr.io/@http/interceptor/doc/types/~/ErrorInterceptor)
 

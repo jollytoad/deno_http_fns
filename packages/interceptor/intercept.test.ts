@@ -238,6 +238,24 @@ Deno.test("error is not thrown if handled by an error interceptor", async () => 
   assertStrictEquals(res, errorResponse);
 });
 
+Deno.test("around interceptors", async () => {
+  const middlewareSpy1 = spy(middleware);
+  const middlewareSpy2 = spy(middleware);
+  const okSpy = spy(ok);
+
+  const handler = intercept(okSpy, {
+    around: [middlewareSpy1, middlewareSpy2],
+  });
+
+  const res = await handler(request());
+
+  assertSpyCalls(middlewareSpy1, 1);
+  assertSpyCalls(middlewareSpy2, 1);
+  assertSpyCalls(okSpy, 1);
+
+  assertInstanceOf(res, Response);
+});
+
 // TODO: test modifying & replacing the Request
 // TODO: test modifying & replacing the Response
 // TODO: test finally handling
@@ -254,4 +272,8 @@ function doNothing() {}
 
 function throwError() {
   throw Error("Something bad happened");
+}
+
+function middleware(_req: Request, next: () => void) {
+  return next();
 }

@@ -10,11 +10,19 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.27.0]
+
 ### Changed
 
 - [@http/fs] `serveDir()` & `serveFile()` now accept a `contentType` function
   option that can override the default mapping of file extensions to
   `content-type` header.
+
+### Added
+
+- [@http/interceptor] added `around` interceptors, like traditional middleware
+- [@http/interceptor] added `requestContext` interceptor to store the `Request`
+  in async context (ie. AsyncLocalStorage) for later retrieval via `getRequest`
 
 ## [0.26.1]
 

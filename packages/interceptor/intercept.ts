@@ -132,8 +132,18 @@ export function intercept<A extends unknown[], R extends Response | null>(
     }
 
     if (!res) {
+      const iterator = flatten("around")[Symbol.iterator]();
+      const next = async () => {
+        const result = iterator.next();
+
+        if (result.done) {
+          res = await handler(req, ...args);
+        } else {
+          return await result.value(req, next, ...args);
+        }
+      };
       try {
-        res = await handler(req, ...args);
+        await next();
       } catch (error: unknown) {
         await applyErrorInterceptors(error);
       }
