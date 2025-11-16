@@ -25,7 +25,7 @@
  */
 
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { Awaitable, Interceptors } from "@http/interceptor/types";
+import type { Awaitable, Interceptors } from "./types.ts";
 
 let requestStorage: AsyncLocalStorage<Request> | undefined = undefined;
 

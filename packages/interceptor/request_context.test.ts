@@ -1,5 +1,5 @@
 import { getRequest, requestContext } from "./request_context.ts";
-import { intercept } from "@http/interceptor/intercept";
+import { intercept } from "./intercept.ts";
 import { assertStrictEquals } from "@std/assert/strict-equals";
 import { assertThrows } from "@std/assert/throws";
 
