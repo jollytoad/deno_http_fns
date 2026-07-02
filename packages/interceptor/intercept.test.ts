@@ -258,13 +258,220 @@ Deno.test("around interceptors", async () => {
 
 // TODO: test modifying & replacing the Request
 // TODO: test modifying & replacing the Response
-// TODO: test finally handling
+
+function finallyNoop(_req: Request, _res: Response | null, _reason?: unknown) {
+  // shape matches the FinallyInterceptor signature
+}
+
+Deno.test("finally interceptor fires once on success with no body", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  const handler = intercept(ok, {
+    finally: finallySpy,
+  });
+
+  const res = await handler(request());
+
+  assertInstanceOf(res, Response);
+  assertSpyCalls(finallySpy, 1);
+  // On success the reason is undefined (per the new contract).
+  assertStrictEquals(finallySpy.calls[0]!.args[2], undefined);
+});
+
+Deno.test("finally interceptor fires once on success with a body that is drained", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  const handler = intercept(
+    () =>
+      new Response(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(new Uint8Array([104, 105])); // "hi"
+            controller.close();
+          },
+        }),
+      ),
+    { finally: finallySpy },
+  );
+
+  const res = await handler(request());
+  // Drain the body to trigger the body-drained path.
+  await res.text();
+
+  assertSpyCalls(finallySpy, 1);
+  assertStrictEquals(finallySpy.calls[0]!.args[2], undefined);
+});
+
+Deno.test("finally interceptor fires once on signal abort with the reason", async () => {
+  const finallySpy = spy(finallyNoop);
+  const controller = new AbortController();
+  const req = new Request("http://example.com", { signal: controller.signal });
+
+  // Handler never reads the body, so the body-drained path will not fire.
+  const handler = intercept(ok, { finally: finallySpy });
+
+  // Kick off the handler, then abort.
+  const promise = handler(req);
+  controller.abort("client-gave-up");
+
+  // The handler may resolve to a Response, or may reject — both are
+  // acceptable outcomes once the signal is aborted. What matters is
+  // that `finally` was invoked exactly once, with the abort reason.
+  try {
+    await promise;
+  } catch {
+    // ignored
+  }
+
+  assertSpyCalls(finallySpy, 1);
+  assertStrictEquals(finallySpy.calls[0]!.args[2], "client-gave-up");
+});
+
+Deno.test("finally interceptor fires exactly once when both paths could fire", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  const handler = intercept(
+    () =>
+      new Response(
+        new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(new Uint8Array([104, 105]));
+            controller.close();
+          },
+        }),
+      ),
+    { finally: finallySpy },
+  );
+
+  const controller = new AbortController();
+  const req = new Request("http://example.com", { signal: controller.signal });
+  const promise = handler(req);
+
+  // Abort and drain the body in the same tick — both paths race.
+  controller.abort("race");
+  const res = await promise;
+  try {
+    await res!.text();
+  } catch {
+    // may throw if aborted before body is read
+  }
+
+  assertSpyCalls(finallySpy, 1);
+});
+
+Deno.test("finally interceptor fires via a Deno-style info.completed provider in args[0]", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  let resolveCompleted!: () => void;
+  const info = {
+    completed: new Promise<void>((r) => {
+      resolveCompleted = r;
+    }),
+  };
+  const handler = intercept(okWithArgs, { finally: finallySpy });
+
+  const res = await handler(request(), info);
+
+  // Finally must not have fired yet — the provider has not resolved.
+  assertSpyCalls(finallySpy, 0);
+  assertInstanceOf(res, Response);
+
+  // Resolve the provider, then yield to the microtask queue.
+  resolveCompleted();
+  await Promise.resolve();
+  await Promise.resolve();
+
+  assertSpyCalls(finallySpy, 1);
+  assertStrictEquals(finallySpy.calls[0]!.args[2], undefined);
+});
+
+Deno.test("finally interceptor fires via a withCompletion-style provider in a later arg", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  let resolveCompleted!: () => void;
+  const provider = {
+    completed: new Promise<void>((r) => {
+      resolveCompleted = r;
+    }),
+  };
+  // Mimic a host wrapper that places the provider as the 2nd arg.
+  const handler = intercept(okWithArgs, { finally: finallySpy });
+
+  const res = await handler(request(), { unrelated: 1 }, provider);
+
+  assertSpyCalls(finallySpy, 0);
+  assertInstanceOf(res, Response);
+
+  resolveCompleted();
+  await Promise.resolve();
+  await Promise.resolve();
+
+  assertSpyCalls(finallySpy, 1);
+});
+
+Deno.test("finally interceptor fires for a null response when a provider is present", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  let resolveCompleted!: () => void;
+  const info = {
+    completed: new Promise<void>((r) => {
+      resolveCompleted = r;
+    }),
+  };
+  // R allows null here.
+  const handler = intercept(
+    (_req: Request, ..._args: unknown[]) => null,
+    { finally: finallySpy },
+  );
+
+  const res = await handler(request(), info);
+
+  // Null responses must not fire finally until the provider resolves.
+  assertSpyCalls(finallySpy, 0);
+  assertStrictEquals(res, null);
+
+  resolveCompleted();
+  await Promise.resolve();
+  await Promise.resolve();
+
+  assertSpyCalls(finallySpy, 1);
+});
+
+Deno.test("finally interceptor fires exactly once when both provider and req.signal abort fire", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  let resolveCompleted!: () => void;
+  const info = {
+    completed: new Promise<void>((r) => {
+      resolveCompleted = r;
+    }),
+  };
+  const controller = new AbortController();
+  const req = new Request("http://example.com", { signal: controller.signal });
+  const handler = intercept(okWithArgs, { finally: finallySpy });
+
+  const promise = handler(req, info);
+  // Resolve the provider and abort the signal in the same tick.
+  resolveCompleted();
+  controller.abort("race");
+  try {
+    await promise;
+  } catch {
+    // ignored
+  }
+
+  assertSpyCalls(finallySpy, 1);
+});
 
 function request() {
   return new Request("http://example.com");
 }
 
 function ok() {
+  return new Response();
+}
+
+function okWithArgs(..._args: unknown[]) {
   return new Response();
 }
 

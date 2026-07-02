@@ -50,6 +50,7 @@ export function intercept<A extends unknown[], R extends Response | null>(
   ...interceptors: readonly Interceptors<A, R>[]
 ): typeof handler {
   const hasFinally = interceptors.some((i) => i.finally);
+  let finallyApplied = false;
 
   function* reversedInterceptors() {
     for (let i = interceptors.length - 1; i >= 0; i--) {
@@ -109,7 +110,10 @@ export function intercept<A extends unknown[], R extends Response | null>(
       }
     }
 
-    function applyFinallyInterceptors(reason: unknown) {
+    function applyFinallyInterceptors(reason?: unknown) {
+      if (finallyApplied) return;
+      finallyApplied = true;
+
       for (const interceptor of flatten("finally", true)) {
         try {
           interceptor(req, res, reason);
@@ -155,6 +159,39 @@ export function intercept<A extends unknown[], R extends Response | null>(
       await applyErrorInterceptors(error);
     }
 
+    if (hasFinally) {
+      // Look for a host/runtime-supplied completed promise provider in the args
+      // (e.g. Deno's `info.completed`, or a `{ completed }` injected by
+      // some other wrapper).
+      // When present, it is preferred over the onResponseComplete tap.
+      const completed = args.findLast(hasCompleted)?.completed;
+
+      if (res) {
+        if (completed) {
+          completed.then(() => applyFinallyInterceptors());
+        } else {
+          // No provider available — fall back to observing the response body.
+          const { onResponseComplete } = await import(
+            "@http/response/on-response-complete"
+          );
+          res = onResponseComplete(res, applyFinallyInterceptors) as R;
+        }
+      } else {
+        // Handler declined (returned null) — fire on completion (or microtask).
+        (completed ?? Promise.resolve()).then(() => applyFinallyInterceptors());
+      }
+    }
+
     return res;
   };
+}
+
+function hasCompleted(v: unknown): v is { completed: PromiseLike<unknown> } {
+  return !!v && typeof v === "object" && "completed" in v &&
+    isPromiseLike(v.completed);
+}
+
+function isPromiseLike(v: unknown): v is PromiseLike<unknown> {
+  return !!v && typeof v === "object" && "then" in v &&
+    typeof v.then === "function";
 }

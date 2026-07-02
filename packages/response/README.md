@@ -60,6 +60,10 @@ the Response from a handler.
 
 - [replaceBody()](./replace_body.ts) allows you to duplicate a Response but with
   an alternative body.
+- [onResponseComplete()](./on_response_complete.ts) wraps a Response so a
+  callback fires exactly once when its body has been fully drained, errored, or
+  cancelled (or, for a bodyless Response, on the next microtask). The returned
+  Response is a pass-through over the original body stream.
 - [prependDocType()](./prepend_doctype.ts) allows you to prepend
   `<!DOCTYPE html>` to a html body whilst preserving its streaming capabilities,
   mostly useful in conjunction with JSX generated content.

@@ -1,6 +1,6 @@
 {
   "name": "@http/response",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "exports": {
     "./accepted": "./accepted.ts",
     "./append-headers": "./append_headers.ts",
@@ -18,6 +18,7 @@
     "./not-found": "./not_found.ts",
     "./not-modified": "./not_modified.ts",
     "./ok": "./ok.ts",
+    "./on-response-complete": "./on_response_complete.ts",
     "./partial-content": "./partial_content.ts",
     "./permanent-redirect": "./permanent_redirect.ts",
     "./plain-error": "./plain_error.ts",

@@ -10,6 +10,16 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.28.0]
+
+### Changed
+
+- [@http/interceptor] adapt `finally` interceptors to cope with the abort signal
+  not firing on success as well as failure. Using `info.completed` promise if
+  available and falling back to `onResponseComplete` if not.
+- [@http/response] added `onResponseComplete` fn to wrap a Response and watch
+  for the end of the stream, and calling a given callback.
+
 ## [0.27.0]
 
 ### Changed
