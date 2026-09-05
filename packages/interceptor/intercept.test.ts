@@ -412,7 +412,7 @@ Deno.test("finally interceptor fires via a withCompletion-style provider in a la
 Deno.test("finally interceptor fires for a null response when a provider is present", async () => {
   const finallySpy = spy(finallyNoop);
 
-  let resolveCompleted!: () => void;
+  let resolveCompleted!: () => void | PromiseLike<void>;
   const info = {
     completed: new Promise<void>((r) => {
       resolveCompleted = r;
@@ -430,9 +430,7 @@ Deno.test("finally interceptor fires for a null response when a provider is pres
   assertSpyCalls(finallySpy, 0);
   assertStrictEquals(res, null);
 
-  resolveCompleted();
-  await Promise.resolve();
-  await Promise.resolve();
+  await resolveCompleted();
 
   assertSpyCalls(finallySpy, 1);
 });
@@ -459,6 +457,109 @@ Deno.test("finally interceptor fires exactly once when both provider and req.sig
   } catch {
     // ignored
   }
+
+  assertSpyCalls(finallySpy, 1);
+});
+
+Deno.test("finally interceptor fires when error is throw by request handler and uncaught", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  const handler = intercept(throwError as () => null, {
+    finally: finallySpy,
+  });
+
+  const initialRequest = request();
+
+  await assertRejects(async () => {
+    await handler(initialRequest);
+  });
+
+  assertSpyCalls(finallySpy, 1);
+});
+
+Deno.test("finally interceptor fires when error is throw by request handler and caught", async () => {
+  const finallySpy = spy(finallyNoop);
+  const errorResponse = new Response();
+  const errorSpy = spy(() => errorResponse);
+
+  const handler = intercept(throwError as () => null, {
+    finally: finallySpy,
+    error: errorSpy,
+  });
+
+  const initialRequest = request();
+
+  const res = await handler(initialRequest);
+
+  assertSpyCalls(finallySpy, 1);
+  assertSpyCalls(errorSpy, 1);
+  assertStrictEquals(res, errorResponse);
+});
+
+Deno.test("finally interceptor fires when error is throw by error interceptor", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  const handler = intercept(throwError as () => null, {
+    finally: finallySpy,
+    error: throwError,
+  });
+
+  const initialRequest = request();
+
+  await assertRejects(async () => {
+    await handler(initialRequest);
+  });
+
+  assertSpyCalls(finallySpy, 1);
+});
+
+Deno.test("finally interceptor fires when error is throw by request interceptor", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  const handler = intercept(throwError as () => null, {
+    finally: finallySpy,
+    request: throwError,
+  });
+
+  const initialRequest = request();
+
+  await assertRejects(async () => {
+    await handler(initialRequest);
+  });
+
+  assertSpyCalls(finallySpy, 1);
+});
+
+Deno.test("finally interceptor fires when error is throw by response interceptor", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  const handler = intercept(throwError as () => null, {
+    finally: finallySpy,
+    response: throwError,
+  });
+
+  const initialRequest = request();
+
+  await assertRejects(async () => {
+    await handler(initialRequest);
+  });
+
+  assertSpyCalls(finallySpy, 1);
+});
+
+Deno.test("finally interceptor fires when error is throw by around interceptor", async () => {
+  const finallySpy = spy(finallyNoop);
+
+  const handler = intercept(throwError as () => null, {
+    finally: finallySpy,
+    around: throwError,
+  });
+
+  const initialRequest = request();
+
+  await assertRejects(async () => {
+    await handler(initialRequest);
+  });
 
   assertSpyCalls(finallySpy, 1);
 });

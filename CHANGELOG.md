@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.29.0]
+
+### Fixed
+
+- [@http/interceptor] fix `finally` interceptors properly this time!
+
 ## [0.28.0]
 
 ### Changed

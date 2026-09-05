@@ -50,7 +50,6 @@ export function intercept<A extends unknown[], R extends Response | null>(
   ...interceptors: readonly Interceptors<A, R>[]
 ): typeof handler {
   const hasFinally = interceptors.some((i) => i.finally);
-  let finallyApplied = false;
 
   function* reversedInterceptors() {
     for (let i = interceptors.length - 1; i >= 0; i--) {
@@ -75,6 +74,8 @@ export function intercept<A extends unknown[], R extends Response | null>(
 
   return async (req, ...args) => {
     let res!: R;
+    let unhandledError: unknown | undefined;
+    let finallyApplied = false;
 
     async function applyRequestInterceptors() {
       for (const interceptor of flatten("request")) {
@@ -97,16 +98,22 @@ export function intercept<A extends unknown[], R extends Response | null>(
       }
     }
 
-    async function applyErrorInterceptors(e: unknown) {
+    async function applyErrorInterceptors(error: unknown) {
       for (const interceptor of flatten("error")) {
-        const result = await interceptor(req, res, e);
-        if (result !== undefined) {
-          res = result as R;
+        try {
+          const result = await interceptor(req, res, error);
+          if (result !== undefined) {
+            res = result as R;
+          }
+        } catch (error2: unknown) {
+          console.error("Error during error interceptor", error2);
+          unhandledError = error2;
+          return;
         }
       }
       if (res === undefined) {
-        console.error("Error not handled by interceptor", e);
-        throw e;
+        console.error("Error not handled by interceptor", error);
+        unhandledError = error;
       }
     }
 
@@ -153,10 +160,12 @@ export function intercept<A extends unknown[], R extends Response | null>(
       }
     }
 
-    try {
-      await applyResponseInterceptors();
-    } catch (error: unknown) {
-      await applyErrorInterceptors(error);
+    if (!unhandledError) {
+      try {
+        await applyResponseInterceptors();
+      } catch (error: unknown) {
+        await applyErrorInterceptors(error);
+      }
     }
 
     if (hasFinally) {
@@ -180,6 +189,10 @@ export function intercept<A extends unknown[], R extends Response | null>(
         // Handler declined (returned null) — fire on completion (or microtask).
         (completed ?? Promise.resolve()).then(() => applyFinallyInterceptors());
       }
+    }
+
+    if (unhandledError) {
+      throw unhandledError;
     }
 
     return res;

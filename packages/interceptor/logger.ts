@@ -105,7 +105,7 @@ export function logStatusAndContentType(req: Request, res: Response | null) {
  * A ErrorInterceptor that simply logs the error.
  */
 export function logError(_req: unknown, _res: unknown, error: unknown) {
-  console.error(error);
+  console.error("%c⚠", `color: red`, error);
 }
 
 /**
