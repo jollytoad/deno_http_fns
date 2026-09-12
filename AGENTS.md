@@ -28,6 +28,8 @@ deno task example <f> # deno run -A --watch <f>
 - Internal/private files prefixed with `_`
 - Export style: higher-order functions returning
   `(Request, ...args) => Awaitable<Response | null>`
+- Utility/helper functions go at the bottom of the module, after the main
+  exported function(s)
 - JSDoc with `@param`, `@returns`, `@example` on all public functions
 
 ## Testing

@@ -21,6 +21,7 @@ This changelog will need to be split between individual packages
   resolved path stays within `fsRoot`, return 400 for malformed percent-encoding
   in pathname, fix `urlRoot` stripping, re-encode normalized path in redirect
   `Location`
+- [@http/interceptor/cors] improve conformance with the CORS spec
 
 ## [0.29.0]
 
