@@ -10,6 +10,12 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
+## [0.29.1]
+
+### Fixed
+
+- [@http/request/body-as-object] accept parameters in `content-type` header
+
 ## [0.29.0]
 
 ### Fixed

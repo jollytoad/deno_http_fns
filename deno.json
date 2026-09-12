@@ -40,7 +40,7 @@
     "@http/host-deno-deploy": "jsr:@http/host-deno-deploy@^0.29.0",
     "@http/host-deno-local": "jsr:@http/host-deno-local@^0.29.0",
     "@http/interceptor": "jsr:@http/interceptor@^0.29.0",
-    "@http/request": "jsr:@http/request@^0.29.0",
+    "@http/request": "jsr:@http/request@^0.29.1",
     "@http/response": "jsr:@http/response@^0.29.0",
     "@http/route": "jsr:@http/route@^0.29.0",
     "@std/assert": "jsr:@std/assert@^1.0.19",

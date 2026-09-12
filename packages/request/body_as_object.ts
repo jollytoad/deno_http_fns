@@ -1,4 +1,6 @@
+import { parseMediaType } from "@std/media-types/parse-media-type";
 import { badRequest } from "@http/response/bad-request";
+import { requiredHeader } from "./required_header.ts";
 
 /**
  * Get the body of a Request as a plain old javascript object.
@@ -18,7 +20,7 @@ export async function getBodyAsObject<T>(
   req: Request,
   processForm?: (data: Record<string, FormDataEntryValue>, form: FormData) => T,
 ): Promise<T> | never {
-  const contentType = req.headers.get("content-type");
+  const contentType = parseContentType(requiredHeader(req, "content-type"));
 
   let body;
 
@@ -54,4 +56,14 @@ export async function getBodyAsObject<T>(
   }
 
   return body;
+}
+
+function parseContentType(contentType: string): string | undefined {
+  try {
+    return parseMediaType(contentType)[0];
+  } catch (error: unknown) {
+    throw badRequest(
+      `Invalid content-type header: ${(error as Error)?.message}`,
+    );
+  }
 }
