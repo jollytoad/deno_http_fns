@@ -39,6 +39,7 @@ Deno.test("by_method", async (t) => {
     const response = await fetch(`${baseUrl}/hello`, { method: "POST" });
 
     assertStatus(response, STATUS_CODE.MethodNotAllowed);
+    assertHeader(response, "Allow", "GET, HEAD, OPTIONS");
     await response.body?.cancel();
   });
 

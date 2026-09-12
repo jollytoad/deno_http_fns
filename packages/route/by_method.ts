@@ -33,7 +33,7 @@ import type { Awaitable, HttpMethod, MethodHandlers } from "./types.ts";
 export function byMethod<A extends unknown[]>(
   handlers: MethodHandlers<A>,
   fallback: (request: Request, ...args: A) => Awaitable<Response | null> = () =>
-    methodNotAllowed(),
+    methodNotAllowed(undefined, allowFor(handlers)),
 ): (req: Request, ...args: A) => Awaitable<Response | null> {
   const defaultHandlers: typeof handlers = {
     OPTIONS: optionsHandler(handlers),
@@ -56,6 +56,10 @@ export function byMethod<A extends unknown[]>(
 function optionsHandler<A extends unknown[]>(
   handlers: MethodHandlers<A>,
 ) {
+  return () => noContent({ allow: allowFor(handlers).join(", ") });
+}
+
+function allowFor<A extends unknown[]>(handlers: MethodHandlers<A>): string[] {
   const methods = Object.keys(handlers);
   if ("GET" in handlers && !("HEAD" in handlers)) {
     methods.push("HEAD");
@@ -63,9 +67,7 @@ function optionsHandler<A extends unknown[]>(
   if (!("OPTIONS" in handlers)) {
     methods.push("OPTIONS");
   }
-  const allow = methods.join(", ");
-
-  return () => noContent({ allow });
+  return methods;
 }
 
 const headHandler = <A extends unknown[]>(

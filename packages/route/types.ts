@@ -59,6 +59,7 @@ export type MethodRecord<T> = {
   PATCH: T;
   POST: T;
   PUT: T;
+  QUERY: T;
   [method: `${Uppercase<string>}`]: T;
 };
 
