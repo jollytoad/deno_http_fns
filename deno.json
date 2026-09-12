@@ -33,7 +33,7 @@
     "@http/assert": "jsr:@http/assert@^0.29.0",
     "@http/discovery": "jsr:@http/discovery@^0.29.0",
     "@http/examples": "jsr:@http/examples@^0.29.0",
-    "@http/fs": "jsr:@http/fs@^0.29.0",
+    "@http/fs": "jsr:@http/fs@^0.29.1",
     "@http/generate": "jsr:@http/generate@^0.29.0",
     "@http/host-bun-local": "jsr:@http/host-bun-local@^0.29.0",
     "@http/host-cloudflare-worker": "jsr:@http/host-cloudflare-worker@^0.29.0",

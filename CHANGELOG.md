@@ -14,8 +14,9 @@ This changelog will need to be split between individual packages
 
 ### Fixed
 
-- [@http/request/body-as-object] accept parameters in `content-type` header
+- [@http/request] `getBodyAsObject()` accept parameters in `content-type` header
 - [@http/route] in `byMethod()` a 405 response now includes the `Allow` header
+- [@http/fs] `fileBodyBun()` fix `end` offset
 
 ## [0.29.0]
 

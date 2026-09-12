@@ -17,7 +17,7 @@ export function fileBodyBun(
   let file = Bun.file(filePath);
 
   if (start > 0 || end !== undefined) {
-    file = file.slice(start, end);
+    file = file.slice(start, end === undefined ? undefined : end + 1);
   }
 
   return Promise.resolve(file.stream());
