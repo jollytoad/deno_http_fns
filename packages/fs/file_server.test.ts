@@ -128,6 +128,81 @@ Deno.test("serveDir() traverses encoded URI path", async () => {
   assertEquals(res.headers.get("location"), "http://localhost/");
 });
 
+Deno.test("serveDir() rejects backslash traversal in encoded URI path", async () => {
+  const req = new Request("http://localhost/..%5C..%5C..%5Csecret.txt");
+  const res = await serveDir(req, serveDirOptions);
+  await res.body?.cancel();
+
+  assertEquals(res.status, 400);
+});
+
+Deno.test("serveDir() rejects encoded backslash inside a path segment", async () => {
+  const req = new Request("http://localhost/foo%5Cbar.txt");
+  const res = await serveDir(req, serveDirOptions);
+  await res.body?.cancel();
+
+  assertEquals(res.status, 400);
+});
+
+Deno.test("serveDir() rejects malformed percent-encoding in URI path", async () => {
+  const badRequest = await serveDir(
+    new Request("http://localhost/100%"),
+    serveDirOptions,
+  );
+  await badRequest.body?.cancel();
+  assertEquals(badRequest.status, 400);
+
+  const badRequest2 = await serveDir(
+    new Request("http://localhost/foo%zzbar.html"),
+    serveDirOptions,
+  );
+  await badRequest2.body?.cancel();
+  assertEquals(badRequest2.status, 400);
+});
+
+Deno.test("serveDir() re-encodes reserved characters in the redirect Location", async () => {
+  const filePath = join(testdataDir, "file#2");
+  await Deno.writeTextFile(filePath, "hash filename");
+  try {
+    // A normalized form mismatch forces the 301 at the early redirect.
+    const res = await serveDir(
+      new Request("http://localhost/file%232//"),
+      serveDirOptions,
+    );
+
+    assertEquals(res.status, 301);
+    assertEquals(res.headers.get("location"), "http://localhost/file%232/");
+
+    // And the redirect target is servable rather than fragment-terminated
+    // (may take a second hop to remove the trailing slash).
+    let target = await serveDir(
+      new Request(res.headers.get("location")!),
+      serveDirOptions,
+    );
+    while (target.status === 301) {
+      await target.body?.cancel();
+      target = await serveDir(
+        new Request(target.headers.get("location")!),
+        serveDirOptions,
+      );
+    }
+    assertEquals(target.status, 200);
+    assertEquals(await target.text(), "hash filename");
+  } finally {
+    await Deno.remove(filePath);
+  }
+});
+
+Deno.test("serveDir() with urlRoot does not serve paths sharing only the prefix", async () => {
+  const res = await serveDir(
+    new Request("http://localhost/my-static-roothello.html"),
+    { fsRoot: testdataDir, urlRoot: "my-static-root" },
+  );
+  await res.body?.cancel();
+
+  assertEquals(res.status, 404);
+});
+
 Deno.test("serveDir() serves unusual filename", async () => {
   const filePath = join(testdataDir, "%");
   using _file = await Deno.create(filePath);

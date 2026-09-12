@@ -35,6 +35,10 @@ deno task example <f> # deno run -A --watch <f>
 - `Deno.test()` with `@std/assert`, co-located `*.test.ts` files
 - Test command uses `--no-check` (typecheck is separate, in `deno task check`)
 - Test snapshot dir: `packages/generate/__snapshots__/`
+- **Failing tests first**: for any behavioral fix, write the regression tests
+  first, run them, and confirm each fails for the expected reason (assertion
+  mismatch on the behavior, never a compile/import error) before implementing
+  the fix; then re-run for green
 - Assertions from `@std/assert`: `assertEquals`, `assertStrictEquals`,
   `assertInstanceOf`, etc.
 

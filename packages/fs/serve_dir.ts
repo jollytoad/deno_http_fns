@@ -1,9 +1,11 @@
-// Copyright 2024 Mark Gibson. MIT license.
+// Copyright 2024-2026 Mark Gibson. MIT license.
 // Copyright 2018-2024 the Deno authors. All rights reserved. MIT license.
 
 // This has been adapted from jsr:@std/http/file-server (2024-07-10)
 import { normalize as posixNormalize } from "@std/path/posix/normalize";
 import { join } from "@std/path/join";
+import { resolve } from "@std/path/resolve";
+import { SEPARATOR } from "@std/path/constants";
 import { notFound } from "@http/response/not-found";
 import { badRequest } from "@http/response/bad-request";
 import { movedPermanently } from "@http/response/moved-permanently";
@@ -65,21 +67,44 @@ export async function serveDir(
     return badRequest();
   }
 
-  const decodedUrl = decodeURIComponent(url.pathname);
+  const decodedUrl = safeDecodeURIComponent(url.pathname);
+  if (decodedUrl === undefined) {
+    return badRequest();
+  }
+
+  // On Windows, a backslash is a path separator, so a decoded `%5C` sequence
+  // could traverse outside of `fsRoot` after POSIX normalisation (which does
+  // not treat backslashes as separators). Backslash is not a valid character
+  // in a URL path segment, so reject it.
+  if (decodedUrl.includes("\\")) {
+    return badRequest();
+  }
+
   let normalizedPath = posixNormalize(decodedUrl);
 
-  if (urlRoot && !normalizedPath.startsWith("/" + urlRoot)) {
-    return notFound();
+  if (urlRoot) {
+    const prefixedPath = "/" + urlRoot + "/";
+    if (
+      !normalizedPath.startsWith(prefixedPath) &&
+      normalizedPath !== "/" + urlRoot
+    ) {
+      return notFound();
+    }
   }
 
   // Redirect paths like `/foo////bar` and `/foo/bar/////` to normalized paths.
   if (normalizedPath !== decodedUrl) {
-    url.pathname = normalizedPath;
+    // The normalized path must be re-encoded before being assigned to the
+    // URL pathname, as decoded characters, such as `#` or `?`, would
+    // otherwise be interpreted as part of the URL syntax.
+    url.pathname = encodeURI(normalizedPath);
     return movedPermanently(url);
   }
 
   if (urlRoot) {
-    normalizedPath = normalizedPath.replace(urlRoot, "");
+    // Strip the URL root positionally, rather than with a first-match
+    // string replace, to preserve the URL-to-path prefix contract.
+    normalizedPath = normalizedPath.slice(urlRoot.length + 1);
   }
 
   // Remove trailing slashes to avoid ENOENT errors
@@ -89,6 +114,17 @@ export async function serveDir(
   }
 
   const fsPath = join(target, normalizedPath);
+
+  // Defense in depth: verify the resolved path cannot escape the file
+  // root (e.g. via platform-specific separators or later `..` handling).
+  const resolvedFsPath = resolve(fsPath);
+  const resolvedTarget = resolve(target);
+  if (
+    resolvedFsPath !== resolvedTarget &&
+    !resolvedFsPath.startsWith(`${resolvedTarget}${SEPARATOR}`)
+  ) {
+    return notFound();
+  }
 
   let fileInfo: FileStats;
   try {
@@ -148,4 +184,13 @@ export async function serveDir(
   }
 
   return notFound();
+}
+
+function safeDecodeURIComponent(encoded: string): string | undefined {
+  try {
+    return decodeURIComponent(encoded);
+  } catch {
+    // Malformed percent-encoding sequences in the request URI.
+    return undefined;
+  }
 }

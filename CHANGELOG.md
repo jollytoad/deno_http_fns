@@ -17,6 +17,10 @@ This changelog will need to be split between individual packages
 - [@http/request] `getBodyAsObject()` accept parameters in `content-type` header
 - [@http/route] in `byMethod()` a 405 response now includes the `Allow` header
 - [@http/fs] `fileBodyBun()` fix `end` offset
+- [@http/fs] `serveDir()` reject potential traversal via `%5C`, validate
+  resolved path stays within `fsRoot`, return 400 for malformed percent-encoding
+  in pathname, fix `urlRoot` stripping, re-encode normalized path in redirect
+  `Location`
 
 ## [0.29.0]
 
