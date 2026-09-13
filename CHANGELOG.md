@@ -22,6 +22,7 @@ This changelog will need to be split between individual packages
   in pathname, fix `urlRoot` stripping, re-encode normalized path in redirect
   `Location`
 - [@http/interceptor/cors] improve conformance with the CORS spec
+- [@http/interceptor] improve `applyForwardedHeaders()` conformance
 
 ## [0.29.0]
 
