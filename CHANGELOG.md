@@ -10,7 +10,7 @@ and this project adheres to
 
 This changelog will need to be split between individual packages
 
-## [0.29.1]
+## [0.30.0]
 
 ### Fixed
 
