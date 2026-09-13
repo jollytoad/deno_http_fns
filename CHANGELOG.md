@@ -21,6 +21,9 @@ This changelog will need to be split between individual packages
   resolved path stays within `fsRoot`, return 400 for malformed percent-encoding
   in pathname, fix `urlRoot` stripping, re-encode normalized path in redirect
   `Location`
+- [@http/fs] `serveFile()` fix `Date` header
+- [@http/fs] `serveFile()` ignore the `Range` header for non-GET requests, and
+  honor `If-Range` (serve full content on mismatch)
 - [@http/interceptor/cors] improve conformance with the CORS spec
 - [@http/interceptor] improve `applyForwardedHeaders()` conformance
 

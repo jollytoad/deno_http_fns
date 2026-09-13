@@ -135,10 +135,9 @@ export async function serveFile(
     "accept-ranges": "bytes",
   });
 
-  // Set date header if access timestamp is available
-  if (fileInfo.atime) {
-    headers.set("date", fileInfo.atime.toUTCString());
-  }
+  // RFC 9110 §6.6.1: the Date header is the message origination time, and an
+  // origin server with a clock MUST generate it in 2xx/3xx/4xx responses.
+  headers.set("date", new Date().toUTCString());
 
   const etag = fileInfo.mtime
     ? await eTag(fileInfo, { algorithm })
@@ -187,8 +186,15 @@ export async function serveFile(
   // Note: Some clients add a Range header to all requests to limit the size of the response.
   // If the file is empty, ignore the range header and respond with a 200 rather than a 416.
   // https://github.com/golang/go/blob/0d347544cbca0f42b160424f6bc2458ebcc7b3fc/src/net/http/fs.go#L273-L276
-  if (rangeValue && 0 < fileSize) {
-    const parsed = parseRangeHeader(rangeValue, fileSize);
+  // RFC 9110 §14.2: GET is the only method for which range handling is
+  // defined, so a Range header received with any other method MUST be ignored.
+  // RFC 9110 §13.1.5: an If-Range condition MUST be evaluated before serving
+  // the range, and on failure the Range header MUST be ignored.
+  const rangeApplies = req.method === "GET" && 0 < fileSize && rangeValue &&
+    ifRangeAllows(req.headers.get("if-range"), etag, fileInfo);
+
+  if (rangeApplies) {
+    const parsed = parseRangeHeader(rangeValue!, fileSize);
 
     if (parsed) {
       // Return 416 Range Not Satisfiable if invalid range header value
@@ -227,4 +233,39 @@ export async function serveFile(
   const body = await fileBody(filePath);
 
   return body ? ok(body, headers) : notFound();
+}
+
+/**
+ * Whether the `If-Range` condition of the request allows a Range request
+ * (RFC 9110 §13.1.5), i.e. `true` when there is no `If-Range` header or when
+ * its validator matches the current representation.
+ *
+ * An entity-tag form is compared using strong comparison (§8.8.3.2) — a weak
+ * received tag never matches (clients MUST NOT send one). An HTTP-date form
+ * must exactly match the representation's `Last-Modified`, at whole-second
+ * granularity — comparison is exact and does not use the "earlier than or
+ * equal to" comparison of `If-Unmodified-Since`.
+ */
+function ifRangeAllows(
+  ifRangeValue: string | null,
+  currentEtag: string | undefined,
+  fileInfo: FileStats,
+): boolean {
+  if (!ifRangeValue) {
+    return true;
+  }
+
+  const isEntityTag = ifRangeValue.startsWith(`"`) ||
+    ifRangeValue.startsWith("W/");
+
+  if (isEntityTag) {
+    // Strong comparison — a weak current validator never satisfies it.
+    return currentEtag !== undefined && !currentEtag.startsWith("W/") &&
+      currentEtag === ifRangeValue;
+  }
+
+  // HTTP-date form — exact match at whole-second granularity.
+  const received = Math.floor(new Date(ifRangeValue).getTime() / 1000);
+  return Number.isInteger(received) && fileInfo.mtime !== null &&
+    received === Math.floor(fileInfo.mtime.getTime() / 1000);
 }

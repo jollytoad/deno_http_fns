@@ -6,6 +6,7 @@ import {
   assert,
   assertAlmostEquals,
   assertEquals,
+  assertNotEquals,
   assertStringIncludes,
 } from "@std/assert";
 import { serveDir, type ServeDirOptions } from "./serve_dir.ts";
@@ -52,12 +53,9 @@ Deno.test("serveDir() sets date header", async () => {
   await res.body?.cancel();
   const dateHeader = res.headers.get("date") as string;
   const date = Date.parse(dateHeader);
-  const expectedTime =
-    TEST_FILE_STAT.atime && TEST_FILE_STAT.atime instanceof Date
-      ? TEST_FILE_STAT.atime.getTime()
-      : Number.NaN;
 
-  assertAlmostEquals(date, expectedTime, 5 * MINUTE);
+  // RFC 9110 §6.6.1: Date is the message origination time.
+  assertAlmostEquals(date, Date.now(), MINUTE);
 });
 
 Deno.test("serveDir()", async () => {
@@ -724,4 +722,120 @@ Deno.test("serveDir() custom contentType can fallback to default contentType fn"
   assertEquals(res.headers.get("content-type"), "text/html; charset=UTF-8");
 
   await res.body?.cancel();
+});
+
+Deno.test("serveFile() sets Date header to message origination time", async () => {
+  const req = new Request("http://localhost/test_file.txt");
+  const res = await serveFile(req, TEST_FILE_PATH);
+  const date = new Date(res.headers.get("date")!);
+  await res.body?.cancel();
+
+  // RFC 9110 §6.6.1: Date is the message origination time, not the file's
+  // access time.
+  assertAlmostEquals(date.getTime(), Date.now(), MINUTE);
+  const freshStat = await Deno.stat(TEST_FILE_PATH);
+  if (freshStat.atime) {
+    assertNotEquals(
+      date.getTime(),
+      freshStat.atime.getTime(),
+    );
+  }
+});
+
+Deno.test("serveFile() ignores range header for POST", async () => {
+  const req = new Request("http://localhost/test_file.txt", {
+    method: "POST",
+    headers: { range: "bytes=0-4" },
+  });
+  const res = await serveFile(req, TEST_FILE_PATH);
+  const text = await res.text();
+
+  // RFC 9110 §14.2: GET is the only method for which range handling is
+  // defined, so a non-GET Range must be ignored.
+  assertEquals(res.status, 200);
+  assertEquals(res.statusText, "OK");
+  assertEquals(res.headers.get("content-range"), null);
+  assertEquals(text, TEST_FILE_TEXT);
+});
+
+Deno.test("serveFile() ignores range header for HEAD", async () => {
+  const req = new Request("http://localhost/test_file.txt", {
+    method: "HEAD",
+    headers: { range: "bytes=0-4" },
+  });
+  const res = await serveFile(req, TEST_FILE_PATH);
+  await res.body?.cancel();
+
+  assertEquals(res.status, 200);
+  assertEquals(res.statusText, "OK");
+  assertEquals(res.headers.get("content-range"), null);
+});
+
+Deno.test("serveFile() serves full content when If-Range is an entity tag that does not match", async () => {
+  const req = new Request("http://localhost/test_file.txt", {
+    headers: { range: "bytes=0-4", "if-range": `"bogus-etag"` },
+  });
+  const res = await serveFile(req, TEST_FILE_PATH);
+  const text = await res.text();
+
+  // RFC 9110 §13.1.5: If-Range uses strong comparison; a mismatching tag
+  // means the Range header must be ignored and the full representation sent.
+  assertEquals(res.status, 200);
+  assertEquals(res.statusText, "OK");
+  assertEquals(res.headers.get("content-range"), null);
+  assertEquals(text, TEST_FILE_TEXT);
+});
+
+Deno.test("serveFile() serves full content when If-Range has the same weak entity tag", async () => {
+  const req = new Request("http://localhost/test_file.txt", {
+    headers: { range: "bytes=0-4", "if-range": TEST_FILE_ETAG },
+  });
+  const res = await serveFile(req, TEST_FILE_PATH);
+  const text = await res.text();
+
+  // RFC 9110 §13.1.5/§8.8.1: If-Range uses strong comparison and a weak tag
+  // can never satisfy it (clients MUST NOT send one either), so even a
+  // byte-identical weak validator must not match — Range is ignored.
+  assertEquals(res.status, 200);
+  assertEquals(res.statusText, "OK");
+  assertEquals(res.headers.get("content-range"), null);
+  assertEquals(text, TEST_FILE_TEXT);
+});
+
+Deno.test("serveFile() serves partial content when If-Range HTTP-date matches Last-Modified exactly", async () => {
+  const req = new Request("http://localhost/test_file.txt", {
+    headers: {
+      range: "bytes=0-4",
+      "if-range": TEST_FILE_LAST_MODIFIED,
+    },
+  });
+  const res = await serveFile(req, TEST_FILE_PATH);
+  await res.body?.cancel();
+
+  assertEquals(res.status, 206);
+  assertEquals(res.statusText, "Partial Content");
+  assertEquals(res.headers.get("content-range"), `bytes 0-4/${TEST_FILE_SIZE}`);
+});
+
+Deno.test("serveFile() serves full content when If-Range HTTP-date differs by a second", async () => {
+  const stat = await Deno.stat(TEST_FILE_PATH);
+  const lastModified = stat.mtime instanceof Date
+    ? new Date(stat.mtime)
+    : new Date();
+  const oneSecondOff = new Date(lastModified.getTime() + 1000);
+  const req = new Request("http://localhost/test_file.txt", {
+    headers: {
+      range: "bytes=0-4",
+      "if-range": oneSecondOff.toUTCString(),
+    },
+  });
+  const res = await serveFile(req, TEST_FILE_PATH);
+  const text = await res.text();
+
+  // RFC 9110 §13.1.5: If-Range comparison is EXACT match, unlike the
+  // earlier-than-or-equal If-Modified-Since comparison.
+  assertEquals(res.status, 200);
+  assertEquals(res.statusText, "OK");
+  assertEquals(res.headers.get("content-range"), null);
+  assertEquals(text, TEST_FILE_TEXT);
 });
