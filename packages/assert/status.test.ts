@@ -2,6 +2,10 @@ import { assertStatus, STATUS_CODE } from "./status.ts";
 import { assertThrows } from "@std/assert/throws";
 import { AssertionError } from "@std/assert/assertion-error";
 
+Deno.test("assertStatus() passes for a response with an empty status text", () => {
+  assertStatus(new Response(null, { status: 204 }), STATUS_CODE.NoContent);
+});
+
 Deno.test("assertStatus() matches status code and text", () => {
   assertStatus(new Response(null, { status: 200, statusText: "OK" }), 200);
 });

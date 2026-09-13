@@ -24,6 +24,7 @@ This changelog will need to be split between individual packages
 - [@http/fs] `serveFile()` fix `Date` header
 - [@http/fs] `serveFile()` ignore the `Range` header for non-GET requests, and
   honor `If-Range` (serve full content on mismatch)
+- [@http/assert] `assertStatus()` accept an empty status text
 - [@http/interceptor/cors] improve conformance with the CORS spec
 - [@http/interceptor] improve `applyForwardedHeaders()` conformance
 

@@ -3,11 +3,13 @@ import { AssertionError } from "@std/assert/assertion-error";
 export { STATUS_CODE, type StatusCode } from "@std/http/status";
 
 /**
- * Assert that a Response has an expected status code and appropriate status text
+ * Assert that a Response has an expected status code and
+ * correct status text if present
  *
  * @param response the Response object to check
  * @param expectedStatus the expected HTTP status code
- * @throws an AssertionError if the status code or status text was not as expected
+ * @throws an AssertionError if the status code or status text
+ *   was presnet and not as expected
  *
  * @example
  * ```ts
@@ -20,7 +22,7 @@ export function assertStatus(response: Response, expectedStatus: StatusCode) {
   const expectedStatusText = STATUS_TEXT[expectedStatus];
   if (
     response.status !== expectedStatus ||
-    response.statusText !== expectedStatusText
+    (response.statusText && response.statusText !== expectedStatusText)
   ) {
     throw new AssertionError(
       `Expected response status "${expectedStatus} ${expectedStatusText}", got "${response.status} ${response.statusText}"`,
